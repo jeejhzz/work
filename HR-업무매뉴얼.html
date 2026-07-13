@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR 업무 매뉴얼</title>
+<style>
+  :root {
+    --paper: #f2f0e9; --paper-raised: #fdfcf9; --ink: #23241f; --ink-soft: #63625a; --ink-faint: #93918d;
+    --accent: #1f4e52; --accent-strong: #163a3d; --accent-tint: #e2ebe9;
+    --seal: #a4392c; --seal-tint: #f5e3df;
+    --line: #ddd9cc; --line-soft: #eae7dc; --shadow: 0 1px 2px rgba(35,36,31,.06),0 6px 20px rgba(35,36,31,.05);
+    --st-empty:#93918d; --st-empty-bg:#eae7dc;
+    --st-draft:#1f4e52; --st-draft-bg:#e2ebe9;
+    --st-review:#a06a1f; --st-review-bg:#f3e6cf;
+    --st-final:#2f7a4f; --st-final-bg:#dcefe1;
+    --serif:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;
+    --sans:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,sans-serif;
+    --mono: ui-monospace,"SFMono-Regular","Menlo","D2Coding",Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#1b1c19; --paper-raised:#232420; --ink:#eae7de; --ink-soft:#a8a598; --ink-faint:#726f63;
+      --accent:#6cb2ac; --accent-strong:#8ac9c2; --accent-tint:#223330; --seal:#d9705f; --seal-tint:#362321;
+      --line:#37372f; --line-soft:#2b2b25; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+      --st-empty:#8b8a83; --st-empty-bg:#2b2b25; --st-draft:#8ac9c2; --st-draft-bg:#223330;
+      --st-review:#d9ac5c; --st-review-bg:#3a2f1c; --st-final:#7ecb99; --st-final-bg:#1f3327; }
+  }
+  * { box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ text-wrap:balance; }
+  p{ text-wrap:pretty; }
+  @media (prefers-reduced-motion:no-preference){
+    .fade-in{ animation:rise .22s ease both; }
+    @keyframes rise{ from{opacity:0;transform:translateY(3px)} to{opacity:1;transform:none} }
+  }
+
+  .app{ max-width:1320px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; }
+
+  .topbar{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1.3rem 2rem; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .topbar .brand{ display:flex; align-items:baseline; gap:.6rem; }
+  .topbar h1{ font-family:var(--serif); font-size:1.35rem; font-weight:600; margin:0; letter-spacing:-.01em; }
+  .topbar .progress-note{ font-size:.78rem; color:var(--ink-soft); }
+  .topbar .actions{ display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; }
+  .btn{ font-family:var(--sans); font-size:.82rem; font-weight:600; border-radius:8px; padding:.5rem .9rem; cursor:pointer; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); }
+  .btn:hover{ border-color:var(--ink-faint); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fdfcf9; }
+  .btn.primary:hover{ background:var(--accent-strong); }
+  .btn.ghost{ background:transparent; border-color:transparent; color:var(--ink-soft); }
+  .btn.ghost:hover{ color:var(--ink); background:var(--line-soft); }
+  .save-flag{ font-size:.76rem; color:var(--accent-strong); font-family:var(--mono); min-width:1px; }
+
+  .body{ display:flex; flex:1; min-height:0; }
+  .sidebar{ width:270px; flex-shrink:0; padding:1.3rem 1rem 2rem 2rem; border-right:1px solid var(--line); overflow-y:auto; }
+  .nav-group{ margin-bottom:1.3rem; }
+  .nav-caption{ font-size:.68rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 .45rem .6rem; }
+  .nav-btn{ display:flex; align-items:center; justify-content:space-between; gap:.5rem; width:100%; text-align:left; background:none; border:none; font-family:var(--sans); font-size:.86rem; color:var(--ink-soft); padding:.42rem .6rem; border-radius:7px; cursor:pointer; line-height:1.3; }
+  .nav-btn:hover{ background:var(--line-soft); color:var(--ink); }
+  .nav-btn.active{ background:var(--accent-tint); color:var(--accent-strong); font-weight:600; }
+  .nav-btn .frac{ font-family:var(--mono); font-size:.7rem; color:var(--ink-faint); flex-shrink:0; }
+  .nav-btn.active .frac{ color:var(--accent-strong); }
+  .seal-chip{ font-family:var(--serif); font-size:.6rem; font-weight:700; color:var(--seal); border:1px solid var(--seal); border-radius:50%; width:1.4em; height:1.4em; display:inline-flex; align-items:center; justify-content:center; transform:rotate(-8deg); flex-shrink:0; }
+
+  .content{ flex:1; min-width:0; padding:2rem 3rem 5rem; overflow-y:auto; }
+  .page{ max-width:800px; }
+  .doc-eyebrow{ font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 .4rem; }
+  .page h2{ font-family:var(--serif); font-size:1.6rem; font-weight:600; margin:0 0 .3rem; letter-spacing:-.01em; }
+  .page h2 .seal-chip{ vertical-align:middle; margin-left:.5rem; width:1.5rem; height:1.5rem; font-size:.66rem; }
+  .page h3{ font-family:var(--serif); font-size:1.08rem; font-weight:600; margin:1.8rem 0 .65rem; }
+  .page h3:first-of-type{ margin-top:1.4rem; }
+  .page p{ line-height:1.75; margin:.55rem 0; max-width:64ch; }
+  .page p.lede{ color:var(--ink-soft); font-size:.97rem; }
+  .page ul,.page ol{ line-height:1.75; padding-left:1.3rem; max-width:64ch; }
+  .page li{ margin:.25rem 0; }
+  code,.path{ font-family:var(--mono); font-size:.87em; background:var(--line-soft); padding:.1em .4em; border-radius:4px; }
+
+  .table-wrap{ overflow-x:auto; margin:1rem 0 1.6rem; border:1px solid var(--line); border-radius:10px; background:var(--paper-raised); box-shadow:var(--shadow); }
+  table{ border-collapse:collapse; width:100%; font-size:.86rem; }
+  th,td{ text-align:left; padding:.6rem .85rem; border-bottom:1px solid var(--line-soft); vertical-align:top; }
+  thead th{ font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-faint); font-weight:600; background:var(--line-soft); }
+  tbody tr:last-child td{ border-bottom:none; }
+  td.num{ font-family:var(--mono); font-variant-numeric:tabular-nums; white-space:nowrap; }
+
+  .callout{ border-left:3px solid var(--seal); background:var(--seal-tint); padding:.8rem 1.05rem; border-radius:0 8px 8px 0; margin:1.1rem 0; font-size:.89rem; }
+  .callout b{ color:var(--seal); }
+
+  .doc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:.8rem; margin:1.3rem 0; }
+  .doc-card{ text-align:left; border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:1rem 1.1rem; box-shadow:var(--shadow); cursor:pointer; font-family:var(--sans); color:var(--ink); }
+  .doc-card:hover{ border-color:var(--accent); }
+  .doc-card .card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:.6rem; margin-bottom:.4rem; }
+  .doc-card .card-title{ font-weight:600; font-size:.94rem; line-height:1.4; }
+  .doc-card .card-desc{ font-size:.8rem; color:var(--ink-soft); line-height:1.55; }
+
+  .badge{ display:inline-block; font-size:.7rem; font-weight:600; padding:.16em .62em; border-radius:999px; white-space:nowrap; }
+  .badge[data-status="미작성"]{ color:var(--st-empty); background:var(--st-empty-bg); }
+  .badge[data-status="초안"]{ color:var(--st-draft); background:var(--st-draft-bg); }
+  .badge[data-status="검토중"]{ color:var(--st-review); background:var(--st-review-bg); }
+  .badge[data-status="확정"]{ color:var(--st-final); background:var(--st-final-bg); }
+
+  .editor-meta{ display:flex; align-items:center; gap:.8rem; margin:.9rem 0 1.3rem; flex-wrap:wrap; }
+  .editor-meta select{ font-family:var(--sans); font-size:.83rem; padding:.4rem .6rem; border-radius:7px; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); }
+  textarea.editor-box{ width:100%; min-height:360px; font-family:var(--sans); font-size:.94rem; line-height:1.7; color:var(--ink); background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; padding:1.1rem 1.2rem; resize:vertical; box-shadow:var(--shadow); }
+  textarea.editor-box:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .view-body{ white-space:pre-wrap; line-height:1.75; font-size:.96rem; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; padding:1.2rem 1.3rem; box-shadow:var(--shadow); }
+  .empty-hint{ color:var(--ink-faint); font-size:.86rem; padding:1.2rem; border:1px dashed var(--line); border-radius:12px; text-align:center; }
+
+  .notes-box{ margin-top:1.6rem; padding-top:1.3rem; border-top:1px solid var(--line); }
+  .notes-box h4{ font-family:var(--serif); font-size:.95rem; font-weight:600; margin:0 0 .5rem; color:var(--ink-soft); }
+  textarea.notes-input{ width:100%; min-height:100px; font-family:var(--sans); font-size:.88rem; line-height:1.6; color:var(--ink); background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:.8rem 1rem; resize:vertical; }
+
+  .row-actions{ display:flex; align-items:center; gap:.7rem; margin-top:.8rem; }
+  .back-link{ font-size:.82rem; color:var(--accent-strong); background:none; border:none; cursor:pointer; padding:0; margin-bottom:1rem; display:inline-flex; align-items:center; gap:.3rem; }
+  .back-link:hover{ text-decoration:underline; }
+
+  .tree{ font-family:var(--mono); font-size:.82rem; line-height:1.85; background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:1rem 1.3rem; white-space:pre; overflow-x:auto; box-shadow:var(--shadow); color:var(--ink-soft); }
+  .tree .hi{ color:var(--accent-strong); font-weight:600; }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(20,20,16,.5); z-index:50; display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:3rem 1.5rem; }
+  .modal-overlay.open{ display:flex; }
+  .modal{ background:var(--paper-raised); border-radius:16px; max-width:640px; width:100%; padding:2rem 2.2rem 2.2rem; box-shadow:var(--shadow); }
+  .modal h2{ font-family:var(--serif); font-size:1.3rem; margin:0 0 1rem; display:flex; justify-content:space-between; align-items:center; }
+  .modal .close-x{ background:none; border:none; font-size:1.4rem; color:var(--ink-faint); cursor:pointer; line-height:1; }
+  .modal ol,.modal ul{ line-height:1.8; padding-left:1.2rem; font-size:.92rem; }
+  .modal li{ margin:.5rem 0; }
+  .modal .step-n{ display:inline-flex; align-items:center; justify-content:center; width:1.5em; height:1.5em; border-radius:50%; background:var(--accent-tint); color:var(--accent-strong); font-weight:700; font-size:.78em; margin-right:.4em; }
+
+  @media (max-width:860px){
+    .body{ flex-direction:column; }
+    .sidebar{ width:auto; border-right:none; border-bottom:1px solid var(--line); padding:1rem 1.2rem; max-height:40vh; }
+    .content{ padding:1.5rem 1.3rem 4rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+
+<div class="modal-overlay" id="guideOverlay" onclick="if(event.target===this) closeGuide()">
+  <div class="modal">
+    <h2>사용법 <button class="close-x" onclick="closeGuide()">&times;</button></h2>
+    <ol>
+      <li><span class="step-n">1</span><b>왼쪽 목록에서 업무를 고르세요.</b> "01 채용 전략"처럼 업무 영역을 누르면 그 안에 있는 문서 목록이 카드로 보여요.</li>
+      <li><span class="step-n">2</span><b>문서 카드를 누르면 내용을 보거나 쓸 수 있어요.</b> 아직 안 쓴 문서는 회색 "미작성" 표시가 있고, 누르면 바로 큰 메모장이 열려서 자유롭게 쓰면 됩니다. 특별한 문법이나 기호를 몰라도 됩니다 — 그냥 쓰는 대로 저장됩니다.</li>
+      <li><span class="step-n">3</span><b>다 쓰면 [저장] 버튼을 누르세요.</b> 저장한 내용은 자동으로 이 컴퓨터의 이 브라우저에 계속 남아있어요. 브라우저를 껐다 켜도 그대로 있습니다.</li>
+      <li><span class="step-n">4</span><b>상태를 바꿀 수 있어요.</b> 문서 위쪽 드롭다운에서 미작성 → 초안 → 검토중 → 확정 순서로 진행 상태를 표시하세요.</li>
+      <li><span class="step-n">5</span><b>다른 사람에게 넘기거나 백업하고 싶으면, 위쪽의 [파일로 저장] 버튼을 누르세요.</b> 지금까지 쓴 내용이 전부 담긴 새 HTML 파일이 다운로드됩니다. 이 파일을 이메일이나 메신저로 그대로 보내면, 받은 사람은 그냥 더블클릭해서 열기만 하면 지금 상태 그대로 보입니다. 별도 프로그램 설치나 인터넷 연결이 필요 없습니다.</li>
+    </ol>
+    <p style="font-size:.85rem;color:var(--ink-soft);margin-top:1rem;">💡 이 화면은 이 컴퓨터, 이 브라우저 안에서만 저장됩니다(다른 컴퓨터나 다른 브라우저에는 자동으로 옮겨지지 않아요). 그래서 작업이 끝나면 꼭 [파일로 저장]으로 한 번씩 새 파일을 받아두는 걸 권장합니다.</p>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   이 블록은 지금까지 작성된 매뉴얼의 "기본값(초기 데이터)"입니다.
+   [파일로 저장]을 누르면 지금 화면의 최신 내용으로 이 블록이
+   통째로 새 파일에 다시 담깁니다.
+========================================================= */
+/*DATA-START*/
+let DATA = {
+  "builtins": {
+    "overview": {
+      "eyebrow": "Root · 전체 개요",
+      "title": "HR 업무 매뉴얼",
+      "body": "<p class=\"lede\">인수인계가 필요 없을 정도로 상세한 업무 매뉴얼을 만들기 위한 도구입니다. \"이 화면만 보면 처음 온 사람도 그 업무를 수행할 수 있다\"를 목표로 합니다.</p><h3>업무 영역 8가지</h3><p>왼쪽 목록에서 각 업무 영역을 눌러 문서를 확인하거나 새로 작성하세요. <span class=\"seal-chip\" style=\"width:1.3em;height:1.3em;font-size:.6rem;\">법</span> 표시가 붙은 업무는 기한을 놓치면 법적 문제가 생길 수 있는 업무입니다.</p><h3>작성 우선순위 제안</h3><ol><li>기한을 놓치면 법적 문제가 생기는 업무 — 전문연구요원, 기업부설연구소, 노사협의회</li><li>정기 반복 업무 — 인원 현황 관리, 타운홀미팅</li><li>연 단위 기획 업무 — 채용 전략, 인원 계획</li><li>수시 업무 — 구성원 간담회</li></ol><h3>문서를 쓸 때 지키면 좋은 규칙</h3><ul><li><b>실명·개인정보는 적지 않습니다.</b> 담당자는 이름 대신 역할(예: \"인사팀 채용 담당자\")로 씁니다.</li><li><b>비밀번호·계정 정보는 적지 않습니다.</b> \"어디서 권한을 받는지\"만 적습니다.</li><li>절차가 바뀌면 내용을 고치고, 언제 왜 바뀌었는지 한 줄 남겨두면 나중에 도움이 됩니다.</li></ul>"
+    },
+    "tpl": {
+      "eyebrow": "작성 가이드",
+      "title": "문서 쓸 때 참고하면 좋은 틀",
+      "body": "<p class=\"lede\">문서 성격에 따라 아래 3가지 틀 중 하나를 참고해서 쓰면 나중에 다시 봐도 헷갈리지 않습니다. 꼭 이 순서를 지킬 필요는 없고, 빠뜨리기 쉬운 항목을 점검하는 체크리스트로 쓰면 됩니다.</p><h3>① 반복 업무용 (채용 전략, 인원 현황·계획 등)</h3><ul><li>이 업무를 왜 하는가 (목적)</li><li>누가 관련되어 있는가</li><li>시작하기 전에 무엇이 필요한가</li><li>단계별로 무엇을 하는가 (언제 · 무엇을 · 어떻게 확인하는가)</li><li>결과물은 어디에 남기는가</li><li>자주 겪는 문제와 해결 방법</li><li>후임자에게 꼭 전달해야 할 것</li></ul><h3>② 회의체 운영용 (타운홀, 노사협의회, 간담회)</h3><ul><li>이 회의를 왜 하는가, 얼마나 자주 하는가</li><li>날짜 기준 준비 일정 (예: 회의 30일 전엔 무엇을, 7일 전엔 무엇을)</li><li>당일 진행 순서</li><li>회의 후 회의록·후속조치 처리 방법</li></ul><h3>③ 법정 기한 업무용 (전문연구요원, 기업부설연구소)</h3><ul><li>이 업무를 안 하면 어떤 불이익이 있는가</li><li><b>신고·보고 기한을 표로 정리 (가장 중요)</b></li><li>계속 유지해야 하는 요건 체크리스트</li><li>평소에 하는 일 / 어떤 사건이 생겼을 때 하는 일 구분</li></ul>"
+    },
+    "common": {
+      "eyebrow": "여러 업무에 걸치는 자료",
+      "title": "공통 자료",
+      "body": "<p class=\"lede\">특정 업무 하나에만 속하지 않고 여러 업무에서 같이 쓰는 정보입니다.</p><h3>연간 업무 캘린더</h3><p>1월부터 12월까지, 어떤 업무를 언제 하는지 한눈에 보는 표입니다. 각 문서를 쓰면서 해당 업무의 시기를 이 표에도 채워두면, 1년 전체 일정을 한 화면에서 볼 수 있습니다. 법정 기한이 있는 업무는 표시를 따로 해두세요.</p><h3>용어집</h3><p>매뉴�얼에 자주 나오는 사내 용어나 법정 용어를 정리해두는 곳입니다. 예: \"노사협의회 — 근로자참여 및 협력증진에 관한 법률에 따라 상시 근로자 30인 이상 사업장에 설치하는 협의 기구\"</p><h3>사용 시스템 목록</h3><p>업무에 쓰는 시스템과 접근 방법을 정리합니다. <b>계정 ID나 비밀번호 값은 절대 적지 않고</b>, \"어디서 어떻게 권한을 받는지\"만 적습니다.</p>"
+    }
+  },
+  "notes": {},
+  "domains": {
+    "d01": {
+      "code": "01", "name": "채용 전략 수립", "tag": null,
+      "intro": "연간/수시 채용 전략을 수립하고 실행을 관리하는 업무입니다.",
+      "related": "08 인원계획 · 07 인원현황",
+      "docs": [
+        { "id":"d01-01", "title":"업무개요", "desc":"업무 정의, 연간 사이클, 관련자", "status":"미작성", "body":"" },
+        { "id":"d01-02", "title":"연간채용전략 수립절차", "desc":"인원 계획 → 채용 목표 → 채널·예산 전략 수립", "status":"미작성", "body":"" },
+        { "id":"d01-03", "title":"채용채널 운영", "desc":"채용 사이트, 서치펌, 리퍼럴 등 채널별 운영 방법", "status":"미작성", "body":"" },
+        { "id":"d01-04", "title":"채용성과 리뷰", "desc":"채용 성과 지표 정의와 리뷰 방법", "status":"미작성", "body":"" }
+      ]
+    },
+    "d02": {
+      "code": "02", "name": "타운홀미팅 진행", "tag": null,
+      "intro": "전 구성원 대상 타운홀미팅을 기획하고 진행하는 업무입니다.",
+      "related": "04 구성원 간담회",
+      "docs": [
+        { "id":"d02-01", "title":"운영매뉴얼", "desc":"개요, D-Day 타임라인, 당일 시나리오, 사후 처리", "status":"미작성", "body":"" },
+        { "id":"d02-02", "title":"안건수집·QnA 운영", "desc":"사전 질문 수집, 익명 질문 처리, 현장 Q&A 운영 요령", "status":"미작성", "body":"" }
+      ]
+    },
+    "d03": {
+      "code": "03", "name": "노사협의회 진행", "tag": "법정",
+      "intro": "근로자참여 및 협력증진에 관한 법률에 따른 법정 회의체를 운영하는 업무입니다. 법정 개최 주기(분기 1회)와 회의록 보존 의무가 있어 기한 관리가 중요합니다.",
+      "related": null,
+      "docs": [
+        { "id":"d03-01", "title":"운영매뉴얼", "desc":"개요, 법정 요건(개최 주기·협의사항·회의록), 타임라인", "status":"미작성", "body":"" },
+        { "id":"d03-02", "title":"위원구성·선출", "desc":"근로자위원·사용자위원 구성, 임기, 선출 절차", "status":"미작성", "body":"" },
+        { "id":"d03-03", "title":"고충처리", "desc":"고충처리위원 운영 (해당 시)", "status":"미작성", "body":"" }
+      ]
+    },
+    "d04": {
+      "code": "04", "name": "구성원 간담회", "tag": null,
+      "intro": "경영진·리더와 구성원 간의 소규모 소통 자리를 기획하고 운영하는 업무입니다.",
+      "related": "02 타운홀미팅",
+      "docs": [
+        { "id":"d04-01", "title":"운영매뉴얼", "desc":"개요, 대상 선정, 준비 절차, 진행 요령, 사후 공유", "status":"미작성", "body":"" },
+        { "id":"d04-02", "title":"의견처리·피드백루프", "desc":"수렴된 의견의 처리·회신 프로세스", "status":"미작성", "body":"" }
+      ]
+    },
+    "d05": {
+      "code": "05", "name": "전문연구요원 관리", "tag": "법정",
+      "intro": "병역법에 따른 전문연구요원(병역대체복무) 제도를 관리하는 법정 업무입니다. 편입·복무·전직 관련 신고 기한을 놓치면 편입 취소, 배정 제한 등 중대한 불이익이 있습니다.",
+      "related": "06 기업부설연구소 · 07 인원현황",
+      "docs": [
+        { "id":"d05-01", "title":"제도개요·기한캘린더", "desc":"제도 개요, 근거 법령, 전체 신고 기한 캘린더", "status":"미작성", "body":"" },
+        { "id":"d05-02", "title":"병역지정업체 관리", "desc":"지정업체 요건 유지, 인원 배정 신청", "status":"미작성", "body":"" },
+        { "id":"d05-03", "title":"신규 편입 절차", "desc":"신규 인원(석사/학사) 편입 절차와 단계별 체크리스트", "status":"초안", "richHtml": true,
+          "body":"<p class=\"lede\">신규 입사자가 자연계 석사/학사 학위 요건을 충족해 전문연구요원으로 편입하는 절차입니다.</p><h3>편입 요건 체크리스트</h3><ul><li>병역 구분 확인 — <b>현역</b>은 자연계 <b>석사 이상</b>, <b>보충역</b>은 자연계 <b>학사 이상</b>이어야 함</li><li>전공이 회사의 연구 내용과 연관되는지 검토</li><li>대표이사의 <b>4촌 이내 혈족이 아님</b>을 확인 (해당 시 편입 불가)</li><li>대상자의 4대보험 취득신고 완료 여부 확인</li></ul><p>편입 후 복무기간은 <b>36개월</b>입니다.</p><h3>절차 (7단계)</h3><ol><li><b>사전 요건 확인</b> — 병역 구분, 학위 요건, 전공-연구 연관성, 대표이사 혈족 여부</li><li><b>자문사 통보</b> — 자문 담당자에게 신규 편입 대상자 통보(이름·입사일·부서), 최신 서식 수령</li><li><b>편입 대기자 정보 엑셀 작성·회신</b> — 29개 항목 작성, 신분증 사본·4대보험 가입내역 확인서 첨부 후 회신</li><li><b>서류 준비 (7종)</b> — 아래 표 참고</li><li><b>취합 및 제출</b> — 서류 누락 확인 → 서명·날인 → 자문사 전달 → 병무청 팩스 제출(제출일 기록)</li><li><b>심사 및 승인</b> — 병무청 심사 1~3일. 심사 포인트는 자연계 전공 여부 + 연구내용 관련 전공 여부. <b>승인 알림톡 수신일 = 복무 시작일</b> (입사일과 다름에 유의)</li><li><b>승인 후 관리</b> — 복무 시작일 기록, 만료 예정일 확인(시작일+36개월), 관리대장 등재, 소속 리더 공유</li></ol><h3>필요 서류 7종</h3><div class=\"table-wrap\"><table><thead><tr><th>#</th><th>서류</th><th>준비 주체</th></tr></thead><tbody><tr><td class=\"num\">1</td><td>편입신청서</td><td>자문사 작성</td></tr><tr><td class=\"num\">2</td><td>성실복무약정 근로조건이행서약서</td><td>자문사 작성</td></tr><tr><td class=\"num\">3</td><td>4촌 이내 혈족확인서</td><td>자문사 작성</td></tr><tr><td class=\"num\">4</td><td>대학원 전공과 수행업무 연관 진술서</td><td>회사+대상자 (심사 핵심 서류, 최대한 자세히)</td></tr><tr><td class=\"num\">5</td><td>최종 학위증</td><td>대상자</td></tr><tr><td class=\"num\">6</td><td>성적증명서</td><td>대상자 (전공 과목 확인용)</td></tr><tr><td class=\"num\">7</td><td>신분증 앞면 사본</td><td>대상자</td></tr></tbody></table></div><h3>자주 발생하는 이슈</h3><ul><li><b>4대보험 확인서 발급 불가</b> → 취득신고 완료 여부 먼저 확인</li><li><b>병무청 심사 반려</b> → 전공-연구 연관 진술서를 팀 리더와 함께 구체적으로 재작성</li><li><b>복무 시작일 혼동</b> → 입사일이 아니라 편입 승인 알림톡 수신일이 복무 시작일</li></ul><p style=\"font-size:.85rem;color:var(--ink-soft);\">📎 대상자별 진행 상황을 체크박스로 추적하는 별도 도구가 있다면 이 문서 옆에 함께 보관하세요.</p>" },
+        { "id":"d05-04", "title":"복무관리", "desc":"근태, 겸직, 파견, 해외출장 등 신고 사항", "status":"미작성", "body":"" },
+        { "id":"d05-05", "title":"전직·퇴사처리", "desc":"전직·퇴사 시 처리 절차와 기한", "status":"미작성", "body":"" },
+        { "id":"d05-06", "title":"실태조사 대응", "desc":"병무청 정기/수시 실태조사 대응", "status":"미작성", "body":"" }
+      ]
+    },
+    "d06": {
+      "code": "06", "name": "기업부설연구소 관리", "tag": "법정",
+      "intro": "기초연구진흥 및 기술개발지원에 관한 법률에 따른 기업부설연구소 인정을 유지·관리하는 법정 업무입니다. 인정 취소는 세액공제·병역지정업체 자격 등에 연쇄 영향을 줍니다.",
+      "related": "05 전문연구요원 · 07 인원현황",
+      "docs": [
+        { "id":"d06-01", "title":"제도개요·기한캘린더", "desc":"제도 개요, 근거 법령, 신고 기한 캘린더, 인정 요건 체크리스트", "status":"미작성", "body":"" },
+        { "id":"d06-02", "title":"변경신고", "desc":"연구전담요원 변동, 소재지·대표자 변경 등 사유별 신고", "status":"미작성", "body":"" },
+        { "id":"d06-03", "title":"연구전담요원 관리", "desc":"자격 요건, 등록·말소, 인원수 유지 관리", "status":"미작성", "body":"" },
+        { "id":"d06-04", "title":"사후관리·실태조사", "desc":"KOITA 사후 관리, 실태조사 대응", "status":"미작성", "body":"" }
+      ]
+    },
+    "d07": {
+      "code": "07", "name": "인원 현황 관리", "tag": null,
+      "intro": "조직의 인원 데이터를 정기적으로 집계·관리하고 보고하는 업무입니다.",
+      "related": "08 인원계획 · 05/06 법정 인원 요건",
+      "docs": [
+        { "id":"d07-01", "title":"업무개요", "desc":"관리 데이터 항목 정의, 집계 기준", "status":"미작성", "body":"" },
+        { "id":"d07-02", "title":"정기집계 절차", "desc":"월간/주간 집계: 출처, 방법, 검증, 배포", "status":"미작성", "body":"" },
+        { "id":"d07-03", "title":"보고서 작성", "desc":"정기 보고서 양식, 작성 요령, 보고 라인", "status":"미작성", "body":"" },
+        { "id":"d07-04", "title":"데이터정합성 관리", "desc":"시스템 간 데이터 불일치 원인과 점검", "status":"미작성", "body":"" }
+      ]
+    },
+    "d08": {
+      "code": "08", "name": "인원 계획 수립", "tag": null,
+      "intro": "연간(또는 반기) 인원 계획(headcount plan)을 수립하고 조정하는 업무입니다.",
+      "related": "07 인원현황 · 01 채용전략",
+      "docs": [
+        { "id":"d08-01", "title":"업무개요", "desc":"목적, 연간 사이클, 관련자(경영진·재무·조직장)", "status":"미작성", "body":"" },
+        { "id":"d08-02", "title":"연간계획 수립절차", "desc":"부서별 수요 취합 → 조정 → 경영진 승인 일정", "status":"미작성", "body":"" },
+        { "id":"d08-03", "title":"기중조정 절차", "desc":"연중 증원/전환 요청 처리 절차", "status":"미작성", "body":"" },
+        { "id":"d08-04", "title":"계획대비 실적관리", "desc":"계획 대비 채용/퇴사 실적 트래킹", "status":"미작성", "body":"" }
+      ]
+    }
+  }
+};
+/*DATA-END*/
+
+/* =========================================================
+   여기부터는 화면을 그리고 저장하는 프로그램 코드입니다.
+   (직접 수정하지 않아도 됩니다)
+========================================================= */
+const ORIGINAL_HTML = document.documentElement.outerHTML;
+const STORAGE_KEY = 'hr-manual-data-v1';
+
+(function loadFromStorage(){
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) DATA = JSON.parse(raw);
+  } catch(e) {}
+})();
+
+let view = { type:'overview', domain:null, doc:null };
+
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function persist(flagText){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(DATA));
+  const flag = document.getElementById('saveFlag');
+  if (flag) {
+    flag.textContent = flagText || ('저장됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
+  }
+}
+function allDocs(){
+  const list = [];
+  Object.values(DATA.domains).forEach(d => d.docs.forEach(doc => list.push(doc)));
+  return list;
+}
+function progressSummary(){
+  const docs = allDocs();
+  const done = docs.filter(d => d.status !== '미작성').length;
+  return `업무 문서 ${docs.length}개 중 ${done}개 작성 시작됨`;
+}
+
+function go(type, domain, doc){ view = { type, domain, doc }; render(); window.scrollTo(0,0); }
+window.go = go;
+
+function render(){
+  const app = document.getElementById('app');
+  app.innerHTML = `
+    <header class="topbar">
+      <div>
+        <div class="brand"><h1>HR 업무 매뉴얼</h1></div>
+        <div class="progress-note">${progressSummary()}</div>
+      </div>
+      <div class="actions">
+        <span class="save-flag" id="saveFlag"></span>
+        <button class="btn ghost" onclick="openGuide()">📖 사용법</button>
+        <button class="btn primary" onclick="exportHtml()">⬇ 파일로 저장</button>
+      </div>
+    </header>
+    <div class="body">
+      <nav class="sidebar">${renderSidebar()}</nav>
+      <main class="content"><div class="page fade-in">${renderMain()}</div></main>
+    </div>
+  `;
+}
+
+function renderSidebar(){
+  const navBtn = (label, active, onclick, extra) => `<button class="nav-btn ${active?'active':''}" onclick="${onclick}">${label}${extra||''}</button>`;
+  let html = `<div class="nav-group"><p class="nav-caption">인덱스</p>
+    ${navBtn('전체 개요', view.type==='overview', "go('overview')")}</div>`;
+  html += `<div class="nav-group"><p class="nav-caption">작성 가이드 · 공통자료</p>
+    ${navBtn('문서 쓰는 틀', view.type==='tpl', "go('tpl')")}
+    ${navBtn('공통 자료', view.type==='common', "go('common')")}</div>`;
+  html += `<div class="nav-group"><p class="nav-caption">업무 영역 8종</p>`;
+  Object.entries(DATA.domains).forEach(([id, d]) => {
+    const done = d.docs.filter(x=>x.status!=='미작성').length;
+    const tag = d.tag ? `<span class="seal-chip" style="margin-left:.3em;">법</span>` : '';
+    const active = view.type!=='overview' && view.type!=='tpl' && view.type!=='common' && view.domain===id;
+    html += navBtn(`${d.code} · ${d.name}${tag}`, active, `go('domain','${id}')`, `<span class="frac">${done}/${d.docs.length}</span>`);
+  });
+  html += `</div>`;
+  return html;
+}
+
+function renderMain(){
+  if (view.type === 'overview') return renderBuiltin('overview');
+  if (view.type === 'tpl') return renderBuiltin('tpl');
+  if (view.type === 'common') return renderBuiltin('common');
+  if (view.type === 'domain') return renderDomain(view.domain);
+  if (view.type === 'doc') return renderDoc(view.domain, view.doc);
+  return '';
+}
+
+function renderBuiltin(key){
+  const b = DATA.builtins[key];
+  const note = DATA.notes[key] || '';
+  return `
+    <p class="doc-eyebrow">${esc(b.eyebrow)}</p>
+    <h2>${esc(b.title)}</h2>
+    ${b.body}
+    ${renderNotes(key, note)}
+  `;
+}
+
+function renderNotes(key, note){
+  return `
+    <div class="notes-box">
+      <h4>📝 내 메모 추가하기 (선택)</h4>
+      <textarea class="notes-input" id="notes-${key}" placeholder="이 페이지에 덧붙이고 싶은 내용을 자유롭게 적어보세요.">${esc(note)}</textarea>
+      <div class="row-actions">
+        <button class="btn" onclick="saveNotes('${key}')">메모 저장</button>
+      </div>
+    </div>
+  `;
+}
+function saveNotes(key){
+  const val = document.getElementById('notes-'+key).value;
+  DATA.notes[key] = val;
+  persist();
+}
+window.saveNotes = saveNotes;
+
+function renderDomain(domainId){
+  const d = DATA.domains[domainId];
+  const tag = d.tag ? `<span class="seal-chip">법</span>` : '';
+  const related = d.related ? `<p style="font-size:.85rem;color:var(--ink-soft);">연관 업무: ${esc(d.related)}</p>` : '';
+  const cards = d.docs.map(doc => `
+    <button class="doc-card" onclick="go('doc','${domainId}','${doc.id}')">
+      <div class="card-top">
+        <span class="card-title">${esc(doc.title)}</span>
+        <span class="badge" data-status="${doc.status}">${doc.status}</span>
+      </div>
+      <div class="card-desc">${esc(doc.desc)}</div>
+    </button>
+  `).join('');
+  return `
+    <p class="doc-eyebrow">${esc(d.code)} · 업무 영역</p>
+    <h2>${esc(d.name)} ${tag}</h2>
+    <p class="lede">${esc(d.intro)}</p>
+    ${related}
+    <h3>이 업무의 문서 목록</h3>
+    <p style="font-size:.85rem;color:var(--ink-soft);">카드를 누르면 내용을 보거나 바로 쓸 수 있습니다.</p>
+    <div class="doc-grid">${cards}</div>
+  `;
+}
+
+function findDoc(domainId, docId){
+  return DATA.domains[domainId].docs.find(d => d.id === docId);
+}
+
+function renderDoc(domainId, docId){
+  const d = DATA.domains[domainId];
+  const doc = findDoc(domainId, docId);
+  const statuses = ['미작성','초안','검토중','확정'];
+  const options = statuses.map(s => `<option value="${s}" ${s===doc.status?'selected':''}>${s}</option>`).join('');
+  const header = `
+    <button class="back-link" onclick="go('domain','${domainId}')">← ${esc(d.name)} 목록으로</button>
+    <p class="doc-eyebrow">${esc(d.code)}-${esc(docId.split('-')[1])} · ${esc(d.name)}</p>
+    <h2>${esc(doc.title)}</h2>
+    <p class="lede">${esc(doc.desc)}</p>
+    <div class="editor-meta">
+      <label style="font-size:.83rem;color:var(--ink-soft);">진행 상태</label>
+      <select id="statusSelect" onchange="updateStatus('${domainId}','${docId}',this.value)">${options}</select>
+    </div>
+  `;
+
+  if (doc.richHtml) {
+    // 미리 정리된 형식의 문서 — 보기 전용으로 보여주고, 덧붙일 내용은 메모로 받습니다.
+    const note = DATA.notes[docId] || '';
+    return header + doc.body + renderNotes(docId, note);
+  }
+
+  return header + `
+    <textarea class="editor-box" id="bodyInput" placeholder="여기에 자유롭게 쓰세요. 특별한 형식은 필요 없습니다 — 그냥 문장으로 쓰시면 됩니다.
+
+예)
+- 이 업무는 왜 하는가
+- 누가 관련되어 있는가
+- 순서대로 무엇을 하는가
+- 자주 겪는 문제와 해결 방법">${esc(doc.body)}</textarea>
+    <div class="row-actions">
+      <button class="btn primary" onclick="saveDoc('${domainId}','${docId}')">저장</button>
+      <span class="save-flag" id="docSaveFlag"></span>
+    </div>
+  `;
+}
+
+function updateStatus(domainId, docId, status){
+  const doc = findDoc(domainId, docId);
+  doc.status = status;
+  persist();
+  render();
+  go('doc', domainId, docId);
+}
+window.updateStatus = updateStatus;
+
+function saveDoc(domainId, docId){
+  const doc = findDoc(domainId, docId);
+  doc.body = document.getElementById('bodyInput').value;
+  if (doc.status === '미작성' && doc.body.trim()) doc.status = '초안';
+  persist();
+  const flag = document.getElementById('docSaveFlag');
+  if (flag) flag.textContent = '저장됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  render();
+  go('doc', domainId, docId);
+}
+window.saveDoc = saveDoc;
+
+function todayStr(){
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function exportHtml(){
+  const json = JSON.stringify(DATA, null, 2);
+  const newSource = ORIGINAL_HTML.replace(
+    /\/\*DATA-START\*\/[\s\S]*?\/\*DATA-END\*\//,
+    `/*DATA-START*/\nlet DATA = ${json};\n/*DATA-END*/`
+  );
+  const blob = new Blob(['<!DOCTYPE html>\n' + newSource], { type: 'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `HR-업무매뉴얼-${todayStr()}.html`;
+  a.click();
+}
+window.exportHtml = exportHtml;
+
+function openGuide(){ document.getElementById('guideOverlay').classList.add('open'); }
+function closeGuide(){ document.getElementById('guideOverlay').classList.remove('open'); }
+window.openGuide = openGuide;
+window.closeGuide = closeGuide;
+
+render();
+</script>
+</body>
+</html>
