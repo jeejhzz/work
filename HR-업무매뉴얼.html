@@ -50,6 +50,20 @@
   .btn.ghost:hover{ color:var(--ink); background:var(--line-soft); }
   .save-flag{ font-size:.76rem; color:var(--accent-strong); font-family:var(--mono); min-width:1px; }
 
+  .searchbar-row{ position:relative; padding:.9rem 2rem; border-bottom:1px solid var(--line); }
+  .searchbar-row input{ width:100%; max-width:560px; font-family:var(--sans); font-size:.92rem; padding:.6rem .9rem .6rem 2.3rem; border:1px solid var(--line); border-radius:10px; background:var(--paper-raised); color:var(--ink); background-image:none; }
+  .searchbar-row input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .searchbar-row .search-icon{ position:absolute; left:2.6rem; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--ink-faint); font-size:.9rem; }
+  .search-results{ position:absolute; left:2rem; top:100%; margin-top:.3rem; width:100%; max-width:560px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow); z-index:40; max-height:60vh; overflow-y:auto; }
+  .search-results .sr-item{ display:block; width:100%; text-align:left; background:none; border:none; border-bottom:1px solid var(--line-soft); padding:.7rem .9rem; cursor:pointer; font-family:var(--sans); }
+  .search-results .sr-item:last-child{ border-bottom:none; }
+  .search-results .sr-item:hover{ background:var(--line-soft); }
+  .search-results .sr-crumb{ font-size:.7rem; color:var(--ink-faint); letter-spacing:.02em; }
+  .search-results .sr-title{ font-weight:600; font-size:.9rem; color:var(--ink); margin:.15rem 0; }
+  .search-results .sr-snippet{ font-size:.8rem; color:var(--ink-soft); line-height:1.5; }
+  .search-results .sr-snippet mark{ background:var(--accent-tint); color:var(--accent-strong); font-weight:600; border-radius:3px; padding:0 .1em; }
+  .search-results .sr-empty{ padding:1rem; font-size:.85rem; color:var(--ink-faint); text-align:center; }
+
   .body{ display:flex; flex:1; min-height:0; }
   .sidebar{ width:270px; flex-shrink:0; padding:1.3rem 1rem 2rem 2rem; border-right:1px solid var(--line); overflow-y:auto; }
   .nav-group{ margin-bottom:1.3rem; }
@@ -144,6 +158,7 @@
       <li><span class="step-n">3</span><b>다 쓰면 [저장] 버튼을 누르세요.</b> 저장한 내용은 자동으로 이 컴퓨터의 이 브라우저에 계속 남아있어요. 브라우저를 껐다 켜도 그대로 있습니다.</li>
       <li><span class="step-n">4</span><b>상태를 바꿀 수 있어요.</b> 문서 위쪽 드롭다운에서 미작성 → 초안 → 검토중 → 확정 순서로 진행 상태를 표시하세요.</li>
       <li><span class="step-n">5</span><b>다른 사람에게 넘기거나 백업하고 싶으면, 위쪽의 [파일로 저장] 버튼을 누르세요.</b> 지금까지 쓴 내용이 전부 담긴 새 HTML 파일이 다운로드됩니다. 이 파일을 이메일이나 메신저로 그대로 보내면, 받은 사람은 그냥 더블클릭해서 열기만 하면 지금 상태 그대로 보입니다. 별도 프로그램 설치나 인터넷 연결이 필요 없습니다.</li>
+      <li><span class="step-n">6</span><b>맨 위 검색창에 문장으로 물어봐도 됩니다.</b> 예) "급여 언제 들어오지", "스톡옵션", "병가 제도". 관련 단어가 들어간 문서를 찾아서 보여주고, 누르면 바로 그 문서로 이동합니다. 다만 진짜 AI가 문장 뜻을 이해하는 검색은 아니고, 문장 속 단어들을 찾아주는 방식이라 정확한 단어로 검색할수록 더 잘 찾습니다.</li>
     </ol>
     <p style="font-size:.85rem;color:var(--ink-soft);margin-top:1rem;">💡 이 화면은 이 컴퓨터, 이 브라우저 안에서만 저장됩니다(다른 컴퓨터나 다른 브라우저에는 자동으로 옮겨지지 않아요). 그래서 작업이 끝나면 꼭 [파일로 저장]으로 한 번씩 새 파일을 받아두는 걸 권장합니다.</p>
   </div>
@@ -337,6 +352,8 @@ const STORAGE_KEY = 'hr-manual-data-v1';
 })();
 
 let view = { type:'overview', domain:null, doc:null };
+let searchQuery = '';
+let searchFocus = false;
 
 function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function persist(flagText){
@@ -358,6 +375,134 @@ function progressSummary(){
 }
 
 function go(type, domain, doc){ view = { type, domain, doc }; render(); window.scrollTo(0,0); }
+
+/* ============ 자연어 검색 (문장을 넣어도 관련 단어를 찾아주는 키워드 검색) ============ */
+function stripHtml(html){
+  const d = document.createElement('div');
+  d.innerHTML = html || '';
+  return d.textContent || '';
+}
+
+const KOREAN_PARTICLES = ['으로부터','에서부터','이라도','이지만','까지','부터','에서','에게','한테','이나마','하고','이랑','와','과','은','는','이','가','을','를','에','의','로','도','만','며']
+  .sort((a,b) => b.length - a.length);
+function stripParticle(token){
+  for (const p of KOREAN_PARTICLES) {
+    if (token.length > p.length && token.endsWith(p)) return token.slice(0, -p.length);
+  }
+  return token;
+}
+
+function buildSearchIndex(){
+  const items = [];
+  const builtinCrumb = { overview:'전체 개요', tpl:'문서 쓰는 틀', common:'공통 자료' };
+  Object.entries(DATA.builtins).forEach(([key, b]) => {
+    items.push({ navType:key, domain:null, doc:null, breadcrumb: builtinCrumb[key] || key, title: b.title,
+      text: b.title + ' ' + stripHtml(b.body) + ' ' + (DATA.notes[key]||'') });
+  });
+  Object.entries(DATA.domains).forEach(([id, d]) => {
+    items.push({ navType:'domain', domain:id, doc:null, breadcrumb:'업무 영역', title: d.code + ' · ' + d.name,
+      text: d.name + ' ' + d.intro + ' ' + (d.related||'') });
+    d.docs.forEach(doc => {
+      items.push({ navType:'doc', domain:id, doc:doc.id, breadcrumb: d.code + ' · ' + d.name, title: doc.title,
+        text: doc.title + ' ' + doc.desc + ' ' + stripHtml(doc.body) + ' ' + (DATA.notes[doc.id]||'') });
+    });
+  });
+  DATA.recruitment.groups.forEach(g => {
+    g.positions.forEach(p => {
+      items.push({ navType:'recruit', domain:null, doc:null, breadcrumb:'채용 현황 대시보드 · ' + g.name, title: p.title,
+        text: [p.title, g.name, p.status, p.owner, p.deadline, p.note].filter(Boolean).join(' ') });
+    });
+  });
+  return items;
+}
+
+function runSearch(query){
+  const q = query.trim();
+  if (!q) return [];
+  const qLower = q.toLowerCase();
+  const tokens = q.split(/\s+/).filter(Boolean).map(t => stripParticle(t.toLowerCase())).filter(t => t.length > 0);
+  const results = [];
+  buildSearchIndex().forEach(item => {
+    const textLower = item.text.toLowerCase();
+    const titleLower = item.title.toLowerCase();
+    let score = 0, matchedAt = -1;
+    if (qLower.length >= 2 && textLower.includes(qLower)) { score += 50; matchedAt = textLower.indexOf(qLower); }
+    if (titleLower.includes(qLower)) score += 30;
+    tokens.forEach(t => {
+      if (titleLower.includes(t)) { score += 8; }
+      else if (textLower.includes(t)) { score += 3; if (matchedAt === -1) matchedAt = textLower.indexOf(t); }
+    });
+    if (score > 0) results.push({ item, score, matchedAt: matchedAt === -1 ? 0 : matchedAt, tokens: tokens.length ? tokens : [qLower] });
+  });
+  results.sort((a,b) => b.score - a.score);
+  return results.slice(0, 8);
+}
+
+function makeSnippet(item, matchedAt, tokens){
+  const text = item.text.replace(/\s+/g,' ').trim();
+  const radius = 46;
+  const start = Math.max(0, matchedAt - radius);
+  const end = Math.min(text.length, matchedAt + radius);
+  const snippet = (start>0?'…':'') + text.slice(start, end) + (end<text.length?'…':'');
+  let safe = esc(snippet);
+  tokens.forEach(t => {
+    if (!t) return;
+    const re = new RegExp('(' + t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'ig');
+    safe = safe.replace(re, '<mark>$1</mark>');
+  });
+  return safe;
+}
+
+let lastSearchResults = [];
+function renderSearchResults(query){
+  const results = runSearch(query);
+  lastSearchResults = results;
+  if (!results.length) {
+    return `<div class="sr-empty">"${esc(query)}"에 대한 검색 결과가 없습니다. 다른 단어로 시도해보세요.</div>`;
+  }
+  return results.map((r, i) => `
+    <button class="sr-item" onclick="goToSearchResult(${i})">
+      <div class="sr-crumb">${esc(r.item.breadcrumb)}</div>
+      <div class="sr-title">${esc(r.item.title)}</div>
+      <div class="sr-snippet">${makeSnippet(r.item, r.matchedAt, r.tokens)}</div>
+    </button>
+  `).join('');
+}
+
+function goToSearchResult(i){
+  const r = lastSearchResults[i];
+  if (!r) return;
+  searchQuery = '';
+  searchFocus = false;
+  go(r.item.navType, r.item.domain, r.item.doc);
+}
+window.goToSearchResult = goToSearchResult;
+
+function onSearchInput(value){
+  searchQuery = value;
+  searchFocus = true;
+  render();
+}
+window.onSearchInput = onSearchInput;
+
+function onSearchKeydown(e){
+  if (e.key === 'Escape') {
+    searchQuery = '';
+    searchFocus = false;
+    render();
+  } else if (e.key === 'Enter') {
+    if (lastSearchResults.length) goToSearchResult(0);
+  }
+}
+window.onSearchKeydown = onSearchKeydown;
+
+document.addEventListener('click', function(e){
+  if (searchQuery && !e.target.closest('.searchbar-row')) {
+    searchQuery = '';
+    searchFocus = false;
+    render();
+  }
+});
 window.go = go;
 
 function render(){
@@ -374,11 +519,21 @@ function render(){
         <button class="btn primary" onclick="exportHtml()">⬇ 파일로 저장</button>
       </div>
     </header>
+    <div class="searchbar-row">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="문장으로 검색해보세요 (예: 급여 입금 시간, 스톡옵션, 병가 제도...)"
+        value="${esc(searchQuery)}"
+        oninput="onSearchInput(this.value)"
+        onkeydown="onSearchKeydown(event)">
+      ${searchQuery.trim() ? `<div class="search-results" id="searchResults">${renderSearchResults(searchQuery)}</div>` : ''}
+    </div>
     <div class="body">
       <nav class="sidebar">${renderSidebar()}</nav>
       <main class="content"><div class="page fade-in">${renderMain()}</div></main>
     </div>
   `;
+  const input = document.getElementById('searchInput');
+  if (input && searchFocus) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
 }
 
 function renderSidebar(){
