@@ -75,6 +75,19 @@
   .nav-btn.active .frac{ color:var(--accent-strong); }
   .seal-chip{ font-family:var(--serif); font-size:.6rem; font-weight:700; color:var(--seal); border:1px solid var(--seal); border-radius:50%; width:1.4em; height:1.4em; display:inline-flex; align-items:center; justify-content:center; transform:rotate(-8deg); flex-shrink:0; }
 
+  .domain-drag-item{ display:flex; align-items:center; gap:.1rem; border-radius:7px; }
+  .domain-drag-item .nav-btn{ flex:1; min-width:0; }
+  .domain-drag-item .drag-handle{ flex-shrink:0; cursor:grab; color:var(--ink-faint); font-size:.8rem; padding:0 .15rem; line-height:1; }
+  .domain-drag-item .drag-handle:active{ cursor:grabbing; }
+  .domain-drag-item[draggable="true"]{ -webkit-user-select:none; user-select:none; }
+  .domain-drag-item.drag-over{ outline:2px dashed var(--accent); outline-offset:-2px; background:var(--accent-tint); }
+  .dashboard-card{ display:block; width:100%; text-align:left; border:1px solid var(--accent); border-radius:12px; background:var(--accent-tint); padding:1rem 1.1rem; box-shadow:var(--shadow); cursor:pointer; font-family:var(--sans); color:var(--ink); margin-bottom:1rem; }
+  .dashboard-card:hover{ background:var(--accent-tint); filter:brightness(0.97); }
+  .dashboard-card .card-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:.6rem; margin-bottom:.35rem; }
+  .dashboard-card .card-title{ font-weight:700; font-size:1rem; color:var(--accent-strong); }
+  .dashboard-card .card-desc{ font-size:.83rem; color:var(--ink-soft); line-height:1.55; }
+  .dashboard-badge{ font-size:.68rem; font-weight:700; letter-spacing:.04em; color:var(--accent-strong); background:var(--paper-raised); border:1px solid var(--accent); border-radius:999px; padding:.15em .6em; white-space:nowrap; }
+
   .content{ flex:1; min-width:0; padding:2rem 3rem 5rem; overflow-y:auto; }
   .page{ max-width:800px; }
   .doc-eyebrow{ font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 .4rem; }
@@ -190,6 +203,7 @@ let DATA = {
     }
   },
   "notes": {},
+  "domainOrder": ["d01","d02","d03","d04","d05","d06","d07","d08","d09"],
   "domains": {
     "d01": {
       "code": "01", "name": "채용 전략 수립", "tag": null,
@@ -560,19 +574,67 @@ function renderSidebar(){
     ${navBtn('문서 쓰는 틀', view.type==='tpl', "go('tpl')")}
     ${navBtn('공통 자료', view.type==='common', "go('common')")}</div>`;
   const domainCount = Object.keys(DATA.domains).length;
-  html += `<div class="nav-group"><p class="nav-caption">업무 영역 ${domainCount}종</p>`;
-  Object.entries(DATA.domains).forEach(([id, d]) => {
+  if (!DATA.domainOrder) DATA.domainOrder = Object.keys(DATA.domains);
+  html += `<div class="nav-group"><p class="nav-caption">업무 영역 ${domainCount}종 <span style="text-transform:none;letter-spacing:0;font-weight:400;">· 드래그해서 순서 변경</span></p>`;
+  DATA.domainOrder.forEach(id => {
+    const d = DATA.domains[id];
+    if (!d) return;
     const done = d.docs.filter(x=>x.status!=='미작성').length;
     const tag = d.tag ? `<span class="seal-chip" style="margin-left:.3em;">법</span>` : '';
-    const active = view.type!=='overview' && view.type!=='tpl' && view.type!=='common' && view.domain===id;
-    html += navBtn(`${d.code} · ${d.name}${tag}`, active, `go('domain','${id}')`, `<span class="frac">${done}/${d.docs.length}</span>`);
+    const active = view.domain===id || (view.type==='recruit' && id==='d09');
+    html += `<div class="domain-drag-item" draggable="true"
+        ondragstart="onDomainDragStart(event,'${id}')"
+        ondragover="onDomainDragOver(event,'${id}')"
+        ondragleave="onDomainDragLeave(event)"
+        ondrop="onDomainDrop(event,'${id}')"
+        ondragend="onDomainDragEnd(event)">
+      <span class="drag-handle" title="드래그해서 순서 변경">⠿</span>
+      ${navBtn(`${d.code} · ${d.name}${tag}`, active, `go('domain','${id}')`, `<span class="frac">${done}/${d.docs.length}</span>`)}
+    </div>`;
   });
   html += `</div>`;
-  const openCount = DATA.recruitment.groups.reduce((n,g)=>n+g.positions.length,0);
-  html += `<div class="nav-group"><p class="nav-caption">운영 도구</p>
-    ${navBtn('채용 현황 대시보드', view.type==='recruit', "go('recruit')", `<span class="frac">${openCount}건</span>`)}</div>`;
   return html;
 }
+
+let draggedDomainId = null;
+function onDomainDragStart(e, id){
+  draggedDomainId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+}
+window.onDomainDragStart = onDomainDragStart;
+function onDomainDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+window.onDomainDragOver = onDomainDragOver;
+function onDomainDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+window.onDomainDragLeave = onDomainDragLeave;
+function onDomainDrop(e, targetId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const fromId = draggedDomainId;
+  draggedDomainId = null;
+  if (!fromId || fromId === targetId) return;
+  const order = (DATA.domainOrder || Object.keys(DATA.domains)).slice();
+  const fromIdx = order.indexOf(fromId);
+  if (fromIdx === -1) return;
+  order.splice(fromIdx, 1);
+  const toIdx = order.indexOf(targetId);
+  order.splice(toIdx === -1 ? order.length : toIdx, 0, fromId);
+  DATA.domainOrder = order;
+  persist();
+  render();
+}
+window.onDomainDrop = onDomainDrop;
+function onDomainDragEnd(){
+  draggedDomainId = null;
+  document.querySelectorAll('.domain-drag-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+window.onDomainDragEnd = onDomainDragEnd;
 
 function renderMain(){
   if (view.type === 'overview') return renderBuiltin('overview');
@@ -724,7 +786,8 @@ function renderRecruit(){
   }).join('');
 
   return `
-    <p class="doc-eyebrow">운영 도구 · 실시간 갱신</p>
+    <button class="back-link" onclick="go('domain','d09')">← 채용 현황 관리 목록으로</button>
+    <p class="doc-eyebrow">09 · 채용 현황 관리 · 실시간 갱신</p>
     <h2>채용 현황 대시보드</h2>
     <p class="lede">현재 열려 있는 채용 공고 ${allPos.length}건을 그룹별로 관리합니다. 상태·담당자·마감일을 바꾸면 바로 저장되고, 직무명을 누르면 메모를 남길 수 있습니다.</p>
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:.6rem; margin:1.2rem 0 1.8rem;">${statCards}</div>
@@ -801,11 +864,25 @@ function renderDomain(domainId){
       <div class="card-desc">${esc(doc.desc)}</div>
     </button>
   `).join('');
+  let dashboardCard = '';
+  if (domainId === 'd09') {
+    const openCount = DATA.recruitment.groups.reduce((n,g)=>n+g.positions.length,0);
+    dashboardCard = `
+      <button class="dashboard-card" onclick="go('recruit')">
+        <div class="card-top">
+          <span class="card-title">📊 채용 현황 대시보드</span>
+          <span class="dashboard-badge">실시간 · ${openCount}건</span>
+        </div>
+        <div class="card-desc">그룹별 포지션 상태·담당자·마감일을 바로 확인하고 갱신하는 운영 도구입니다.</div>
+      </button>
+    `;
+  }
   return `
     <p class="doc-eyebrow">${esc(d.code)} · 업무 영역</p>
     <h2>${esc(d.name)} ${tag}</h2>
     <p class="lede">${esc(d.intro)}</p>
     ${related}
+    ${dashboardCard}
     <h3>이 업무의 문서 목록</h3>
     <p style="font-size:.85rem;color:var(--ink-soft);">카드를 누르면 내용을 보거나 바로 쓸 수 있습니다.</p>
     <div class="doc-grid">${cards}</div>
