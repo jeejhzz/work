@@ -353,7 +353,6 @@ const STORAGE_KEY = 'hr-manual-data-v1';
 
 let view = { type:'overview', domain:null, doc:null };
 let searchQuery = '';
-let searchFocus = false;
 
 function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 function persist(flagText){
@@ -473,23 +472,43 @@ function goToSearchResult(i){
   const r = lastSearchResults[i];
   if (!r) return;
   searchQuery = '';
-  searchFocus = false;
   go(r.item.navType, r.item.domain, r.item.doc);
 }
 window.goToSearchResult = goToSearchResult;
 
+function updateSearchResultsPanel(){
+  const row = document.querySelector('.searchbar-row');
+  if (!row) return;
+  let panel = document.getElementById('searchResults');
+  const q = searchQuery.trim();
+  if (!q) {
+    if (panel) panel.remove();
+    return;
+  }
+  const html = renderSearchResults(searchQuery);
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.className = 'search-results';
+    panel.id = 'searchResults';
+    row.appendChild(panel);
+  }
+  panel.innerHTML = html;
+}
+
 function onSearchInput(value){
+  // 결과 패널만 갱신하고 입력창 자체는 다시 그리지 않습니다.
+  // (한글은 자음/모음이 합쳐져 한 글자가 되는 "조합" 과정을 거치는데,
+  //  입력 중에 <input>을 통째로 새로 그리면 이 조합이 끊겨 글자가 깨집니다.)
   searchQuery = value;
-  searchFocus = true;
-  render();
+  updateSearchResultsPanel();
 }
 window.onSearchInput = onSearchInput;
 
 function onSearchKeydown(e){
+  if (e.isComposing) return; // 한글 등 조합 중인 키 입력은 무시
   if (e.key === 'Escape') {
     searchQuery = '';
-    searchFocus = false;
-    render();
+      render();
   } else if (e.key === 'Enter') {
     if (lastSearchResults.length) goToSearchResult(0);
   }
@@ -499,8 +518,7 @@ window.onSearchKeydown = onSearchKeydown;
 document.addEventListener('click', function(e){
   if (searchQuery && !e.target.closest('.searchbar-row')) {
     searchQuery = '';
-    searchFocus = false;
-    render();
+      render();
   }
 });
 window.go = go;
@@ -532,8 +550,6 @@ function render(){
       <main class="content"><div class="page fade-in">${renderMain()}</div></main>
     </div>
   `;
-  const input = document.getElementById('searchInput');
-  if (input && searchFocus) { input.focus(); input.setSelectionRange(input.value.length, input.value.length); }
 }
 
 function renderSidebar(){
