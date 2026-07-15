@@ -88,6 +88,24 @@
   .dashboard-card .card-desc{ font-size:.83rem; color:var(--ink-soft); line-height:1.55; }
   .dashboard-badge{ font-size:.68rem; font-weight:700; letter-spacing:.04em; color:var(--accent-strong); background:var(--paper-raised); border:1px solid var(--accent); border-radius:999px; padding:.15em .6em; white-space:nowrap; }
 
+  .jd-group-header{ font-family:var(--serif); font-size:.85rem; font-weight:600; color:var(--ink-soft); margin:1.3rem 0 .5rem; padding-bottom:.3rem; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:.4rem; }
+  .jd-group-header .cnt{ font-family:var(--mono); font-weight:400; color:var(--ink-faint); font-size:.78rem; }
+  .jd-item{ display:flex; align-items:center; gap:.4rem; border:1px solid var(--line); border-radius:10px; background:var(--paper-raised); margin-bottom:.5rem; box-shadow:var(--shadow); }
+  .jd-item.drag-over{ outline:2px dashed var(--accent); outline-offset:-2px; background:var(--accent-tint); }
+  .jd-item .drag-handle{ flex-shrink:0; cursor:grab; color:var(--ink-faint); font-size:.9rem; padding:.7rem .3rem .7rem .7rem; }
+  .jd-item .drag-handle:active{ cursor:grabbing; }
+  .jd-item button.jd-open{ flex:1; min-width:0; text-align:left; background:none; border:none; padding:.7rem .5rem; cursor:pointer; font-family:var(--sans); }
+  .jd-item .jd-title{ font-weight:600; font-size:.92rem; color:var(--ink); }
+  .jd-item .jd-sub{ font-size:.78rem; color:var(--ink-faint); margin-top:.15rem; }
+  .jd-item .jd-del{ flex-shrink:0; background:none; border:none; color:var(--ink-faint); cursor:pointer; padding:.5rem .8rem; font-size:.85rem; }
+  .jd-item .jd-del:hover{ color:var(--seal); }
+  .jd-field{ margin-bottom:1.1rem; }
+  .jd-field label{ display:block; font-size:.78rem; font-weight:600; color:var(--ink-soft); margin-bottom:.35rem; }
+  .jd-field input[type="text"]{ width:100%; font-family:var(--sans); font-size:.94rem; padding:.55rem .8rem; border:1px solid var(--line); border-radius:8px; background:var(--paper-raised); color:var(--ink); }
+  .jd-field textarea{ width:100%; font-family:var(--sans); font-size:.9rem; line-height:1.65; padding:.7rem .9rem; border:1px solid var(--line); border-radius:8px; background:var(--paper-raised); color:var(--ink); resize:vertical; }
+  .jd-field .hint{ font-size:.76rem; color:var(--ink-faint); margin-top:.3rem; }
+  .jd-preview{ white-space:pre-wrap; line-height:1.75; font-size:.9rem; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; padding:1.2rem 1.3rem; box-shadow:var(--shadow); max-height:420px; overflow-y:auto; }
+
   .content{ flex:1; min-width:0; padding:2rem 3rem 5rem; overflow-y:auto; }
   .page{ max-width:800px; }
   .doc-eyebrow{ font-size:.72rem; letter-spacing:.13em; text-transform:uppercase; color:var(--ink-faint); margin:0 0 .4rem; }
@@ -346,7 +364,777 @@ let DATA = {
         { "id":"r20", "title":"SCM 매니저", "level":"", "status":"모집중", "owner":"", "deadline":"", "note":"" }
       ]}
     ]
-  }
+  },
+  "jd": {
+  "common": {
+    "companyIntro": "디노티시아는 AI와 데이터 시스템의 융합을 통해 혁신적인 가치를 창출하는 장기기억 인공지능 전문기업으로, 세계에서 가장 권위 있는 스타트업 평가 기관 CB Insights의 '2025 글로벌 AI 100'에 선정되며 기술력과 성장성을 인정받았습니다. 디노티시아는 세계 최초로 개발한 벡터 데이터 연산 가속기 'VDPU'를 기반으로 고성능 벡터 데이터베이스 'SEAHORSE(씨홀스)'를 선보이고 있으며, 이를 통해 생성형 인공지능의 핵심 기술인 RAG(Retrieval-Augmented Generation) 솔루션을 구현하고 있습니다. 또한 독자적으로 개발한 LLM 파운데이션 모델 'DNA'를 활용한 엣지 디바이스 'MNEMOS(니모스)'를 통해 개인화된 AI 경험을 제공하고 있습니다. 디노티시아는 벡터 데이터베이스 처리에 특화된 반도체 기술과 최적화된 알고리즘을 통합해 새로운 인공지능 패러다임을 제시하고 있습니다. 누구나 쉽게 인공지능을 활용할 수 있는 AGI의 미래, 디노티시아와 함께 만들어갈 인재를 기다립니다.",
+    "benefits": [
+      "유연근무제 및 재택근무제 운영",
+      "업무 장비 및 업무 관련 도서 지원 제도 운영",
+      "점심식사 및 야근식대 지원",
+      "스낵바 상시 운영",
+      "수면 캡슐 및 마사지 체어 운영",
+      "경조비 및 경조휴가 제공",
+      "생일 및 명절 선물 제공",
+      "연간 무료 건강검진 제공"
+    ],
+    "process": "서류전형 > 1차 인터뷰 > 2차 인터뷰 > 레퍼런스 체크 > 처우협의 > 최종합격\n\n* 전형 절차는 직무별로 다르게 운영될 수 있으며, 일정 및 상황에 따라 변동될 수 있습니다.",
+    "closing": "디노티시아는 모든 사람의 다양성을 존중하며 글로벌 테크 스타트업의 조직문화를 만들어가고 있습니다. 채용 과정에서 연령, 성별, 국적 등 업무 역량과 관계없는 요소로 차별하지 않으며, 지원자 모두에게 공정한 기회를 제공하고 있습니다. AI와 벡터 데이터베이스 분야에서 업계 최고의 인재들이 함께하고 있는 디노티시아에 많은 관심 부탁드리며, 채용 관련하여 궁금하신 점은 언제든지 디노티시아 인사팀에 문의주시기 바랍니다."
+  },
+  "positions": [
+    {
+      "title": "QA Engineer",
+      "intro": "디노티시아 QA Engineer는 하드웨어(VDPU 가속기 보드)와 소프트웨어(드라이버, Firmware, Runtime, SDK)가 결합된 제품의 품질 기준을 정의하고 검증 체계를 설계합니다. PCIe 디바이스 드라이버, 호스트 SDK, API 레벨의 기능·성능·신뢰성 검증을 주도하며, CI/CD와 연동된 Hardware-in-the-Loop(HIL) 자동화 테스트 프레임워크를 구축합니다. DMA 기반 고속 데이터 전송의 무결성 검증부터 장기 신뢰성 테스트까지, 제품 출하 전 마지막 품질 관문을 담당합니다.",
+      "duties": [
+        "QA 전략 수립 및 테스트 프로세스 초기 셋업 (테스트 케이스 표준화, Defect Lifecycle, Exit Criteria)",
+        "PCIe 디바이스 드라이버, 호스트 SDK, API 레벨 기능·비기능 테스트 주도",
+        "고속 데이터 전송(DMA) 시 데이터 무결성 검증 및 비트 에러율(BER) 측정",
+        "메모리 누수, Race Condition, 커널 크래시 등 시스템 레벨 이슈 분석",
+        "성능(Throughput, Latency, IOPS) 벤치마크 환경 구축 및 프로파일링",
+        "장기 신뢰성(Aging) 스트레스 테스트 설계 및 실행",
+        "CI/CD 파이프라인 연동 HIL 기반 자동화 테스트 프레임워크 구축"
+      ],
+      "qualifications": [
+        "임베디드 시스템, 반도체, 또는 가속기 분야 SW/시스템 QA 경력 7년 이상",
+        "Linux 커널 및 디바이스 드라이버 구조에 대한 깊은 이해와 디버깅 능력",
+        "Python, C/C++ 등을 활용한 테스트 자동화 스크립트 개발 능력",
+        "PCIe 아키텍처(BAR, Interrupt, DMA, Virtualization) 이해",
+        "초기 프로젝트에서 QA 프로세스 및 자동화 인프라 구축 경험",
+        "뛰어난 커뮤니케이션 역량"
+      ],
+      "preferred": [
+        "AI/반도체 하드웨어 가속기 관련 소프트웨어 스택 검증 경험",
+        "Jenkins, GitLab CI 등을 활용한 HIL 연동 CI/CD 파이프라인 구축 경험",
+        "Valgrind, gdb, ftrace, perf 등 Linux 디버깅 툴 활용 능력",
+        "소프트웨어 개발 경험(C/C++ 또는 Firmware)에서 QA로 전환",
+        "Jira, Confluence 등 협업 툴 워크플로우 커스텀 셋업 경험"
+      ],
+      "id": "jd1",
+      "group": ""
+    },
+    {
+      "title": "SCM 매니저 (Supply Chain Management Manager)",
+      "intro": "디노티시아 SCM 매니저는 AI 반도체 및 하드웨어 제품 개발에 필요한 핵심 부품의 공급망을 기획하고 운영합니다. 국내외 Supplier 및 Design House와 협업하며, 부품 소싱부터 단가 협의, BOM Cost 관리, 양산 이관(NPI)까지 전 과정을 주도합니다. 개발, 생산, 사업 조직과 긴밀히 협업하여 안정적인 공급망과 원가 경쟁력을 확보하고, 빠르게 변화하는 시장 환경에서 최적의 구매 전략을 수립합니다.",
+      "duties": [
+        "SoC 및 Set 제품 개발·양산 단계에서의 전반적인 Supply Chain 관리 (신규 부품 소싱 ~ 양산 안정화)",
+        "개발 및 양산 BOM Cost 산정·관리 및 원가 절감 활동 추진",
+        "PCB, IC, Passive 소자 등 주요 부품 Supplier 발굴·평가·이원화 및 협업 관리",
+        "부품 수급 리스크(단종, Lead-time, Allocation) 대응 및 공급 안정성 확보",
+        "개발/품질 부서 및 외주 생산 업체와 협업을 통한 부품 선정 및 양산 이관 지원"
+      ],
+      "qualifications": [
+        "Fabless 또는 완제품(Set) 제조사 구매/SCM 관련 경력",
+        "Design House와 Silicon, Package 공급 및 단가 협의 경험",
+        "PCB, IC, Passive 소자 등 하드웨어 부품에 대한 기술적 이해",
+        "다양한 Supplier와의 협업 및 커뮤니케이션 경험",
+        "개발·양산 BOM Cost 관리 경험"
+      ],
+      "preferred": [
+        "Design House / Foundry / OSAT / EMS 협력사 대응 경험",
+        "반도체 또는 전자부품 원가 구조에 대한 이해",
+        "신규 프로젝트 부품 소싱 및 양산 이관(NPI) 프로세스 수행 경험",
+        "ERP 기반 구매/재고 관리 시스템 활용 경험"
+      ],
+      "id": "jd2",
+      "group": ""
+    },
+    {
+      "title": "AI 프로젝트 매니저 (AI Project Manager)",
+      "intro": "디노티시아 사업개발그룹 AI 프로젝트 매니저는 B2B/B2G 고객을 대상으로 AI Agent, 데이터 플랫폼, RAG 기반 AX(AI Transformation) 프로젝트를 제안 단계부터 구축·운영까지 End-to-End로 리딩합니다. 고객 비즈니스 요구사항을 기술적으로 해석하고, LLM·Vector DB·AI Agent 기술을 활용한 최적 솔루션을 설계·구현하여 성공적인 프로젝트 딜리버리를 이끌어냅니다. 기술과 비즈니스를 연결하는 프로젝트 리더십을 발휘하고 싶은 분을 환영합니다.",
+      "duties": [
+        "AI Agent/데이터 플랫폼 기반 AX 프로젝트 기획·제안 및 구축 관리 (일정·품질·리스크)",
+        "RAG, 지식베이스, 실시간 분석 등을 고려한 AI Agent 구축 프로젝트 E2E 리딩",
+        "AI/Data 플랫폼 시스템 아키텍처링 및 최적화 설계",
+        "고객 온프레미스 환경 기반 AI 구축 프로젝트 이슈·리스크 대응 및 운영",
+        "프로젝트 관련 문서 작성, 산출물 관리 및 고객·파트너 커뮤니케이션"
+      ],
+      "qualifications": [
+        "7년 이상 금융/공공 고객 대상 관련 프로젝트 PM/PL 경험",
+        "대화형 시스템 / LLM 활용 AI Agent 플랫폼 개발 및 이행 경험",
+        "데이터 플랫폼 전반에 대한 이해 (수집, 저장, 정제, 변환, 적재, 제공 등)"
+      ],
+      "preferred": [
+        "컴퓨터공학, 통계학 관련 전공",
+        "AI Agent 프레임워크 설계 및 Agent 서비스 개발 경험",
+        "고객 중심 AI Agent 기획/설계 및 현장 적용 경험",
+        "데이터 거버넌스, 메타데이터, 데이터 품질관리 경험",
+        "Databricks, Snowflake, Palantir 등 상용 데이터 플랫폼 구축 경험",
+        "AWS, Azure, GCP 기반 구축·개발 경험",
+        "ADP, DAP, SQLP, PMP, Cloud 관련 자격증"
+      ],
+      "id": "jd3",
+      "group": ""
+    },
+    {
+      "title": "구매 (Procurement / Purchasing Manager)",
+      "intro": "디노티시아 지원팀은 회사의 안정적인 운영 기반을 구축하고 효율적인 지원 체계를 통해 조직 생산성을 높이는 역할을 합니다. 구매 담당자는 국책과제 및 R&D 활동에 필요한 연구 기자재, 소프트웨어, 서버·반도체 장비 등 기술 자산과 사내 운영 물품을 적시에 구매·관리합니다. 비용 최적화, 공급사 관리, 자산 대장 관리 등을 통해 회사의 재무 효율성과 R&D 생산성을 지원합니다. IT·테크 기업의 구매 프로세스를 체계적으로 운영하고 개선하는 데 관심 있는 분을 환영합니다.",
+      "duties": [
+        "국책과제 수행에 필요한 연구 기자재, 소프트웨어 등의 구매 및 정산 업무",
+        "R&D 부서 요구사항에 따른 연구자재, 기술 장비, 인프라 및 부품 구매",
+        "사내 유형자산, 사무용 비품, 소모품 등 기업 운영 물품 구매",
+        "AI Tool, 소프트웨어 라이선스 계약 관리 및 비용 최적화",
+        "전사 유형자산(HW/SW) 대장 등재 및 관리",
+        "구매물품 입고·검수 및 재고 관리",
+        "신규 공급사 발굴, 단가 협상, 계약 조건 검토"
+      ],
+      "qualifications": [
+        "IT 업계 구매 관련 경력 2년 이상",
+        "Excel 등 OA 프로그램 활용 능력",
+        "데이터 및 비용 정산 업무 경험",
+        "체계적인 문서 작성 및 정리 역량",
+        "내·외부 이해관계자와의 원활한 커뮤니케이션 능력"
+      ],
+      "preferred": [
+        "정부지원 국책과제 관련 구매 및 사업비 정산 경험",
+        "반도체, 서버 장비 등 하드웨어 및 소프트웨어 자산 구매 경험",
+        "자산/재고 관리 시스템(ERP) 운영 경험",
+        "스타트업 또는 테크 기업에서 초기 구매 프로세스 구축 경험",
+        "RCMS 사용 경험"
+      ],
+      "id": "jd4",
+      "group": ""
+    },
+    {
+      "title": "법무행정 (Legal & Administration)",
+      "intro": "디노티시아 법무팀은 계약, 소송·분쟁, 컴플라이언스, 거버넌스 관련 법률 리스크를 검토·관리하여 회사의 안정적인 사업 운영과 의사결정을 지원합니다. 법무행정 담당자는 법무팀의 법률 검토 및 리스크 관리 업무가 효율적으로 수행될 수 있도록 계약·소송·분쟁·내규·결재 등 법무 업무 전반에 수반되는 운영 및 행정 업무를 지원합니다. 법무 프로세스를 체계화하고 업무 효율성을 높이는 데 기여합니다.",
+      "duties": [
+        "계약서, 법률문서, 소송·분쟁 자료 등 법무 관련 문서 정리, 보관, 관리",
+        "계약 기간, 갱신일, 해지일 등 주요 일정 관리 및 모니터링",
+        "계약 체결, 법률자문, 소송·분쟁 대응 과정에서의 내부 기안, 품의, 증빙자료 취합 지원",
+        "내부 규정 및 법무 문서 정리, 편집, 업데이트 지원",
+        "외부 전문가와의 커뮤니케이션 및 자료 송부 지원",
+        "법무 업무 체계화 및 프로세스 개선 지원"
+      ],
+      "qualifications": [
+        "3년 이상 직장 근무 경력",
+        "기본 오피스 툴(한컴, MS Office 등) 활용 능력",
+        "여러 업무의 우선순위를 판단하고 기한 내 처리 능력",
+        "원활한 커뮤니케이션 능력",
+        "책임감과 업무 맥락을 이해하며 선제적으로 챙기는 태도"
+      ],
+      "preferred": [
+        "기업 법무팀, 경영지원팀, 인사팀 또는 법무법인 근무 경험",
+        "계약서, 품의서, 기안서, 회의록, 보고서 등 문서 작성 경험",
+        "계약관리, 문서관리, 전자결재, 그룹웨어 사용 경험",
+        "민감한 자료나 대외비 문서 처리 경험",
+        "반복 업무 체계화 또는 프로세스 개선 경험"
+      ],
+      "id": "jd5",
+      "group": ""
+    },
+    {
+      "title": "기술관리 매니저 (Technology Management Manager)",
+      "intro": "디노티시아 기술관리팀은 회사가 보유한 핵심 기술을 가장 깊이 이해하고, 체계적으로 정리·관리하며, 대외 가치로 연결하는 팀입니다. 기술의 전체 그림(기술트리)을 그리고, 이를 정부 R&D 과제, 기술특례상장, 특허, 투자 유치(IR) 등 중요한 의사결정과 사업 기회로 연결합니다. 개발(반도체·SW)·사업·경영 등 사내 다양한 조직과 긴밀히 협업하며, 선례가 없는 새로운 과제를 개척하는 도전적이고 빠르게 성장하는 팀입니다.",
+      "duties": [
+        "회사 핵심 기술 이해·관리·구조화·문서화",
+        "기술 동향·경쟁 기술 파악 및 기술 체계 유지·관리",
+        "정부 R&D 과제 제안 및 전 주기 관리",
+        "RFP 분석 및 과제 제안서·사업계획서 작성",
+        "과제 목표·일정·산출물·정량지표 관리 및 결과 보고",
+        "유관기관과의 기술 커뮤니케이션 및 컨소시엄 조율",
+        "성능 실증(PoC)·공인시험·특허 등 기술 검증 지원"
+      ],
+      "qualifications": [
+        "기술 이해 역량 (반도체, 데이터베이스, AI 인프라, 스토리지 등)",
+        "기술 문서(보고서, 제안서 등)를 논리적이고 설득력 있게 작성하는 역량",
+        "다양한 조직과 적극적으로 소통하며 협업하는 능력",
+        "주도적으로 새로운 과제를 설계하고 추진하는 역량",
+        "정부 R&D 과제 구조·절차·문서에 대한 이해 또는 작성 경험"
+      ],
+      "preferred": [
+        "국가 R&D 과제 수행·관리 경험",
+        "유관 분야(반도체, 전기전자공학, 컴퓨터공학 등) 학위 또는 연구·업무 경험",
+        "기술특례상장, 특허 전략, IR 자료 준비 경험"
+      ],
+      "id": "jd6",
+      "group": ""
+    },
+    {
+      "title": "R&D 프로젝트 매니저 (R&D Project Manager)",
+      "intro": "디노티시아 R&D 프로젝트 매니저는 AI 반도체 분야 국가연구개발과제를 기획하고 안정적으로 운영·관리합니다. 연구개발 기술과 제도에 대한 이해를 바탕으로 내부 조직 간 협업을 조율하고, 외부 기관과의 커뮤니케이션을 통해 과제를 성공적으로 수행합니다. 과제 전주기 관리(기획, 수행, 보고, 정산 등)를 담당하며, AI 반도체·On-Device AI 기술 개발 프로젝트를 체계적으로 이끌어가는 역할을 맡습니다. 국가 R&D 프로젝트 관리와 기술 이해를 겸비한 분을 환영합니다.",
+      "duties": [
+        "국가연구개발과제 발굴 및 기획 지원",
+        "연구개발계획서, 사업계획서, 발표자료 등 문서 작성",
+        "과제 협약·수행·변경 등 운영 관리",
+        "과제 예산 계획 수립 및 집행·정산 관리",
+        "과제 일정 관리, 전문기관 보고·평가 대응",
+        "진도점검, 연차·최종보고서 등 공식 산출물 작성"
+      ],
+      "qualifications": [
+        "국가연구개발과제 수행 또는 관리 관련 경력",
+        "사업계획서, 제안서, 보고서, 발표자료 직접 작성 경험",
+        "다양한 이해관계자와의 원활한 커뮤니케이션 역량",
+        "꼼꼼한 문서 작성 및 업무 관리 능력",
+        "IRIS, RCMS, Nxt, Ezbaro, rndcard 등 과제 관리 시스템 경험"
+      ],
+      "preferred": [
+        "국가연구개발과제 신규 제안 및 기획 경험",
+        "다수 기관 참여 과제 수행 또는 리딩 경험",
+        "AI반도체/On-Device AI 기술 흐름에 대한 이해",
+        "한글, MS Office 등 업무 도구 활용 능력 우수"
+      ],
+      "id": "jd7",
+      "group": ""
+    },
+    {
+      "title": "재무회계 매니저 (Finance & Accounting Manager)",
+      "intro": "디노티시아 경영지원팀은 회사의 재무 체계를 설계·운영하고 안정적인 경영 기반을 구축하는 핵심 조직입니다. 재무회계 매니저는 회계·재무 및 자금 운영을 관리하며, 내부 관리 체계를 통해 재무적 투명성과 안정성을 제고합니다. 예산 관리와 비용 통제를 통해 조직의 효율적인 자원 활용을 지원하고, 경영진의 합리적인 의사결정을 뒷받침합니다. 기술 스타트업 특유의 복잡한 회계처리(K-IFRS, 개발비 자본화, SaaS 매출인식, 스톡옵션 등)를 수행하며, Pre-IPO/IPO 대비 재무 기반을 강화합니다. 정확성과 책임감을 바탕으로 회사의 지속가능한 성장 기반을 함께 구축할 분을 찾고 있습니다.",
+      "duties": [
+        "K-IFRS 기준 월별·분기별·연간 재무제표 작성 및 결산 프로세스 운영",
+        "개발비 자본화, SaaS 매출인식(IFRS 15) 등 기술 스타트업 특유의 회계처리 수행",
+        "스톡옵션 주식보상비용 회계처리 및 Cap Table 관리",
+        "Pre-IPO·IPO 대비 재무 데이터 정비, 투자자 대응 자료 준비 및 재무실사(DD) 지원",
+        "예산 관리, 비용 통제 및 경영 성과 분석"
+      ],
+      "qualifications": [
+        "회계·재무·경영학 관련 학과 졸업",
+        "재무회계 실무 경력 3년 이상",
+        "K-IFRS 기준 재무제표 작성 실무 경험",
+        "Excel 기반 재무 모델링 능숙 (Pivot, 시뮬레이션 등)"
+      ],
+      "preferred": [
+        "스타트업 또는 회계법인 출신으로 IPO·기술특례상장 준비 경험",
+        "외부감사 대응 또는 연결재무제표 작성 경험",
+        "해외 법인 회계처리 또는 크로스보더 세무 관련 지식"
+      ],
+      "id": "jd8",
+      "group": ""
+    },
+    {
+      "title": "경영기획 매니저 (Corporate Planning Manager)",
+      "intro": "디노티시아 경영기획팀은 회사의 성장 방향을 체계적으로 설계하고, 전사적 관점에서 지속가능한 성장을 이끌어가는 핵심 조직입니다. 경영기획 매니저는 연간 및 중장기 사업계획을 수립·관리하며, 손익 분석과 성과 모니터링을 통해 재무적 건전성과 효율성을 점검합니다. 또한 전사·조직 단위 전략 과제를 발굴하고 실행을 지원하여 회사가 목표를 일관되게 달성할 수 있도록 조율합니다. 기술과 비즈니스를 통합하여 시장에서 가치를 인정받을 수 있는 종합적인 청사진을 제시하는 역할을 맡습니다. 급변하는 산업 트렌드를 빠르게 해석하고 분석 기반의 전략적 의사결정을 이끌 분을 환영합니다.",
+      "duties": [
+        "연간/중장기 사업계획 수립 및 관리",
+        "손익 분석 및 경영 성과 모니터링",
+        "전사/조직 단위 전략 과제 발굴 및 실행 지원",
+        "신규 사업/제품 타당성 분석 및 수익 모델 검토",
+        "시장/경쟁사 분석 및 데이터 기반 인사이트 도출"
+      ],
+      "qualifications": [
+        "경영기획, 재무기획, 경영전략, IR 등 관련 직무 경험 3~10년",
+        "손익 구조 및 재무제표 이해와 재무 분석 역량",
+        "급변하는 환경에서 우선순위를 조정하며 실행할 수 있는 역량",
+        "데이터 기반 인사이트 도출 및 전략 제안 역량"
+      ],
+      "preferred": [
+        "AI/데이터/클라우드/엔터프라이즈 SaaS 등 기술 기반 산업 이해",
+        "B2B 제품/솔루션의 단가·원가 구조, 리세일·SaaS 모델 이해",
+        "재무 모델링(Financial Modeling), 시장·경쟁사 리서치 경험",
+        "스타트업 또는 고성장 조직에서의 경험"
+      ],
+      "id": "jd9",
+      "group": ""
+    },
+    {
+      "title": "Field Sales",
+      "intro": "디노티시아 사업개발그룹은 사업전략부터 GTM, 영업·마케팅까지 통합 실행하며 시장을 개척하고 고객 프로젝트를 성공적으로 이끌어갑니다. Field Sales는 금융·공공·기업 고객을 대상으로 디노티시아의 AI 솔루션(LLM, Vector DB, RAG, AI Agent, AI Appliance 등)을 제안하고 수주하며, 고객 성공과 회사 성장을 동시에 이끄는 역할을 수행합니다. 시장·고객·기술을 종합적으로 분석하여 중장기 사업 방향을 설계하고 실행하는 데 열정이 있는 분을 환영합니다.",
+      "duties": [
+        "공공/금융/기업 고객 대상 AI 솔루션 사업 수주 및 판매",
+        "고객 사업기회 발굴, 기획 및 기술 영업 진행",
+        "LLM, Vector DB, RAG, AI Agent, AI Appliance, AI Storage 관련 기술 영업",
+        "협력사와의 협업 사업 추진 및 단독 사업 추진",
+        "고객 요구사항 분석 및 기술 제안서 작성, PoC 지원"
+      ],
+      "qualifications": [
+        "공공/금융 분야 IT·Cloud·AI 영업 경력 5년 이상",
+        "사업기획, 기술영업, 수주 등 Sales 전반 경험",
+        "AI 기술 영업이 가능한 역량",
+        "고객 커뮤니케이션 및 관계 관리 능력"
+      ],
+      "preferred": [
+        "AI·Cloud 관련 영업 경력",
+        "경쟁 시장 분석 및 학습 역량",
+        "기술 자료 작성 및 프레젠테이션 능력",
+        "고객 요구사항을 빠르게 분석·정의하고 솔루션화하는 역량"
+      ],
+      "id": "jd10",
+      "group": ""
+    },
+    {
+      "title": "AI Field Engineer",
+      "intro": "디노티시아 사업개발그룹의 AI Field Engineer는 사업본부의 핵심 기술 전문가로서, AI 서비스 컨설팅부터 기술 솔루션 딜리버리, 프로젝트 관리까지 전 과정을 주도합니다. 고객의 비즈니스 Pain Point를 정확히 진단하고, LLM, RAG, Vector DB, AI Agent 기술 기반의 최적화된 솔루션을 성공적으로 구축·안착시키는 역할을 수행합니다. 기술 전달을 넘어 고객 비즈니스 가치를 극대화하는 데 열정이 있는 분을 환영합니다.",
+      "duties": [
+        "고객사 AI 시스템 구축 프로젝트 PM/PL 역할 (일정, 리스크, 품질, 산출물 관리)",
+        "LLM, RAG, Vector DB, AI Agent 기반 솔루션 구축 및 Legacy 시스템 연동",
+        "고객 요구사항 분석, 기술 제안서 작성, PoC/BMT 수행",
+        "구축 후 운영 안정화, 성능 개선 및 기술 지원",
+        "기술 컨설팅, 고객 미팅, 기술 데모 지원",
+        "고객 기술 이슈 해결 및 솔루션 고도화"
+      ],
+      "qualifications": [
+        "기업 및 공공기관 대상 DX/AX 컨설팅 및 구축 프로젝트 경력 5년 이상",
+        "AI 시스템 아키텍처에 대한 기본 이해 (LLM, Vector DB, RAG, Agent 등)",
+        "Kubernetes 기반 클라우드/온프레미스 환경 구축 및 배포 경험",
+        "오픈소스 기술 스택 활용 능력",
+        "고객 커뮤니케이션 및 기술 문서 작성 능력"
+      ],
+      "preferred": [
+        "LLM, RAG, MCP, MLOps/LLMOps 실무 경험",
+        "AWS, Azure, GCP 등 클라우드 환경 기반 시스템 설계·구축 경험",
+        "멀티 LLM 환경에서의 RAG/Agent 서비스 구축 경험",
+        "경쟁사 분석 및 고객 요구사항을 빠르게 솔루션화하는 역량",
+        "비즈니스 영어 커뮤니케이션 능력"
+      ],
+      "id": "jd11",
+      "group": ""
+    },
+    {
+      "title": "사업기획 매니저 (Business Planning Manager)",
+      "intro": "디노티시아 사업개발그룹은 기업, 공공, 산업 고객을 대상으로 AI 솔루션 및 서비스 사업 기회를 발굴하고, 고객 문제를 분석해 최적의 기술 솔루션을 제안합니다. 사업기획 매니저는 시장 및 고객에 대한 깊이 있는 이해를 바탕으로 문제를 구조적으로 정의하고, 기술·서비스 전략을 수립하며, GTM 전략 실행, 파트너십 구축, 제품 기획까지 사업 전 과정에 주도적으로 참여하여 지속 가능한 사업 구조를 설계합니다. AI/Vector DB 기반 신규 사업 기획과 전략 수립에 열정이 있는 분을 환영합니다.",
+      "duties": [
+        "사업기획 및 GTM(Go-To-Market) 전략 수립, 중장기 성장 전략 도출",
+        "시장 환경 분석, 고객 Needs 파악 및 경쟁사 벤치마킹",
+        "제품 포트폴리오 전략 및 로드맵 관리 (PO 역할)",
+        "사업 KPI 수립, 실적 관리 및 P&L(손익) 분석",
+        "전략적 파트너십 발굴 및 관계 구축 (CSP, MSP, 글로벌 하이퍼스케일러 등)",
+        "개발·영업 조직과의 협업을 통한 요구사항 조율 및 사업 프로세스 최적화",
+        "White Labeling, Marketplace 진입 전략 등 신규 사업 모델 개발"
+      ],
+      "qualifications": [
+        "사업기획, GTM 전략 수립, 사업관리 경력 5년 이상",
+        "PO(Product Owner)로서 서비스 및 제품 로드맵 관리 경험",
+        "재무/손익 구조 이해 및 데이터 기반 사업 분석 역량",
+        "IT 서비스, Cloud, AI 솔루션 관련 프로젝트 수행 경험",
+        "고객 Needs 분석, 제안서 작성, 계약 협상 경험"
+      ],
+      "preferred": [
+        "AI/LLM/RAG/데이터 플랫폼 사업 경험",
+        "국내외 CSP/MSP 및 글로벌 하이퍼스케일러(AWS, Azure 등) 제휴 경험",
+        "엔터프라이즈/금융/공공/제조 산업 도메인 지식",
+        "정부과제, 공공입찰, RFP 대응 경험",
+        "비즈니스 영어 커뮤니케이션 능력"
+      ],
+      "id": "jd12",
+      "group": ""
+    },
+    {
+      "title": "Product Strategy Manager",
+      "intro": "디노티시아 제품개발그룹은 Agentic RAG 기반 AI 어플리케이션 생태계의 End-to-End를 책임지며, 데이터베이스 및 스토리지부터 AI Agent까지 풀 스택 제품 라인업을 제공합니다. Product Strategy Manager는 디노티시아 제품 포트폴리오의 전략적 방향성을 수립하고, 시장 및 경쟁사 분석을 기반으로 경영진의 의사결정을 지원합니다. Vector Database, Cloud SaaS, AI 반도체 등 다양한 제품의 우선순위와 로드맵을 정의하며, 기술과 시장의 접점을 발견·연결합니다. AI 시대의 핵심 인프라인 벡터 데이터베이스와 전용 하드웨어 가속기의 융합이라는 새로운 도전을 즐기시는 분을 환영합니다.",
+      "duties": [
+        "Seahorse Vector DB, Seahorse Cloud, VDPU, AI Platform 등 제품 포트폴리오의 전략적 우선순위 정리",
+        "단기(6~18개월) 및 중장기(3년 이상) 제품 로드맵 수립 및 시장 진입 판단 프레임워크 운영",
+        "고객 니즈, 시장 동향, 경쟁사(Pinecone, Milvus, Weaviate 등) 분석을 기반으로 한 제품 전략 수립 및 차별화 포지셔닝",
+        "경영진, 개발팀, 투자자 등 이해관계자 대상 제품 비전 제시 및 분기별 성과 리뷰"
+      ],
+      "qualifications": [
+        "8년 이상 B2B 소프트웨어 및 인프라 업계 경력",
+        "클라우드 인프라, 데이터 플랫폼, 데이터베이스 관련 제품전략 경험",
+        "기술과 시장을 이해하고 연결할 수 있는 역량",
+        "데이터 기반 의사결정 및 전략적 분석 역량",
+        "비즈니스 영어 가능 (글로벌 경쟁사 자료 원문 독해)"
+      ],
+      "preferred": [
+        "벡터 DB, RAG, ML 인프라, AI Agent 생태계 관련 실무 경험",
+        "전략 컨설팅 → B2B SaaS/인프라 기업 커리어 전환 경험",
+        "반도체 및 하드웨어 제품에 대한 이해도"
+      ],
+      "id": "jd13",
+      "group": ""
+    },
+    {
+      "title": "DevOps Engineer",
+      "intro": "디노티시아 Engineering 팀은 개발부터 테스트, 배포, 운영까지 전 과정을 자동화하고 표준화하여 엔지니어들이 안정적으로 제품을 개발·운영할 수 있는 플랫폼과 인프라를 구축합니다. DevOps Engineer는 GitHub 및 Jenkins 기반 CI/CD 파이프라인, Kubernetes 중심 실행 환경을 운영·개선하며, 코드 품질 관리, 테스트 자동화, 배포 안정성 강화를 통해 개발 생산성과 시스템 신뢰성을 높입니다. 또한 VDPU 개발을 위한 FPGA/ASIC 환경과 LLM 학습을 위한 DGX 기반 MLOps 플랫폼을 운영합니다. IT 개발 환경과 사내 인프라를 구축·관리하는 데 열정이 있는 분을 환영합니다.",
+      "duties": [
+        "GitHub/Jenkins 기반 CI/CD 파이프라인 운영 및 개선",
+        "Kubernetes 환경에서의 서비스 및 빌드/테스트 워크로드 운영",
+        "SonarQube, 테스트 자동화 등을 통한 코드 품질 관리",
+        "CI/테스트/운영 지표 시각화를 위한 대시보드 개발",
+        "FPGA/ASIC 기반 VDPU 개발·테스트 파이프라인 운영",
+        "DGX 서버 기반 GPU 클러스터 환경 운영",
+        "다양한 팀과 협업하여 내부 플랫폼 안정성 개선 및 DevOps 문화 확산"
+      ],
+      "qualifications": [
+        "2년 이상 소프트웨어 개발 또는 DevOps 관련 실무 경험",
+        "Python, C/C++, Bash, Go 등 하나 이상의 언어에 익숙",
+        "Kubernetes 클러스터 운영에 대한 기본 이해",
+        "CI/CD 및 Linux 기반 서비스 운영 경험",
+        "GitHub Actions, Jenkins 등 CI 도구 실무 경험"
+      ],
+      "preferred": [
+        "FPGA/ASIC 또는 HW 가속기 기반 개발·테스트 환경 이해",
+        "MLOps 또는 데이터/AI 파이프라인 운영 경험",
+        "클라우드(AWS, GCP) 및 분산 시스템 운영 경험"
+      ],
+      "id": "jd14",
+      "group": ""
+    },
+    {
+      "title": "AI Agent Development Engineer",
+      "intro": "디노티시아 제품개발그룹은 벡터 데이터베이스와 RAG 시스템을 기반으로 차세대 AI 플랫폼을 개발합니다. AI Agent Development Engineer는 AI 에이전트를 활용해 개발 및 업무 프로세스를 자동화하고, 다양한 도구와 시스템을 유기적으로 연결하는 AI Agent 플랫폼을 구축합니다. CLI 및 웹 기반 AI Agent 개발, Multi-Agent 협업, Tool Calling, Context Management 등 Agentic AI 기술을 활용하여 지능적이고 효율적인 AI 워크플로우를 구현합니다. Vector DB·RAG와 AI Agent를 결합한 실서비스 적용 가능한 차세대 AI 시스템을 함께 만들어갈 분을 환영합니다.",
+      "duties": [
+        "CLI 또는 웹 기반 AI Agent 소프트웨어 설계 및 개발",
+        "AI Agent를 활용한 개발 및 업무 자동화 솔루션 개발",
+        "MCP 기반 Tool Calling 기능 개발 및 외부 시스템 연동",
+        "멀티 에이전트 기반 Agentic Workflow 설계 및 개발",
+        "Context Management를 통한 AI Agent 작업 연속성 및 상태 관리",
+        "Vector Database 및 RAG 시스템과 AI Agent 연계 기능 개발",
+        "AI Agent 간 협업 및 Task Delegation 구조 설계",
+        "개발 조직과 협업하여 AI Agent 플랫폼 고도화 및 서비스 적용"
+      ],
+      "qualifications": [
+        "컴퓨터공학, 전기전자공학 또는 관련 분야 학사 이상",
+        "AI Agent 또는 업무 자동화 소프트웨어 개발 경험",
+        "Python, C++ 등 프로그래밍 언어를 활용한 개발 경험",
+        "CLI 또는 웹 애플리케이션 개발 경험",
+        "AI Agent, Tool Calling, 멀티 에이전트 시스템에 대한 이해",
+        "Context Management 및 분산 시스템 기반 Task 관리 이해",
+        "AWS, GCP 등 클라우드 또는 분산 시스템 개발 경험"
+      ],
+      "preferred": [
+        "멀티 에이전트 협업 및 Workflow Automation 개발 경험",
+        "LLM, NLP 등 생성형 AI 및 머신러닝 모델 활용 경험",
+        "AI Agent와 연계되는 API 및 마이크로서비스 설계·개발 경험",
+        "DevOps, CI/CD, Docker, Kubernetes 기반 환경 경험",
+        "Vector Database, RAG 또는 AI Agent Framework (LangGraph, AutoGen, CrewAI 등) 활용 경험",
+        "AI 기반 개발 도구를 활용한 개발 경험"
+      ],
+      "id": "jd15",
+      "group": ""
+    },
+    {
+      "title": "Vector Database Engineer",
+      "intro": "디노티시아 Data 그룹은 벡터 데이터가 생성·저장·검색·확장되는 전 과정을 책임지며, AI가 단기 추론을 넘어 장기 기억과 의미 기반 검색을 수행할 수 있는 기술적 토대를 구축합니다. Vector Database Engineer는 수십억 규모의 벡터 데이터를 효율적으로 저장하고 초고속으로 검색할 수 있는 고성능 Vector Database 코어 엔진을 개발합니다. Vector Index 알고리즘, 분산 아키텍처, 성능 최적화 등 핵심 기술을 연구·개발하며, AI 시스템의 장기 기억 기능을 실현하는 데 기여합니다. 코드 품질과 시스템 성능에 대한 높은 기준을 가지고 팀과 협업하며 기술적 도전을 즐기는 분을 환영합니다.",
+      "duties": [
+        "Vector Database 코어 엔진 설계 및 개발",
+        "고성능 Vector Index 알고리즘 연구 및 구현",
+        "분산 시스템 아키텍처 설계 및 최적화",
+        "대규모 데이터 처리를 위한 성능 튜닝 및 벤치마킹"
+      ],
+      "qualifications": [
+        "전기전자 및 전산, 컴퓨터 분야 석사 이상 (또는 이에 준하는 연구/개발 경력)",
+        "C++ 또는 Rust를 활용한 시스템 프로그래밍 능력",
+        "자료구조, 알고리즘, 운영체제에 대한 깊이 있는 이해"
+      ],
+      "preferred": [
+        "RDBMS, NoSQL 등 데이터베이스 시스템 설계 및 개발 경험",
+        "고성능 시스템 소프트웨어 프로젝트 수행 경험",
+        "벡터 검색, ANN(Approximate Nearest Neighbor) 알고리즘 관련 연구 또는 개발 경험",
+        "Database & Storage Systems 관련 학회/저널 논문 경험 (VLDB, SIGMOD, ICDE, FAST 등)",
+        "Systems & Architecture 관련 학회/저널 논문 경험 (SOSP, OSDI, ASPLOS, MICRO 등)"
+      ],
+      "id": "jd16",
+      "group": ""
+    },
+    {
+      "title": "Storage System Software Engineer",
+      "intro": "디노티시아 제품개발그룹은 벡터 데이터가 생성·저장·검색·확장되는 전 과정을 책임지며, AI가 장기 기억과 의미 기반 검색을 수행할 수 있는 기술적 토대를 구축합니다. Storage System Software Engineer는 차세대 AI 및 LLM 시스템을 위한 고성능·대규모 분산 스토리지 시스템을 개발합니다. Ceph 기반 분산 스토리지 아키텍처를 확장·고도화하여 대규모 벡터 데이터와 AI 워크로드에 최적화된 저장·입출력·내구성·확장성을 제공하는 AI Storage Layer를 구축합니다. 분산 스토리지 시스템의 내부 구조를 깊이 이해하고 AI/Vector DB 워크로드 특성을 반영한 차세대 스토리지 기술을 함께 만들어갈 분을 환영합니다.",
+      "duties": [
+        "K8s 기반 DB/Storage-as-a-Service 및 AgentOps 솔루션 개발",
+        "Ceph 기반 AI Storage 시스템 아키텍처 설계 및 개발",
+        "Vector Database 및 LLM 워크로드를 고려한 스토리지 구조 및 I/O 경로 최적화",
+        "분산 스토리지 시스템의 성능, 안정성, 확장성 개선",
+        "메타데이터 관리, 복제/Erasure Coding, 캐싱 전략 등 핵심 기능 개발",
+        "대규모 분산 환경에서의 장애 대응, 데이터 무결성 및 복구 메커니즘 설계",
+        "벤치마킹 및 성능 분석을 통한 병목 구간 도출 및 최적화",
+        "Storage–DB–AI 시스템 간 인터페이스 및 연동 구조 설계"
+      ],
+      "qualifications": [
+        "컴퓨터공학 또는 전기전자공학 석사 이상 (또는 이에 준하는 연구/개발 경력)",
+        "분산 시스템, 운영체제, 파일 시스템, 스토리지 구조에 대한 탄탄한 기본기",
+        "Linux 환경에서의 Low-level 시스템 개발 경험",
+        "대규모 데이터 처리 및 성능 최적화에 대한 이해와 관심",
+        "AI Agent를 활용한 솔루션 개발 및 서비스 운영 경험"
+      ],
+      "preferred": [
+        "Ceph, Lustre, GlusterFS 등 분산 스토리지 시스템 사용 또는 개발 경험",
+        "RDBMS, NoSQL, Vector DB 등 데이터베이스 스토리지 레이어 이해",
+        "AI/ML 또는 Vector Search(ANN) 워크로드 특성에 대한 이해",
+        "C/C++ 또는 Rust 기반 시스템 프로그래밍 역량",
+        "고성능 스토리지 또는 시스템 소프트웨어 프로젝트 경험",
+        "Kubernetes 환경에서의 스토리지 연동 경험",
+        "스토리지·시스템·아키텍처 관련 학회/논문 경험 (FAST, SOSP, OSDI, ASPLOS, VLDB 등)"
+      ],
+      "id": "jd17",
+      "group": ""
+    },
+    {
+      "title": "SoC Firmware Engineer",
+      "intro": "디노티시아 SoC 그룹은 자사 AI 가속기 SoC의 Pre-Silicon 검증부터 Post-Silicon bring-up, 양산 지원까지 Firmware 전 영역을 담당합니다. SoC Firmware Engineer는 Internal/External IP 검증용 Software 개발, On-chip Firmware Architecture 설계, Bootloader, Device Driver, Multi-core Data Processing Firmware 개발 등을 수행하며, Hardware 팀 및 3rd party와의 긴밀한 협업을 통해 SoC의 안정적 동작과 최적 성능을 실현합니다. SoC 개발 Full Cycle에 대한 깊이 있는 이해를 가진 분을 환영합니다.",
+      "duties": [
+        "Internal / External IP 검증용 Software 작성 및 FPGA/Emulator 기반 IP 검증",
+        "SoC boot-ROM code 개발 및 Hardware 검증 협업",
+        "On-chip Firmware Architecture 설계 및 Reference Firmware code 개발 (Bare-metal/RTOS/Embedded Linux)",
+        "Bootloader, Device Driver, Communication Protocol 개발 및 최적화",
+        "Multi-core processor를 활용한 Data-processing Firmware 개발",
+        "Post-silicon Bring-up 지원 및 Firmware issue 분석·해결",
+        "3rd party와의 Chip final-test code 개발 및 양산 지원",
+        "유관 부서 및 3rd party와의 긴밀한 협업"
+      ],
+      "qualifications": [
+        "전자공학, 컴퓨터공학 또는 관련 전공 학사 이상",
+        "Firmware 개발 경력 10년 이상",
+        "C/C++ 프로그래밍 및 Python 등 Scripting 언어 역량",
+        "DDR, PCIe, UCIe 등 High-speed IP에 대한 이해 및 실무 경험",
+        "SoC/Computer Architecture에 대한 높은 이해도 및 Hardware Debugging 능력",
+        "탁월한 문제 해결 능력과 커뮤니케이션 스킬"
+      ],
+      "preferred": [
+        "SoC High-speed IP (DDR, PCIe, UCIe 등) Bring-up 경험",
+        "Software Architecture 설계 경험",
+        "Linux Device Driver 개발 경험 (특히 PCIe Driver)",
+        "Emulator 환경에서의 Firmware 개발 경험",
+        "SoC 개발 Flow 및 양산 칩 경험"
+      ],
+      "id": "jd18",
+      "group": ""
+    },
+    {
+      "title": "SoC PKG / Board Hardware Engineer",
+      "intro": "디노티시아 SoC 그룹은 고성능 AI 가속기 SoC의 패키지(PKG)와 Board 개발을 통해 실리콘의 잠재력을 최대화합니다. SoC PKG / Board Hardware Engineer는 PCIe, DDR 등 High-speed IP를 기반으로 PKG 및 Board 설계, SI/PI 최적화, Evaluation Board 개발, Post-silicon 검증, 양산 제품 개발까지 전반적인 Hardware Platform 업무를 수행합니다. 3rd party를 효과적으로 리드하며 복잡한 고속·고전력 시스템을 성공적으로 구현할 수 있는 분을 환영합니다.",
+      "duties": [
+        "PKG / Board 관점에서의 Silicon floor planning",
+        "High-level circuit design 및 High-speed/High-power PCB 설계",
+        "Schematic, Artwork review & guide",
+        "SI/PI 분석 및 설계 최적화",
+        "SoC Evaluation Board 개발 및 Post-silicon 기능·성능 검증",
+        "SoC Reference schematic 작성",
+        "양산 제품 HW 개발 (PCB 설계, 기구/방열 협업) 및 인증 테스트",
+        "유관 부서 및 3rd party와의 긴밀한 협업"
+      ],
+      "qualifications": [
+        "전자공학 또는 관련 분야 학사 이상",
+        "Board Level HW 개발 경력 7년 이상",
+        "High-speed 및 High-power 설계에 대한 폭넓은 이해",
+        "PCB CAD Tool (Cadence Allegro 등) 사용 능력",
+        "계측기(Oscilloscope, Power Analyzer 등)를 활용한 회로 검증 능력",
+        "문제 해결 능력 및 뛰어난 커뮤니케이션 스킬"
+      ],
+      "preferred": [
+        "SIwave, HFSS, ADS 등 SI/PI Tool 활용 경험",
+        "PCIe 5.0/6.0, LPDDR5X, HBM 등 고속 인터페이스 IP 경험",
+        "Python/C/C++ 등을 활용한 SoC 및 Board 테스트 경험",
+        "SoC 양산 경험"
+      ],
+      "id": "jd19",
+      "group": ""
+    },
+    {
+      "title": "SoC Design Verification Engineer",
+      "intro": "디노티시아 SoC 그룹 DV 팀은 고성능 AI 가속기 SoC의 기능 및 성능 검증을 담당합니다. SoC Design Verification Engineer는 Testbench 설계부터 Verification signoff까지 전 과정을 주도하며, Design Specification 기반 Testplan 작성, UVM 기반 테스트 환경 구축, Coverage 달성 등을 통해 설계의 안정성과 품질을 확보합니다. Architect 및 RTL Designer와의 긴밀한 협업을 통해 복잡한 SoC 검증을 성공적으로 이끌 수 있는 분을 환영합니다.",
+      "duties": [
+        "Verification planning 및 Testbench architecturing",
+        "Design specification 기반 Testplan 작성 및 Directed/Constraint Random Test 개발",
+        "Functional Coverage, Scoreboard, Assertions 작성",
+        "UVM 기반 Reusable Testbench 및 Test 개발",
+        "Code/Functional Coverage 달성 및 Verification Signoff",
+        "DV Infrastructure 및 Methodology 자동화, In-house VIP 개발",
+        "Bug Root Cause 분석 및 Verification Quality 향상"
+      ],
+      "qualifications": [
+        "Digital Logic Design Verification 경력 3년 이상",
+        "SystemVerilog와 UVM에 대한 높은 이해도",
+        "UVM 기반 Testbench 개발 경험",
+        "복잡한 디자인 검증 및 Debugging Skill",
+        "전기전자공학, 컴퓨터공학 또는 관련 분야 학사 이상"
+      ],
+      "preferred": [
+        "Formal Verification 경험",
+        "Design Verification Modeling (C++, SystemC) 경험",
+        "Memory, PCIe, UCIe 등 Serial/Parallel Protocol 경험"
+      ],
+      "id": "jd20",
+      "group": ""
+    },
+    {
+      "title": "SoC / RTL Design Engineer",
+      "intro": "디노티시아 SoC 그룹 Design 팀은 고성능 AI 가속기 SoC의 설계 및 구현을 담당합니다. SoC / RTL Design Engineer는 Verilog 기반 RTL 설계부터 IP 통합, Synthesis, Timing 분석까지 SoC 개발 전 과정을 주도하며, CPU, PCIe, DDR 등 Vendor IP를 효과적으로 활용하여 양산 가능한 고성능·저전력 칩 설계에 기여합니다. 복잡한 SoC 아키텍처에 대한 깊은 이해와 실무 경험을 바탕으로 혁신적인 반도체 솔루션을 만들어가고 싶은 분을 환영합니다.",
+      "duties": [
+        "Verilog를 이용한 고성능·저전력 RTL 블록 설계, 개발 및 최적화",
+        "SoC 아키텍처 및 모듈 사양 정의 (Verification, Backend 팀 협업)",
+        "다양한 IP 블록 통합 및 전체 아키텍처 요구사항 검증",
+        "Synthesis, Timing 분석, 전력 최적화 수행",
+        "검증 계획 수립 및 블록/시스템 레벨 디버깅",
+        "DFT, Design Review 참여 및 설계 문서화",
+        "최신 반도체 기술 트렌드 학습 및 적용"
+      ],
+      "qualifications": [
+        "RTL 설계 및 SoC 개발 경력 5년 이상",
+        "Verilog/SystemVerilog에 대한 숙련도 및 ASIC 설계 프로세스 이해",
+        "CPU, GPU, Memory System 등 컴퓨터 아키텍처에 대한 이해",
+        "EDA Tool (Synopsys, Cadence 등) 사용 경험",
+        "전기전자공학, 컴퓨터공학 또는 관련 분야 학사 이상"
+      ],
+      "preferred": [
+        "저전력 설계 기법 경험",
+        "Python/TCL 스크립트 활용 경험",
+        "HW/SW Co-design 및 디버깅 경험",
+        "양산 칩 설계 및 출시 경험"
+      ],
+      "id": "jd21",
+      "group": ""
+    },
+    {
+      "title": "System Architect",
+      "intro": "디노티시아 Architecture 팀은 차세대 인공지능 솔루션의 핵심 연산을 가속하기 위한 하드웨어와 소프트웨어를 아우르는 전체 시스템의 청사진을 설계합니다. System Architect는 워크로드에 대한 깊이 있는 분석과 선구적인 아이디어를 바탕으로 시스템의 근본적인 구조를 혁신하며, 알고리즘, 소프트웨어, 하드웨어를 종합적으로 고려한 아키텍처를 정의합니다. ASIC 구현 경험이 많지 않더라도 컴퓨터 아키텍처 분야에서 학술적으로 깊이 있는 연구를 수행한 분을 적극 환영합니다.",
+      "duties": [
+        "Vector DB, RAG, Agentic AI 등 핵심 워크로드 분석 및 성능 병목 식별",
+        "성능·전력·비용 제약 조건 하에서의 최적 아키텍처 탐색 및 정량적 검증",
+        "SoC 구성요소와 소프트웨어를 포함한 전체 시스템 아키텍처 정의",
+        "하드웨어-소프트웨어 인터페이스 설계 및 Runtime/OS/가상화 환경 구조 정의",
+        "Security, Debug, RAS(Reliability, Availability, Serviceability) 아키텍처 정의",
+        "C++/SystemC/Python 기반 시스템 레벨 모델링 및 시뮬레이션 환경 구축",
+        "최신 컴퓨터 아키텍처 및 AI 가속기 기술 동향 연구 및 적용",
+        "사내 알고리즘·소프트웨어·하드웨어 팀과의 긴밀한 협업"
+      ],
+      "qualifications": [
+        "전기/전자/컴퓨터공학, 전산학 분야 석사 이상 (석사 후 3년 이상 관련 경력) 또는 박사",
+        "컴퓨터 아키텍처 분야에 대한 깊이 있는 학문적 배경과 이해",
+        "C++/SystemC/Python 등을 이용한 시스템 레벨 모델링 및 시뮬레이터 개발 능력",
+        "CPU, GPU, 메모리 시스템, 인터커넥트 등 컴퓨터 시스템 전반에 대한 이해"
+      ],
+      "preferred": [
+        "Top-tier 아키텍처 학회/저널 논문 주저자 실적 (ISCA, MICRO, ASPLOS, HPCA 등)",
+        "RAG, Vector DB 등 최신 AI 워크로드에 대한 이해",
+        "아키텍처-알고리즘-컴파일러 Co-optimization 연구 경험",
+        "System Software, OS, 가상화 기술 및 하드웨어 연동 이해",
+        "RTL 설계 및 ASIC 구현 프로세스 이해",
+        "성능 분석 툴 사용 및 분석 경험"
+      ],
+      "id": "jd22",
+      "group": ""
+    },
+    {
+      "title": "Vector Library Engineer",
+      "intro": "디노티시아 Vector Platform 팀은 다양한 데이터베이스 및 실행 환경에서 대규모 벡터 데이터를 효율적으로 처리·검색하기 위한 라이브러리를 개발합니다. Vector Library Engineer는 디노티시아의 VDPU(Vector Data Processing Unit) Hardware에 최적화된 벡터 검색 및 연산 알고리즘을 구현하고, 플랫폼 관점에서 VDPU의 활용 범위와 적용 가능성을 확장하는 소프트웨어 레이어를 설계·개발합니다. 알고리즘과 시스템 소프트웨어 관점에서 성능, 확장성, 이식성을 종합적으로 고려하며, 기술적 완성도와 높은 코드 품질을 추구하는 분을 환영합니다.",
+      "duties": [
+        "VDPU에 최적화된 벡터 처리 및 검색 기능 구현",
+        "고성능 Vector Index 및 검색 알고리즘 연구 및 구현",
+        "Vector Data Processing/Search 라이브러리 설계 및 개발",
+        "플랫폼 관점에서 VDPU 활용을 확장하기 위한 기능 설계 및 개선",
+        "다양한 데이터베이스 및 실행 환경과의 연동 및 통합 개발",
+        "성능, 메모리 사용량, 지연 시간 관점의 분석 및 최적화",
+        "대규모 벡터 데이터 처리를 위한 벤치마킹 및 성능 검증"
+      ],
+      "qualifications": [
+        "C++ 기반의 시스템 프로그래밍 역량",
+        "자료구조, 알고리즘, 운영체제에 대한 탄탄한 이해",
+        "Linux 환경에서의 개발 경험 및 git, docker 등 협업 도구 활용 능력",
+        "전산/컴퓨터공학 또는 관련 분야 학사 이상"
+      ],
+      "preferred": [
+        "고성능 시스템 소프트웨어, 공통 처리 라이브러리, 미들웨어 개발 경험",
+        "Vector Search 또는 ANN(Approximate Nearest Neighbor) 알고리즘 관련 연구/개발 경험",
+        "하드웨어 가속기 환경을 고려한 소프트웨어 최적화 경험",
+        "다양한 언어(C/C++, Rust 등) 기반 시스템 연동 또는 바인딩 개발 경험",
+        "AI 기반 개발 도구를 활용한 코드 작성·분석·디버깅 경험"
+      ],
+      "id": "jd23",
+      "group": ""
+    },
+    {
+      "title": "Firmware Software Engineer",
+      "intro": "디노티시아 System SW 팀은 회사의 모든 제품을 위한 런타임, 디바이스 드라이버, 펌웨어, 고성능 컴퓨팅 라이브러리를 개발하며 전체 소프트웨어 플랫폼을 구축합니다. Firmware Software Engineer는 RISC-V 기반 AI 가속기 SoC를 위한 저수준 펌웨어를 설계·개발·검증하고, Host-side 도구 및 가상 플랫폼 환경을 구축하며, 플랫폼 관리와 보안 기능을 구현합니다. Bootloader, PCIe Endpoint, PLDM, Secure Boot, Virtual Platform 등 다양한 영역에서 하드웨어와 긴밀히 협업하여 안정적이고 고성능의 펌웨어 솔루션을 완성합니다. 임베디드 시스템의 깊이 있는 개발 경험을 통해 AI 가속기의 신뢰성과 성능을 극대화하고 싶은 분을 환영합니다.",
+      "duties": [
+        "RISC-V 기반 Bootloader, Early/Runtime Firmware 설계 및 개발",
+        "PCIe Endpoint 펌웨어, DMA 엔진, Command Queue 구현 및 Bring-up",
+        "PLDM 기반 플랫폼 관리 및 모니터링 펌웨어 구현 (MCTP over PCIe/SMBus)",
+        "Root of Trust, Secure Boot, Chain of Trust 구현",
+        "Host PC용 CLI 디버그/제어 도구 및 펌웨어 서비스 계층 개발",
+        "QEMU, SystemC 등 가상 플랫폼 환경 구축 및 펌웨어 검증 플로우 자동화",
+        "FPGA/실리콘 Bring-up 지원 및 하드웨어 팀과의 협업",
+        "메모리·전력·성능 최적화 및 기술 문서화"
+      ],
+      "qualifications": [
+        "Embedded C/C++ 기반 펌웨어 개발 경험",
+        "ARM 또는 RISC-V 아키텍처에 대한 깊은 이해",
+        "PCIe, PLDM, Secure Boot 관련 경험 또는 이해",
+        "Linux CLI 도구 개발 또는 가상 플랫폼(QEMU, SystemC) 경험",
+        "복잡한 저수준 시스템 디버깅 및 문제 해결 능력",
+        "컴퓨터공학 또는 관련 전공 학사 이상 및 경력 3년 이상"
+      ],
+      "preferred": [
+        "SoC Bring-up 및 Host Driver 연동 경험",
+        "RTOS(FreeRTOS, Zephyr) 또는 Embedded Linux 경험",
+        "Hardware RoT, MCTP, BMC 연동 경험",
+        "테스트 기반 개발(TDD) 및 HW 디버깅 경험"
+      ],
+      "id": "jd24",
+      "group": ""
+    },
+    {
+      "title": "Device Driver Software Engineer",
+      "intro": "디노티시아 System SW 팀은 회사의 모든 제품을 위한 런타임, 디바이스 드라이버, 펌웨어, 고성능 컴퓨팅 라이브러리를 개발하며 전체 소프트웨어 아키텍처를 설계합니다. Device Driver Software Engineer는 PCIe 기반 AI 가속기 플랫폼을 위한 Host-side Linux Device Driver 개발을 담당합니다. Linux 커널 드라이버부터 사용자 공간 고성능 라이브러리까지 전반을 책임지며, 하드웨어와 긴밀히 협업하여 안정적이고 고성능의 드라이버 솔루션을 구현합니다. 복잡한 저수준 시스템 개발을 통해 AI 가속기의 잠재력을 최대화하고 싶은 분을 환영합니다.",
+      "duties": [
+        "Linux 커널 기반 PCIe 디바이스 드라이버 개발 및 유지보수 (RC Mode)",
+        "PCIe Enumeration, BAR 매핑, MSI/MSI-X 인터럽트 처리, DMA 설정 및 완료 처리 구현",
+        "커널 인터페이스 구현 (ioctl, mmap, sysfs)",
+        "ftrace, perf, crash dump 등을 활용한 PCIe 및 드라이버 디버깅",
+        "하드웨어 및 펌웨어 팀과 협업하여 SoC/보드 Bring-up 지원",
+        "AI 가속기 접근을 위한 User-space 드라이버 및 고성능 라이브러리 개발",
+        "사용자 API 및 개발 도구 설계, 기술 문서 작성",
+        "PCI 디바이스 드라이버 관련 최신 기술 트렌드 학습 및 적용"
+      ],
+      "qualifications": [
+        "Linux 커널 개발 경험",
+        "PCI Express(PCIe) 아키텍처에 대한 깊은 이해",
+        "DMA, 인터럽트, 메모리 관리에 대한 이해",
+        "Linux 커널 구조(모듈, 디바이스 드라이버, 시스템 콜 등)에 대한 이해",
+        "커널 디버깅 및 성능 분석 도구 사용 경험",
+        "컴퓨터공학 또는 관련 전공 학사 이상 및 경력 3년 이상"
+      ],
+      "preferred": [
+        "펌웨어 및 하드웨어 팀과의 협업 경험",
+        "I2C, SPI, UART 등 다양한 하드웨어 인터페이스 경험",
+        "테스트 기반 개발 경험 (Linux KUnit 등)"
+      ],
+      "id": "jd25",
+      "group": ""
+    },
+    {
+      "title": "Optimization Engineer",
+      "intro": "디노티시아 Core 그룹은 LLM과 벡터 데이터베이스의 고성능 실행을 위한 시스템 최적화에 집중하고 있습니다. Optimization Engineer는 LLM 추론 엔진의 성능 한계를 극복하고, 실제 서비스 환경에서 최고의 효율성을 달성하는 데 핵심적인 역할을 수행합니다. 오픈소스 추론 프레임워크를 심층 분석하고, 모델 경량화, 메모리 관리, 하드웨어 특성 활용 등 다양한 최적화 기법을 직접 설계·구현하며, 정량적 분석과 프로파일링을 통해 지속적인 성능 개선을 이끌어냅니다. 최신 연구 동향을 빠르게 적용하여 실질적인 제품 성능 향상을 이뤄내고 싶은 분을 환영합니다.",
+      "duties": [
+        "LLM 추론 엔진의 설계 및 개발",
+        "오픈소스 기반 추론 프레임워크(e.g., vLLM)의 구조 분석 및 커스터마이징",
+        "LLM 워크로드에 대한 정량적 분석 및 병목 지점 프로파일링",
+        "Quantization 및 Pruning 기법을 활용한 추론 경량화 및 최적화 설계 및 구현",
+        "최신 논문 및 공개된 구현체 기반 최적화 기법 지속적 습득 및 적용",
+        "시스템/하드웨어 특성에 맞춘 추론 경로 최적화 (e.g., CPU-GPU 간 데이터 이동 최소화, 메모리 계층 활용 등)"
+      ],
+      "qualifications": [
+        "C++ 또는 Python 기반 개발 능력",
+        "Transformer 구조 및 LLM 아키텍처에 대한 이해",
+        "Quantization 또는 Pruning 기법에 대한 이론 및 실습 경험",
+        "Git, Linux 환경 기반 개발 및 디버깅 경험",
+        "관련 전공 학사 이상 또는 이에 상응하는 실무 경험"
+      ],
+      "preferred": [
+        "vLLM 또는 유사 LLM 추론 엔진 내부 구조에 대한 깊은 이해 및 수정 경험",
+        "CUDA 및 GPU 최적화 커널 개발 경험",
+        "GPU 아키텍처 및 메모리 계층 구조에 대한 실질적인 이해",
+        "Computer Architecture, Heterogeneous Computing, Operating System 관련 지식",
+        "LLM 추론 관련 최신 논문 및 구현체를 빠르게 분석·적용하는 능력"
+      ],
+      "id": "jd26",
+      "group": ""
+    },
+    {
+      "title": "LLM Engineer",
+      "intro": "디노티시아 AI 그룹은 최신 기술과 혁신을 기반으로 대형 언어 모델(LLM)을 실제 환경에 구현하는 데 집중하고 있습니다. 또한 Cost-Effective 서비스를 위한 기술 개발, 최신 AI 알고리즘 연구를 통해 핵심 모델을 발전시키며, On-device LLM 및 애플리케이션 개발에도 주력하고 있습니다. LLM Engineer는 데이터셋 수집 및 정리, 모델 개발 및 학습, 성능 개선을 위한 혁신적인 아이디어 도출을 통해 디노티시아의 LLM 개발을 주도하는 역할을 수행합니다. 최신 AI 연구 동향을 반영해 새로운 모델 아키텍처와 알고리즘을 구현하며, 기술적인 전문성과 창의적인 문제 해결 능력을 통해 혁신적인 제품과 서비스를 개발하고 싶은 분을 환영합니다.",
+      "duties": [
+        "LLM Pre-Training 속도 개선을 위한 GPU 대규모 멀티 노드 학습 진행, 잡 스케줄링, NCCL 최적화",
+        "LLM Pre-Training 성능 개선을 위한 데이터 크롤링, 필터링 및 모델 아키텍처 개선",
+        "LLM Post-Training 성능 고도화를 위한 방법론/강화학습 연구",
+        "LLM 평가 방법 연구 및 벤치마크 분석 개발 진행",
+        "LLM 모델링 관련 최신 논문 분석 및 적용"
+      ],
+      "qualifications": [
+        "멀티 GPU를 이용한 한국어 LLM 파인튜닝 경험 필수",
+        "AI/ML 관련 전공 석사 이상 또는 이에 상응하는 실무 경험",
+        "자연어 처리, LLM, 데이터 분석 및 처리 경험",
+        "Python/C++ 개발 역량 및 PyTorch 또는 HuggingFace 플랫폼을 이용한 연구/개발 경험"
+      ],
+      "preferred": [
+        "AI/ML 관련 전공 박사 우대",
+        "주요 AI/ML 컨퍼런스 논문 게재 경험",
+        "PyTorch 및 HuggingFace Contributor 또는 관련 오픈소스 진행 경험",
+        "GPU 16장 이상 멀티 노드 학습 경험"
+      ],
+      "id": "jd27",
+      "group": ""
+    }
+  ]
+}
 };
 /*DATA-END*/
 
@@ -427,6 +1215,10 @@ function buildSearchIndex(){
       items.push({ navType:'recruit', domain:null, doc:null, breadcrumb:'채용 현황 대시보드 · ' + g.name, title: p.title,
         text: [p.title, g.name, p.status, p.owner, p.deadline, p.note].filter(Boolean).join(' ') });
     });
+  });
+  DATA.jd.positions.forEach(p => {
+    items.push({ navType:'jddetail', domain:null, doc:p.id, breadcrumb:'JD 관리' + (p.group?(' · '+p.group):''), title: p.title,
+      text: [p.title, p.group, p.intro, (p.duties||[]).join(' '), (p.qualifications||[]).join(' '), (p.preferred||[]).join(' ')].filter(Boolean).join(' ') });
   });
   return items;
 }
@@ -646,6 +1438,8 @@ function renderMain(){
   if (view.type === 'doc') return renderDoc(view.domain, view.doc);
   if (view.type === 'example') return renderExample(view.doc);
   if (view.type === 'recruit') return renderRecruit();
+  if (view.type === 'jdmanage') return renderJdManage();
+  if (view.type === 'jddetail') return renderJdDetail(view.doc);
   return '';
 }
 
@@ -824,6 +1618,259 @@ function saveRecruitNote(posId){
 }
 window.saveRecruitNote = saveRecruitNote;
 
+/* ============ JD 관리 ============ */
+function findJd(id){ return DATA.jd.positions.find(p => p.id === id); }
+
+function groupedJdPositions(){
+  const buckets = {}; const order = [];
+  DATA.jd.positions.forEach(p => {
+    const g = p.group && p.group.trim() ? p.group.trim() : '미분류';
+    if (!buckets[g]) { buckets[g] = []; order.push(g); }
+    buckets[g].push(p);
+  });
+  return order.map(g => ({ group:g, items:buckets[g] }));
+}
+
+function renderJdManage(){
+  const c = DATA.jd.common;
+  const groups = groupedJdPositions();
+  const listHtml = groups.map(gr => `
+    <div class="jd-group-header">${esc(gr.group)} <span class="cnt">${gr.items.length}건</span></div>
+    ${gr.items.map(p => `
+      <div class="jd-item" draggable="true"
+          ondragstart="onJdDragStart(event,'${p.id}')"
+          ondragover="onJdDragOver(event)"
+          ondragleave="onJdDragLeave(event)"
+          ondrop="onJdDrop(event,'${p.id}')"
+          ondragend="onJdDragEnd(event)">
+        <span class="drag-handle" title="드래그해서 순서·그룹 변경">⠿</span>
+        <button class="jd-open" onclick="go('jddetail',null,'${p.id}')">
+          <div class="jd-title">${esc(p.title)}</div>
+          <div class="jd-sub">${esc((p.intro||'').slice(0,60))}${(p.intro||'').length>60?'…':''}</div>
+        </button>
+        <button class="jd-del" onclick="deleteJdPosition('${p.id}')" title="삭제">삭제</button>
+      </div>
+    `).join('')}
+  `).join('');
+
+  return `
+    <p class="doc-eyebrow">09 · 채용 현황 관리 · JD 관리</p>
+    <h2>JD 관리</h2>
+    <p class="lede">공통 항목은 한 번만 관리하고, 포지션별 항목만 따로 관리합니다. 카드를 드래그하면 순서를 바꾸거나 다른 포지션 위에 놓아서 같은 그룹으로 묶을 수 있습니다.</p>
+
+    <h3>공통 항목 (모든 포지션 동일)</h3>
+    <div class="jd-field">
+      <label>회사소개</label>
+      <textarea id="jdCommonIntro" style="min-height:110px;">${esc(c.companyIntro)}</textarea>
+    </div>
+    <div class="jd-field">
+      <label>복리후생 (한 줄에 하나씩)</label>
+      <textarea id="jdCommonBenefits" style="min-height:130px;">${esc(c.benefits.join('\n'))}</textarea>
+    </div>
+    <div class="jd-field">
+      <label>채용절차</label>
+      <textarea id="jdCommonProcess" style="min-height:80px;">${esc(c.process)}</textarea>
+    </div>
+    <div class="jd-field">
+      <label>마무리 문구</label>
+      <textarea id="jdCommonClosing" style="min-height:80px;">${esc(c.closing)}</textarea>
+    </div>
+    <div class="row-actions">
+      <button class="btn primary" onclick="saveJdCommon()">공통 항목 저장</button>
+      <span class="save-flag" id="jdCommonSaveFlag"></span>
+    </div>
+
+    <h3 style="margin-top:2rem;">포지션 목록 (${DATA.jd.positions.length}개)</h3>
+    <div class="row-actions" style="margin-bottom:1rem;">
+      <button class="btn primary" onclick="addJdPosition()">+ 새 포지션 추가</button>
+    </div>
+    ${listHtml}
+  `;
+}
+
+function saveJdCommon(){
+  DATA.jd.common.companyIntro = document.getElementById('jdCommonIntro').value;
+  DATA.jd.common.benefits = document.getElementById('jdCommonBenefits').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  DATA.jd.common.process = document.getElementById('jdCommonProcess').value;
+  DATA.jd.common.closing = document.getElementById('jdCommonClosing').value;
+  persist();
+  const flag = document.getElementById('jdCommonSaveFlag');
+  if (flag) flag.textContent = '저장됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+window.saveJdCommon = saveJdCommon;
+
+function addJdPosition(){
+  const title = prompt('새 포지션의 직무명을 입력하세요.');
+  if (!title || !title.trim()) return;
+  const id = 'jd' + Date.now();
+  DATA.jd.positions.push({ id, title: title.trim(), group:'', intro:'', duties:[], qualifications:[], preferred:[] });
+  persist();
+  go('jddetail', null, id);
+}
+window.addJdPosition = addJdPosition;
+
+function deleteJdPosition(id){
+  const p = findJd(id);
+  if (!p) return;
+  if (!confirm(`'${p.title}' JD를 삭제할까요?`)) return;
+  DATA.jd.positions = DATA.jd.positions.filter(x => x.id !== id);
+  persist();
+  render();
+  go('jdmanage');
+}
+window.deleteJdPosition = deleteJdPosition;
+
+let draggedJdId = null;
+function onJdDragStart(e, id){
+  draggedJdId = id;
+  e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
+}
+window.onJdDragStart = onJdDragStart;
+function onJdDragOver(e){
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  e.currentTarget.classList.add('drag-over');
+}
+window.onJdDragOver = onJdDragOver;
+function onJdDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+window.onJdDragLeave = onJdDragLeave;
+function onJdDrop(e, targetId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const fromId = draggedJdId;
+  draggedJdId = null;
+  if (!fromId || fromId === targetId) return;
+  const list = DATA.jd.positions;
+  const fromIdx = list.findIndex(p => p.id === fromId);
+  const target = list.find(p => p.id === targetId);
+  if (fromIdx === -1 || !target) return;
+  const [moved] = list.splice(fromIdx, 1);
+  moved.group = target.group; // 드롭한 대상의 그룹으로 편입
+  const toIdx = list.findIndex(p => p.id === targetId);
+  list.splice(toIdx + 1, 0, moved);
+  persist();
+  render();
+}
+window.onJdDrop = onJdDrop;
+function onJdDragEnd(){
+  draggedJdId = null;
+  document.querySelectorAll('.jd-item.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+window.onJdDragEnd = onJdDragEnd;
+
+function renderJdDetail(id){
+  const p = findJd(id);
+  if (!p) return '<p>포지션을 찾을 수 없습니다.</p>';
+  return `
+    <button class="back-link" onclick="go('jdmanage')">← JD 관리 목록으로</button>
+    <p class="doc-eyebrow">09 · 채용 현황 관리 · JD 관리</p>
+    <h2>${esc(p.title)}</h2>
+    <div class="jd-field">
+      <label>직무명</label>
+      <input type="text" id="jdTitle" value="${esc(p.title)}">
+    </div>
+    <div class="jd-field">
+      <label>그룹 (같은 이름을 쓰면 목록에서 같이 묶여요, 비워두면 "미분류")</label>
+      <input type="text" id="jdGroup" value="${esc(p.group||'')}" placeholder="예: SoC그룹, AI그룹...">
+    </div>
+    <div class="jd-field">
+      <label>직무소개</label>
+      <textarea id="jdIntro" style="min-height:130px;">${esc(p.intro||'')}</textarea>
+    </div>
+    <div class="jd-field">
+      <label>담당업무 (한 줄에 하나씩)</label>
+      <textarea id="jdDuties" style="min-height:150px;">${esc((p.duties||[]).join('\n'))}</textarea>
+    </div>
+    <div class="jd-field">
+      <label>자격요건 (한 줄에 하나씩)</label>
+      <textarea id="jdQual" style="min-height:130px;">${esc((p.qualifications||[]).join('\n'))}</textarea>
+    </div>
+    <div class="jd-field">
+      <label>우대사항 (한 줄에 하나씩)</label>
+      <textarea id="jdPreferred" style="min-height:130px;">${esc((p.preferred||[]).join('\n'))}</textarea>
+    </div>
+    <div class="row-actions">
+      <button class="btn primary" onclick="saveJdDetail('${id}')">저장</button>
+      <button class="btn" onclick="copyFullJd('${id}')">전체 JD 복사</button>
+      <button class="btn" onclick="deleteJdPosition('${id}')" style="color:var(--seal);">삭제</button>
+      <span class="save-flag" id="jdDetailSaveFlag"></span>
+    </div>
+  `;
+}
+
+function saveJdDetail(id){
+  const p = findJd(id);
+  if (!p) return;
+  p.title = document.getElementById('jdTitle').value.trim() || p.title;
+  p.group = document.getElementById('jdGroup').value.trim();
+  p.intro = document.getElementById('jdIntro').value;
+  p.duties = document.getElementById('jdDuties').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  p.qualifications = document.getElementById('jdQual').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  p.preferred = document.getElementById('jdPreferred').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  persist();
+  render();
+  go('jddetail', null, id);
+  const flag = document.getElementById('jdDetailSaveFlag');
+  if (flag) flag.textContent = '저장됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+window.saveJdDetail = saveJdDetail;
+
+function assembleFullJd(id){
+  const p = findJd(id);
+  const c = DATA.jd.common;
+  const bullets = arr => (arr||[]).map(x => '· ' + x).join('\n');
+  return [
+    p.title,
+    '',
+    '# 회사소개',
+    c.companyIntro,
+    '',
+    '# 직무소개',
+    p.intro,
+    '',
+    '# 담당업무',
+    bullets(p.duties),
+    '',
+    '# 자격요건',
+    bullets(p.qualifications),
+    '',
+    '# 우대사항',
+    bullets(p.preferred),
+    '',
+    '# 복리후생',
+    bullets(c.benefits),
+    '',
+    '# 채용절차',
+    c.process,
+    '',
+    c.closing,
+  ].join('\n');
+}
+
+function copyFullJd(id){
+  const text = assembleFullJd(id);
+  const flag = document.getElementById('jdDetailSaveFlag');
+  const done = () => { if (flag) flag.textContent = '전체 JD가 복사되었습니다 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}); };
+  const fail = () => { if (flag) flag.textContent = '복사에 실패했습니다. 브라우저 권한을 확인해주세요.'; };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done).catch(fail);
+  } else {
+    try {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      done();
+    } catch(e) { fail(); }
+  }
+}
+window.copyFullJd = copyFullJd;
+
 function renderBuiltin(key){
   const b = DATA.builtins[key];
   const note = DATA.notes[key] || '';
@@ -869,6 +1916,7 @@ function renderDomain(domainId){
   let dashboardCard = '';
   if (domainId === 'd09') {
     const openCount = DATA.recruitment.groups.reduce((n,g)=>n+g.positions.length,0);
+    const jdCount = DATA.jd.positions.length;
     dashboardCard = `
       <button class="dashboard-card" onclick="go('recruit')">
         <div class="card-top">
@@ -876,6 +1924,13 @@ function renderDomain(domainId){
           <span class="dashboard-badge">실시간 · ${openCount}건</span>
         </div>
         <div class="card-desc">그룹별 포지션 상태·담당자·마감일을 바로 확인하고 갱신하는 운영 도구입니다.</div>
+      </button>
+      <button class="dashboard-card" onclick="go('jdmanage')">
+        <div class="card-top">
+          <span class="card-title">📋 JD 관리</span>
+          <span class="dashboard-badge">${jdCount}개 포지션</span>
+        </div>
+        <div class="card-desc">포지션별 채용공고(JD)를 추가·삭제·수정하고 그룹으로 묶어 관리합니다. 공통 항목(회사소개·복리후생·채용절차)은 한 곳에서만 관리됩니다.</div>
       </button>
     `;
   }
