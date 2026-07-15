@@ -3252,7 +3252,7 @@ let DATA = {
       "gender": "남",
       "hireDate": "2026-03-16",
       "deptMoveDate": "2026-03-16",
-      "rndActual": "N-R&D",
+      "rndActual": "R&D",
       "rndRegistered": "O"
     },
     {
@@ -7225,15 +7225,15 @@ function renderHeadcountDashboard(){
 
     <div class="chart-card">
       <h3>🔬 연구원 현황 (케이스별)</h3>
-      <p style="font-size:.83rem;color:var(--ink-soft);margin-top:0;">"실질 R&D 인력"은 실제로 연구개발 업무를 수행하는지 여부이고, "산기협 연구원 등록"은 기업부설연구소에 정식으로 연구원으로 등록되어 있는지 여부입니다. 두 기준이 항상 일치하지는 않아 4가지 경우로 나눠 보여드립니다.</p>
+      <p style="font-size:.83rem;color:var(--ink-soft);margin-top:0;"><b>기업부설연구소 정식 연구원</b>은 산기협에 등록된 사람만을 뜻합니다(아래 표의 "산기협 등록 O" 두 칸 = ${rr+nr}명이 정식 연구원 수). <b>실질 R&D 인력</b>은 실제로 연구개발 업무를 수행하는지 여부로, 주로 투자사에 R&D 인력 규모를 어필할 때 쓰는 자료입니다. 두 기준이 항상 일치하지는 않아 4가지 경우로 나눠 보여드립니다.</p>
       <div class="table-wrap"><table class="rnd-cross">
-        <thead><tr><th></th><th>산기협 등록 O</th><th>산기협 등록 X</th></tr></thead>
+        <thead><tr><th></th><th>산기협 등록 O (정식 연구원)</th><th>산기협 등록 X</th></tr></thead>
         <tbody>
           <tr><th>실질 R&D 인력</th><td class="hi">${rr}명</td><td>${rx}명</td></tr>
-          <tr><th>실질 R&D 아님</th><td>${nr}명</td><td class="lo">${nx}명</td></tr>
+          <tr><th>실질 R&D 아님</th><td class="hi">${nr}명</td><td class="lo">${nx}명</td></tr>
         </tbody>
       </table></div>
-      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">기업부설연구소 정식 연구원 수(산기협 등록 기준) = ${rr+nr}명 · 실질 R&D 인력 수 = ${rr+rx}명</p>
+      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">기업부설연구소 정식 연구원 수(산기협 등록 기준) = ${rr+nr}명 · 실질 R&D 인력 수(투자사 어필용) = ${rr+rx}명</p>
     </div>
 
     ${upcomingHtml}
