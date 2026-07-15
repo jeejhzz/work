@@ -6978,6 +6978,12 @@ async function runCandidateAnalysis(){
   candidateAnalyzing = true;
   candidateResult = null;
   render();
+  if (typeof pdfjsLib === 'undefined') {
+    candidateResult = { error: 'PDF 읽기 기능을 사용할 수 없는 화면입니다. 미리보기(채팅 안 링크)에서는 지원되지 않으니, 다운로드한 HR-업무매뉴얼.html 파일을 직접 열어서 사용해주세요.' };
+    candidateAnalyzing = false;
+    render();
+    return;
+  }
   try {
     let fullText = '';
     for (const f of candidateFiles) fullText += await extractPdfText(f) + '\n';
