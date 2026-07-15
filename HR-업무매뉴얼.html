@@ -1868,6 +1868,7 @@ function renderJdDetail(id){
     <div class="row-actions">
       <button class="btn primary" onclick="saveJdDetail('${id}')">저장</button>
       <button class="btn" onclick="copyFullJd('${id}')">전체 JD 복사</button>
+      <button class="btn" onclick="downloadJdWord('${id}')">📄 워드 파일로 다운로드</button>
       <button class="btn" onclick="deleteJdPosition('${id}')" style="color:var(--seal);">삭제</button>
       <span class="save-flag" id="jdDetailSaveFlag"></span>
     </div>
@@ -1922,6 +1923,46 @@ function assembleFullJd(id){
     c.closing,
   ].join('\n');
 }
+
+function downloadJdWord(id){
+  const p = findJd(id);
+  const c = DATA.jd.common;
+  const text = s => esc(s || '').replace(/\n/g, '<br>');
+  const bullets = arr => '<ul>' + (arr || []).map(x => `<li>${esc(x)}</li>`).join('') + '</ul>';
+  const html = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="utf-8">
+<title>${esc(p.title)}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
+<style>
+  body{ font-family:'맑은 고딕','Malgun Gothic',sans-serif; font-size:11pt; line-height:1.6; color:#222; }
+  h1{ font-size:20pt; margin:0 0 6pt; }
+  h2{ font-size:14pt; margin:22pt 0 6pt; border-bottom:1px solid #999; padding-bottom:3pt; }
+  ul{ margin:0 0 8pt; padding-left:20pt; }
+  li{ margin-bottom:4pt; }
+  p{ margin:0 0 10pt; }
+</style>
+</head>
+<body>
+<h1>${esc(p.title)}</h1>
+<h2>회사소개</h2><p>${text(c.companyIntro)}</p>
+<h2>직무소개</h2><p>${text(p.intro)}</p>
+<h2>담당업무</h2>${bullets(p.duties)}
+<h2>자격요건</h2>${bullets(p.qualifications)}
+<h2>우대사항</h2>${bullets(p.preferred)}
+<h2>복리후생</h2>${bullets(c.benefits)}
+<h2>채용절차</h2><p>${text(c.process)}</p>
+<p>${text(c.closing)}</p>
+</body>
+</html>`;
+  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `JD_${String(p.title).replace(/[\\/:*?"<>|]/g, '_')}.doc`;
+  a.click();
+}
+window.downloadJdWord = downloadJdWord;
 
 function copyFullJd(id){
   const text = assembleFullJd(id);
