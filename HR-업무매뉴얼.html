@@ -1924,42 +1924,138 @@ function assembleFullJd(id){
   ].join('\n');
 }
 
-function downloadJdWord(id){
+/* ============ 워드(.docx) 파일 생성 ============
+   .docx는 사실 ZIP 압축 파일이라, 압축 없이(STORE 방식) 직접 ZIP 바이트를
+   만들어서 진짜 워드 문서를 인터넷 연결이나 외부 라이브러리 없이 생성합니다. */
+function crc32(bytes){
+  let c, crc = 0xFFFFFFFF;
+  for (let i = 0; i < bytes.length; i++) {
+    c = (crc ^ bytes[i]) & 0xFF;
+    for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+    crc = (crc >>> 8) ^ c;
+  }
+  return (crc ^ 0xFFFFFFFF) >>> 0;
+}
+
+function makeZip(entries){
+  const enc = new TextEncoder();
+  const parts = [];
+  const centralParts = [];
+  let offset = 0;
+  entries.forEach(entry => {
+    const nameBytes = enc.encode(entry.name);
+    const data = entry.data;
+    const crc = crc32(data);
+    const size = data.length;
+
+    const local = new Uint8Array(30 + nameBytes.length);
+    const lv = new DataView(local.buffer);
+    lv.setUint32(0, 0x04034b50, true);
+    lv.setUint16(4, 20, true);
+    lv.setUint16(6, 0, true);
+    lv.setUint16(8, 0, true);
+    lv.setUint16(10, 0, true);
+    lv.setUint16(12, 0x21, true);
+    lv.setUint32(14, crc, true);
+    lv.setUint32(18, size, true);
+    lv.setUint32(22, size, true);
+    lv.setUint16(26, nameBytes.length, true);
+    lv.setUint16(28, 0, true);
+    local.set(nameBytes, 30);
+    parts.push(local, data);
+
+    const central = new Uint8Array(46 + nameBytes.length);
+    const cv = new DataView(central.buffer);
+    cv.setUint32(0, 0x02014b50, true);
+    cv.setUint16(4, 20, true);
+    cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0, true);
+    cv.setUint16(10, 0, true);
+    cv.setUint16(12, 0, true);
+    cv.setUint16(14, 0x21, true);
+    cv.setUint32(16, crc, true);
+    cv.setUint32(20, size, true);
+    cv.setUint32(24, size, true);
+    cv.setUint16(28, nameBytes.length, true);
+    cv.setUint16(30, 0, true);
+    cv.setUint16(32, 0, true);
+    cv.setUint16(34, 0, true);
+    cv.setUint16(36, 0, true);
+    cv.setUint32(38, 0, true);
+    cv.setUint32(42, offset, true);
+    central.set(nameBytes, 46);
+    centralParts.push(central);
+
+    offset += local.length + data.length;
+  });
+
+  const centralStart = offset;
+  const centralSize = centralParts.reduce((n, c) => n + c.length, 0);
+
+  const end = new Uint8Array(22);
+  const ev = new DataView(end.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(4, 0, true);
+  ev.setUint16(6, 0, true);
+  ev.setUint16(8, entries.length, true);
+  ev.setUint16(10, entries.length, true);
+  ev.setUint32(12, centralSize, true);
+  ev.setUint32(16, centralStart, true);
+  ev.setUint16(20, 0, true);
+
+  return new Blob([...parts, ...centralParts, end], { type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' });
+}
+
+function escXml(s){ return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+function docxPara(text, opts){
+  opts = opts || {};
+  const runProps = [];
+  if (opts.bold) runProps.push('<w:b/>');
+  if (opts.size) runProps.push(`<w:sz w:val="${opts.size}"/><w:szCs w:val="${opts.size}"/>`);
+  const rPr = runProps.length ? `<w:rPr>${runProps.join('')}</w:rPr>` : '';
+  const pPr = opts.spacingAfter !== undefined ? `<w:pPr><w:spacing w:after="${opts.spacingAfter}"/></w:pPr>` : '';
+  return `<w:p>${pPr}<w:r>${rPr}<w:t xml:space="preserve">${escXml(text)}</w:t></w:r></w:p>`;
+}
+function docxTitle(text){ return docxPara(text, { bold:true, size:40, spacingAfter:200 }); }
+function docxHeading(text){ return docxPara(text, { bold:true, size:28, spacingAfter:120 }); }
+function docxBullets(arr){ return (arr || []).map(x => docxPara('•  ' + x, { spacingAfter:60 })).join(''); }
+function docxMultiline(text){ return String(text || '').split('\n').filter(l => l.length).map(line => docxPara(line, { spacingAfter:80 })).join(''); }
+
+function buildJdDocumentXml(id){
   const p = findJd(id);
   const c = DATA.jd.common;
-  const text = s => esc(s || '').replace(/\n/g, '<br>');
-  const bullets = arr => '<ul>' + (arr || []).map(x => `<li>${esc(x)}</li>`).join('') + '</ul>';
-  const html = `<!DOCTYPE html>
-<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
-<head>
-<meta charset="utf-8">
-<title>${esc(p.title)}</title>
-<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View></w:WordDocument></xml><![endif]-->
-<style>
-  body{ font-family:'맑은 고딕','Malgun Gothic',sans-serif; font-size:11pt; line-height:1.6; color:#222; }
-  h1{ font-size:20pt; margin:0 0 6pt; }
-  h2{ font-size:14pt; margin:22pt 0 6pt; border-bottom:1px solid #999; padding-bottom:3pt; }
-  ul{ margin:0 0 8pt; padding-left:20pt; }
-  li{ margin-bottom:4pt; }
-  p{ margin:0 0 10pt; }
-</style>
-</head>
-<body>
-<h1>${esc(p.title)}</h1>
-<h2>회사소개</h2><p>${text(c.companyIntro)}</p>
-<h2>직무소개</h2><p>${text(p.intro)}</p>
-<h2>담당업무</h2>${bullets(p.duties)}
-<h2>자격요건</h2>${bullets(p.qualifications)}
-<h2>우대사항</h2>${bullets(p.preferred)}
-<h2>복리후생</h2>${bullets(c.benefits)}
-<h2>채용절차</h2><p>${text(c.process)}</p>
-<p>${text(c.closing)}</p>
-</body>
-</html>`;
-  const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
+  const body = [
+    docxTitle(p.title),
+    docxHeading('회사소개'), docxMultiline(c.companyIntro),
+    docxHeading('직무소개'), docxMultiline(p.intro),
+    docxHeading('담당업무'), docxBullets(p.duties),
+    docxHeading('자격요건'), docxBullets(p.qualifications),
+    docxHeading('우대사항'), docxBullets(p.preferred),
+    docxHeading('복리후생'), docxBullets(c.benefits),
+    docxHeading('채용절차'), docxMultiline(c.process),
+    docxMultiline(c.closing),
+  ].join('');
+  return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}<w:sectPr><w:pgSz w:w="11906" w:h="16838"/><w:pgMar w:top="1417" w:right="1417" w:bottom="1417" w:left="1417"/></w:sectPr></w:body></w:document>`;
+}
+
+const DOCX_CONTENT_TYPES = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>`;
+const DOCX_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>`;
+const DOCX_DOCUMENT_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`;
+
+function downloadJdWord(id){
+  const p = findJd(id);
+  const enc = new TextEncoder();
+  const entries = [
+    { name: '[Content_Types].xml', data: enc.encode(DOCX_CONTENT_TYPES) },
+    { name: '_rels/.rels', data: enc.encode(DOCX_RELS) },
+    { name: 'word/document.xml', data: enc.encode(buildJdDocumentXml(id)) },
+    { name: 'word/_rels/document.xml.rels', data: enc.encode(DOCX_DOCUMENT_RELS) },
+  ];
+  const blob = makeZip(entries);
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `JD_${String(p.title).replace(/[\\/:*?"<>|]/g, '_')}.doc`;
+  a.download = `JD_${String(p.title).replace(/[\\/:*?"<>|]/g, '_')}.docx`;
   a.click();
 }
 window.downloadJdWord = downloadJdWord;
