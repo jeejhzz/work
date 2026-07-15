@@ -199,6 +199,88 @@
   .match-evidence{ font-size:.83rem; color:var(--ink-soft); margin:.3rem 0 0; padding-left:1.1rem; }
   .match-evidence li{ margin-bottom:.4rem; line-height:1.55; }
   .match-evidence mark{ background:var(--accent-tint); color:var(--accent-strong); padding:0 .2em; border-radius:3px; }
+
+  :root{
+    --series-1:#2a78d6; --series-2:#008300; --series-3:#e87ba4; --series-4:#eda100; --series-5:#1baf7a; --series-6:#eb6834;
+    --age-1:#cfe3e2; --age-2:#8fb9b7; --age-3:#4f8e8b; --age-4:#1f4e52;
+    --org-ceo-bg:#f6ddc0; --org-ceo-ink:#8a5a1f; --org-div-bg:#e2dbf2; --org-div-ink:#5c4a8a;
+    --org-group-bg:#d7ece6; --org-group-ink:#1f4e52; --org-team-bg:#fdfcf9; --org-team-ink:#23241f;
+    --org-newhire-bg:#dcefe1; --org-newhire-ink:#2f7a4f; --org-move-bg:#f3e6cf; --org-move-ink:#a06a1f;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --series-1:#3987e5; --series-2:#3fbf3f; --series-3:#d55181; --series-4:#c98500; --series-5:#199e70; --series-6:#d95926;
+      --age-1:#233330; --age-2:#365f5c; --age-3:#5a938f; --age-4:#8ac9c2;
+      --org-ceo-bg:#4a3a24; --org-ceo-ink:#e6c690; --org-div-bg:#332a4a; --org-div-ink:#c6b8ec;
+      --org-group-bg:#20332f; --org-group-ink:#8ac9c2; --org-team-bg:#232420; --org-team-ink:#eae7de;
+      --org-newhire-bg:#1f3327; --org-newhire-ink:#7ecb99; --org-move-bg:#3a2f1c; --org-move-ink:#d9ac5c;
+    }
+  }
+
+  .stat-row{ display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:.8rem; margin:1rem 0 1.4rem; }
+  .stat-tile{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:.9rem 1.1rem; box-shadow:var(--shadow); }
+  .stat-tile .stat-label{ font-size:.78rem; color:var(--ink-soft); margin-bottom:.3rem; }
+  .stat-tile .stat-value{ font-family:var(--serif); font-size:1.6rem; font-weight:700; }
+  .stat-tile .stat-sub{ font-size:.75rem; color:var(--ink-faint); margin-top:.2rem; }
+
+  .chart-card{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:1.1rem 1.3rem; box-shadow:var(--shadow); margin-bottom:1.2rem; }
+  .chart-card h3{ font-size:.95rem; margin:0 0 .9rem; }
+  .bar-row{ display:flex; align-items:center; gap:.7rem; margin-bottom:.55rem; cursor:default; }
+  .bar-row .bar-label{ width:120px; flex:0 0 120px; font-size:.82rem; color:var(--ink-soft); text-align:right; }
+  .bar-row .bar-track{ flex:1; background:var(--line-soft); border-radius:4px; height:20px; position:relative; overflow:hidden; }
+  .bar-row .bar-fill{ height:100%; border-radius:4px; display:flex; align-items:center; }
+  .bar-row .bar-value{ width:70px; flex:0 0 70px; font-family:var(--mono); font-size:.8rem; color:var(--ink); }
+  .bar-row.clickable{ cursor:pointer; }
+  .bar-row.clickable:hover .bar-label{ color:var(--accent-strong); text-decoration:underline; }
+  .stack-bar{ display:flex; height:28px; border-radius:6px; overflow:hidden; }
+  .stack-bar > div{ display:flex; align-items:center; justify-content:center; font-size:.78rem; color:#fff; font-weight:600; }
+  .legend-row{ display:flex; flex-wrap:wrap; gap:.9rem; margin-top:.7rem; font-size:.8rem; color:var(--ink-soft); }
+  .legend-row .sw{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:.4em; vertical-align:middle; }
+  .breadcrumb-mini{ font-size:.8rem; color:var(--ink-soft); margin-bottom:.7rem; }
+  .breadcrumb-mini button{ background:none; border:none; color:var(--accent-strong); cursor:pointer; font-size:.8rem; padding:0; text-decoration:underline; }
+
+  .rnd-cross{ width:100%; border-collapse:collapse; font-size:.85rem; }
+  .rnd-cross th,.rnd-cross td{ border:1px solid var(--line); padding:.6rem .8rem; text-align:center; }
+  .rnd-cross th{ background:var(--line-soft); font-weight:600; }
+  .rnd-cross td.hi{ background:var(--st-final-bg); color:var(--st-final); font-weight:700; }
+  .rnd-cross td.lo{ color:var(--ink-faint); }
+
+  .upcoming-list{ font-size:.85rem; color:var(--ink-soft); }
+  .upcoming-list .up-chip{ display:inline-block; background:var(--line-soft); border-radius:999px; padding:.25em .8em; margin:.2em .3em .2em 0; }
+
+  /* 조직도 */
+  .orgchart-toolbar{ display:flex; gap:.6rem; align-items:center; margin-bottom:1rem; flex-wrap:wrap; }
+  .orgchart-wrap{ overflow-x:auto; padding-bottom:1rem; }
+  .org-tree{ display:flex; gap:1.4rem; align-items:flex-start; min-width:max-content; padding:.5rem; }
+  .org-col{ display:flex; flex-direction:column; align-items:center; }
+  .org-box{ border-radius:10px; padding:.55rem .9rem; min-width:150px; text-align:center; box-shadow:var(--shadow); position:relative; }
+  .org-box.lvl-본부{ background:var(--org-div-bg); color:var(--org-div-ink); }
+  .org-box.lvl-그룹{ background:var(--org-group-bg); color:var(--org-group-ink); }
+  .org-box.lvl-팀{ background:var(--org-team-bg); color:var(--org-team-ink); border:1px solid var(--line); }
+  .org-box.lvl-Part{ background:var(--org-team-bg); color:var(--org-team-ink); border:1px dashed var(--line); }
+  .org-box .org-box-name{ font-weight:700; font-size:.88rem; }
+  .org-box .org-box-leader{ font-size:.82rem; margin-top:.1rem; }
+  .org-box .org-box-count{ font-family:var(--mono); font-size:.72rem; opacity:.75; margin-top:.15rem; }
+  .org-box .org-edit-btn{ position:absolute; top:-8px; right:-8px; width:20px; height:20px; border-radius:50%; border:1px solid var(--line); background:var(--paper-raised); font-size:.7rem; cursor:pointer; line-height:1; display:none; align-items:center; justify-content:center; }
+  .org-box:hover .org-edit-btn{ display:flex; }
+  .org-children{ display:flex; gap:1rem; margin-top:1rem; padding-top:1rem; border-top:1px solid var(--line); position:relative; }
+  .org-children::before{ content:''; }
+  .org-member-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(78px,1fr)); gap:.35rem; margin-top:.6rem; width:100%; }
+  .org-member-chip{ font-size:.72rem; background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:.25rem .4rem; text-align:center; cursor:pointer; }
+  .org-member-chip.new-hire{ background:var(--org-newhire-bg); color:var(--org-newhire-ink); border-color:transparent; }
+  .org-member-chip.dept-move{ background:var(--org-move-bg); color:var(--org-move-ink); border-color:transparent; }
+  .org-member-chip .tag{ font-size:.65rem; opacity:.8; }
+  .org-legend{ display:flex; flex-wrap:wrap; gap:1rem; font-size:.78rem; color:var(--ink-soft); margin-top:1rem; padding:.7rem 1rem; background:var(--paper); border:1px solid var(--line); border-radius:8px; }
+  .org-legend .sw{ display:inline-block; width:14px; height:14px; border-radius:3px; margin-right:.4em; vertical-align:middle; }
+  .org-edit-panel{ border:1px solid var(--accent); border-radius:10px; background:var(--accent-tint); padding:1rem 1.2rem; margin-bottom:1.2rem; }
+  .org-edit-panel h4{ margin:0 0 .7rem; font-size:.9rem; }
+  .org-edit-panel .field{ margin-bottom:.6rem; }
+  .org-edit-panel label{ display:block; font-size:.78rem; color:var(--ink-soft); margin-bottom:.2rem; }
+  .org-edit-panel input[type=text],.org-edit-panel select{ width:100%; padding:.4rem .6rem; border:1px solid var(--line); border-radius:6px; font-family:var(--sans); font-size:.85rem; background:var(--paper-raised); color:var(--ink); }
+  .org-member-row{ display:flex; gap:.5rem; align-items:center; margin-bottom:.4rem; }
+  .org-member-row input{ flex:1; }
+  .org-member-row .tag-btn{ font-size:.7rem; padding:.2rem .5rem; border-radius:999px; border:1px solid var(--line); background:var(--paper-raised); cursor:pointer; }
+  .org-member-row .tag-btn.active{ background:var(--accent); color:#fff; border-color:var(--accent); }
 </style>
 </head>
 <body>
@@ -1208,6 +1290,4681 @@ let DATA = {
       "group": ""
     }
   ]
+},
+  "headcount": {
+  "asOf": "2026-07-15",
+  "people": [
+    {
+      "empId": "DN23070101",
+      "name": "정무경",
+      "type": "임원",
+      "org": [
+        "CEO 직속"
+      ],
+      "title": "CEO",
+      "age": 50,
+      "gender": "남",
+      "hireDate": "2023-07-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN23090101",
+      "name": "손준혁",
+      "type": "임원",
+      "org": [
+        "경영기획본부"
+      ],
+      "title": "COO",
+      "age": 52,
+      "gender": "남",
+      "hireDate": "2023-09-01",
+      "deptMoveDate": null,
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN23100103",
+      "name": "박용운",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Eng.팀"
+      ],
+      "title": "팀장",
+      "age": 46,
+      "gender": "남",
+      "hireDate": "2023-10-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN23100102",
+      "name": "김제민",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "LLM팀"
+      ],
+      "title": null,
+      "age": 48,
+      "gender": "남",
+      "hireDate": "2023-10-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN23100101",
+      "name": "구성학",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "재무팀"
+      ],
+      "title": "팀장",
+      "age": 51,
+      "gender": "남",
+      "hireDate": "2023-10-01",
+      "deptMoveDate": "2026-04-06",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN23110102",
+      "name": "이승재",
+      "type": "임원",
+      "org": [
+        "R&D센터",
+        "AI그룹"
+      ],
+      "title": "CAIO",
+      "age": 45,
+      "gender": "남",
+      "hireDate": "2023-11-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN23120103",
+      "name": "조두현",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 37,
+      "gender": "남",
+      "hireDate": "2023-12-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN23120101",
+      "name": "문성현",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 39,
+      "gender": "남",
+      "hireDate": "2023-12-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN23121101",
+      "name": "차정훈",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 30,
+      "gender": "남",
+      "hireDate": "2023-12-11",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN23121801",
+      "name": "정지원",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "재무팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "여",
+      "hireDate": "2023-12-18",
+      "deptMoveDate": null,
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24010101",
+      "name": "이정엄",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "Applied Product팀"
+      ],
+      "title": "팀장",
+      "age": 49,
+      "gender": "남",
+      "hireDate": "2024-01-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24010801",
+      "name": "이재운",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "인사팀"
+      ],
+      "title": null,
+      "age": 43,
+      "gender": "남",
+      "hireDate": "2024-01-08",
+      "deptMoveDate": null,
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24011601",
+      "name": "김영일",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "HW P.팀"
+      ],
+      "title": null,
+      "age": 37,
+      "gender": "남",
+      "hireDate": "2024-01-16",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24011701",
+      "name": "노홍찬",
+      "type": "임원",
+      "org": [
+        "사업본부"
+      ],
+      "title": "본부장(CDO)",
+      "age": 47,
+      "gender": "남",
+      "hireDate": "2024-01-17",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24021901",
+      "name": "조명훈",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 49,
+      "gender": "남",
+      "hireDate": "2024-02-19",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24022101",
+      "name": "남무현",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀"
+      ],
+      "title": "팀장",
+      "age": 36,
+      "gender": "남",
+      "hireDate": "2024-02-21",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24030104",
+      "name": "함은경",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design2팀"
+      ],
+      "title": null,
+      "age": 27,
+      "gender": "여",
+      "hireDate": "2024-03-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24030105",
+      "name": "전유진",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "여",
+      "hireDate": "2024-03-01",
+      "deptMoveDate": "2016-01-01",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24030102",
+      "name": "Aidyn",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2024-03-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24030101",
+      "name": "김현진",
+      "type": "정규직",
+      "org": [
+        "R&D센터"
+      ],
+      "title": null,
+      "age": 48,
+      "gender": "남",
+      "hireDate": "2024-03-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24031801",
+      "name": "박영민",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "Applied Product팀"
+      ],
+      "title": null,
+      "age": 44,
+      "gender": "남",
+      "hireDate": "2024-03-18",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24032501",
+      "name": "박상길",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "LLM팀"
+      ],
+      "title": "팀장",
+      "age": 49,
+      "gender": "남",
+      "hireDate": "2024-03-25",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24041502",
+      "name": "오세현",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "인덱스 Part"
+      ],
+      "title": "파트리더",
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2024-04-15",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24041501",
+      "name": "서정원",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 47,
+      "gender": "남",
+      "hireDate": "2024-04-15",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24043001",
+      "name": "장수형",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "AI Platform팀",
+        "Optimization Part"
+      ],
+      "title": "팀장",
+      "age": 48,
+      "gender": "남",
+      "hireDate": "2024-04-30",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24050101",
+      "name": "양대곤",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": "팀장",
+      "age": 34,
+      "gender": "남",
+      "hireDate": "2024-05-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24062501",
+      "name": "조현수",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "DB Part"
+      ],
+      "title": null,
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2024-06-25",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24070105",
+      "name": "박상현",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Vector Platform팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "남",
+      "hireDate": "2024-07-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24070102",
+      "name": "박동규",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "남",
+      "hireDate": "2024-07-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24070103",
+      "name": "정주현",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "DB Part"
+      ],
+      "title": "파트리더",
+      "age": 37,
+      "gender": "남",
+      "hireDate": "2024-07-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24070104",
+      "name": "이정엽",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "LLM팀"
+      ],
+      "title": null,
+      "age": 45,
+      "gender": "남",
+      "hireDate": "2024-07-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24070101",
+      "name": "양세현",
+      "type": "임원",
+      "org": [
+        "R&D센터"
+      ],
+      "title": "CTO",
+      "age": 51,
+      "gender": "남",
+      "hireDate": "2024-07-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24071501",
+      "name": "김철원",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Eng.팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2024-07-15",
+      "deptMoveDate": "2026-01-06",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24071502",
+      "name": "차민영",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "프로젝트기획팀"
+      ],
+      "title": "팀장",
+      "age": 41,
+      "gender": "여",
+      "hireDate": "2024-07-15",
+      "deptMoveDate": null,
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24072201",
+      "name": "강영석",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "DV팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2024-07-22",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24072901",
+      "name": "김성욱",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "Applied Product팀"
+      ],
+      "title": null,
+      "age": 49,
+      "gender": "남",
+      "hireDate": "2024-07-29",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24080104",
+      "name": "성진우",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "Applied Product팀"
+      ],
+      "title": null,
+      "age": 33,
+      "gender": "남",
+      "hireDate": "2024-08-01",
+      "deptMoveDate": "2025-09-15",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24080105",
+      "name": "천종민",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design2팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2024-08-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24080103",
+      "name": "이종성",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 46,
+      "gender": "남",
+      "hireDate": "2024-08-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24080101",
+      "name": "김진우",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "지원팀"
+      ],
+      "title": "팀장",
+      "age": 52,
+      "gender": "남",
+      "hireDate": "2024-08-01",
+      "deptMoveDate": "2026-04-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24082601",
+      "name": "남수민",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "PR팀"
+      ],
+      "title": "팀장",
+      "age": 40,
+      "gender": "여",
+      "hireDate": "2024-08-26",
+      "deptMoveDate": "2025-09-15",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN24090101",
+      "name": "강동현",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Arch팀"
+      ],
+      "title": null,
+      "age": 33,
+      "gender": "남",
+      "hireDate": "2024-09-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24090104",
+      "name": "변우석",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Arch팀"
+      ],
+      "title": null,
+      "age": 36,
+      "gender": "남",
+      "hireDate": "2024-09-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24090105",
+      "name": "양희철",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "AI Platform팀",
+        "Runtime Part"
+      ],
+      "title": "파트리더",
+      "age": 38,
+      "gender": "남",
+      "hireDate": "2024-09-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24090103",
+      "name": "문승모",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀"
+      ],
+      "title": "팀장",
+      "age": 41,
+      "gender": "남",
+      "hireDate": "2024-09-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24090106",
+      "name": "이동현",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Vector Platform팀"
+      ],
+      "title": "팀장",
+      "age": 42,
+      "gender": "남",
+      "hireDate": "2024-09-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24090102",
+      "name": "권지웅",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹"
+      ],
+      "title": "그룹장",
+      "age": 50,
+      "gender": "남",
+      "hireDate": "2024-09-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24092301",
+      "name": "이창희",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "HW P.팀"
+      ],
+      "title": "팀장",
+      "age": 48,
+      "gender": "남",
+      "hireDate": "2024-09-23",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24092601",
+      "name": "손현욱",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "DV팀"
+      ],
+      "title": null,
+      "age": 30,
+      "gender": "남",
+      "hireDate": "2024-09-26",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24100105",
+      "name": "김준형",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "DV팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "남",
+      "hireDate": "2024-10-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24100106",
+      "name": "박내범",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Arch팀"
+      ],
+      "title": null,
+      "age": 33,
+      "gender": "남",
+      "hireDate": "2024-10-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24100107",
+      "name": "최인준",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀",
+        "Engine IP Part"
+      ],
+      "title": "파트리더",
+      "age": 37,
+      "gender": "남",
+      "hireDate": "2024-10-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24100201",
+      "name": "손진우",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "AI Platform팀",
+        "Optimization Part"
+      ],
+      "title": null,
+      "age": 40,
+      "gender": "남",
+      "hireDate": "2024-10-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24100103",
+      "name": "정성훈",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "DV팀"
+      ],
+      "title": "팀장",
+      "age": 44,
+      "gender": "남",
+      "hireDate": "2024-10-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24102101",
+      "name": "김성희",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "남",
+      "hireDate": "2024-10-21",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24110103",
+      "name": "문진석",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "AI Platform팀",
+        "Runtime Part"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "남",
+      "hireDate": "2024-11-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24110101",
+      "name": "김주호",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "DB Part"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2024-11-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24110104",
+      "name": "어성욱",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Arch팀"
+      ],
+      "title": null,
+      "age": 38,
+      "gender": "남",
+      "hireDate": "2024-11-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24110102",
+      "name": "노창구",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "DV팀"
+      ],
+      "title": null,
+      "age": 44,
+      "gender": "남",
+      "hireDate": "2024-11-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN24110106",
+      "name": "이동훈",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀"
+      ],
+      "title": null,
+      "age": 53,
+      "gender": "남",
+      "hireDate": "2024-11-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DT24122301",
+      "name": "권윤옥",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "DB Part"
+      ],
+      "title": null,
+      "age": 34,
+      "gender": "여",
+      "hireDate": "2024-12-23",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25010102",
+      "name": "임근우",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2025-01-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25010103",
+      "name": "임종혁",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 36,
+      "gender": "남",
+      "hireDate": "2025-01-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25010104",
+      "name": "한병전",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹"
+      ],
+      "title": "그룹장",
+      "age": 42,
+      "gender": "남",
+      "hireDate": "2025-01-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25010101",
+      "name": "기정수",
+      "type": "정규직",
+      "org": [
+        "CEO 직속",
+        "DC 사업개발실"
+      ],
+      "title": "실장",
+      "age": 55,
+      "gender": "남",
+      "hireDate": "2025-01-01",
+      "deptMoveDate": "2026-07-08",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25010601",
+      "name": "손성용",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "인사팀"
+      ],
+      "title": "팀장",
+      "age": 37,
+      "gender": "남",
+      "hireDate": "2025-01-06",
+      "deptMoveDate": null,
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT25021001",
+      "name": "박관우",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "Applied Product팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "남",
+      "hireDate": "2025-02-10",
+      "deptMoveDate": "2026-04-08",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25022401",
+      "name": "우고은",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design2팀"
+      ],
+      "title": null,
+      "age": 25,
+      "gender": "여",
+      "hireDate": "2025-02-24",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DT25030104",
+      "name": "황재상",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 26,
+      "gender": "남",
+      "hireDate": "2025-03-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25030102",
+      "name": "장건희",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "DV팀"
+      ],
+      "title": null,
+      "age": 27,
+      "gender": "남",
+      "hireDate": "2025-03-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25031001",
+      "name": "김은서",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "여",
+      "hireDate": "2025-03-10",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DO25031702",
+      "name": "나동준",
+      "type": "전문연구요원",
+      "org": [
+        "R&D센터",
+        "Eng.팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "남",
+      "hireDate": "2025-03-17",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DO25040103",
+      "name": "황영진",
+      "type": "전문연구요원",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 26,
+      "gender": "남",
+      "hireDate": "2025-04-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25040102",
+      "name": "이민철",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 34,
+      "gender": "남",
+      "hireDate": "2025-04-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25040101",
+      "name": "신주한",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "DB Part"
+      ],
+      "title": null,
+      "age": 41,
+      "gender": "남",
+      "hireDate": "2025-04-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DO25042101",
+      "name": "김유찬",
+      "type": "전문연구요원",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Vector Platform팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "남",
+      "hireDate": "2025-04-21",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DO25042102",
+      "name": "이태준",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Vector Platform팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "남",
+      "hireDate": "2025-04-21",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25042301",
+      "name": "성한승",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "인덱스 Part"
+      ],
+      "title": null,
+      "age": 36,
+      "gender": "남",
+      "hireDate": "2025-04-23",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25042801",
+      "name": "지준희",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "인사팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "남",
+      "hireDate": "2025-04-28",
+      "deptMoveDate": null,
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DO25050701",
+      "name": "한동훈",
+      "type": "전문연구요원",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 30,
+      "gender": "남",
+      "hireDate": "2025-05-07",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25050702",
+      "name": "한재흥",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Eng.팀"
+      ],
+      "title": null,
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2025-05-07",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25051203",
+      "name": "연지은",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "해외사업팀"
+      ],
+      "title": null,
+      "age": 34,
+      "gender": "여",
+      "hireDate": "2025-05-12",
+      "deptMoveDate": "2026-07-08",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25051202",
+      "name": "박형준",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "해외사업팀"
+      ],
+      "title": "팀장",
+      "age": 47,
+      "gender": "남",
+      "hireDate": "2025-05-12",
+      "deptMoveDate": "2025-12-26",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25051201",
+      "name": "Ranjit",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": "팀장",
+      "age": 50,
+      "gender": "남",
+      "hireDate": "2025-05-12",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25051901",
+      "name": "송경태",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2025-05-19",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25052201",
+      "name": "이장원",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹"
+      ],
+      "title": "그룹장",
+      "age": 51,
+      "gender": "남",
+      "hireDate": "2025-05-22",
+      "deptMoveDate": "2025-09-15",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25060101",
+      "name": "김영윤",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2025-06-01",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25060401",
+      "name": "최지혁",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design2팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "남",
+      "hireDate": "2025-06-04",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25062301",
+      "name": "김규리",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "재무팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "여",
+      "hireDate": "2025-06-23",
+      "deptMoveDate": "2026-04-06",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25070101",
+      "name": "양동석",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "기술관리팀"
+      ],
+      "title": "팀장",
+      "age": 40,
+      "gender": "남",
+      "hireDate": "2025-07-01",
+      "deptMoveDate": "2025-09-15",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25080401",
+      "name": "이우철",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 36,
+      "gender": "남",
+      "hireDate": "2025-08-04",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25082501",
+      "name": "신현우",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "Applied Product팀"
+      ],
+      "title": null,
+      "age": 44,
+      "gender": "남",
+      "hireDate": "2025-08-25",
+      "deptMoveDate": null,
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25090101",
+      "name": "심지은",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "법무 Part"
+      ],
+      "title": null,
+      "age": 38,
+      "gender": "여",
+      "hireDate": "2025-09-01",
+      "deptMoveDate": "2026-07-08",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT25091501",
+      "name": "박수연",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "해외사업팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "여",
+      "hireDate": "2025-09-15",
+      "deptMoveDate": "2026-07-08",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25091501",
+      "name": "김남곤",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "AI Tech팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "남",
+      "hireDate": "2025-09-15",
+      "deptMoveDate": "2025-09-15",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25091502",
+      "name": "김현식",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "AI Tech팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2025-09-15",
+      "deptMoveDate": "2025-09-15",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25092901",
+      "name": "한채린",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "인사팀"
+      ],
+      "title": null,
+      "age": 26,
+      "gender": "여",
+      "hireDate": "2025-09-29",
+      "deptMoveDate": "2025-09-29",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25092902",
+      "name": "권효상",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "경영기획팀"
+      ],
+      "title": null,
+      "age": 37,
+      "gender": "남",
+      "hireDate": "2025-09-29",
+      "deptMoveDate": "2026-05-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25110301",
+      "name": "김영로",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Agent팀"
+      ],
+      "title": null,
+      "age": 37,
+      "gender": "남",
+      "hireDate": "2025-11-03",
+      "deptMoveDate": "2026-04-21",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN25112401",
+      "name": "김보경",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "사업기획팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "여",
+      "hireDate": "2025-11-24",
+      "deptMoveDate": "2025-11-24",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25121901",
+      "name": "김언정",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "지원팀"
+      ],
+      "title": null,
+      "age": 39,
+      "gender": "여",
+      "hireDate": "2025-12-19",
+      "deptMoveDate": "2025-12-19",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN25122201",
+      "name": "권기룡",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "기술관리팀"
+      ],
+      "title": null,
+      "age": 50,
+      "gender": "남",
+      "hireDate": "2025-12-22",
+      "deptMoveDate": "2025-12-22",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26010101",
+      "name": "전재현",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "기술관리팀"
+      ],
+      "title": null,
+      "age": 30,
+      "gender": "남",
+      "hireDate": "2026-01-01",
+      "deptMoveDate": "2026-01-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26010101",
+      "name": "백진환",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Arch팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2026-01-01",
+      "deptMoveDate": "2026-01-01",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DI26010501",
+      "name": "서지민",
+      "type": "단시간근로자",
+      "org": [
+        "경영기획본부",
+        "인사팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "여",
+      "hireDate": "2026-01-05",
+      "deptMoveDate": "2026-01-05",
+      "rndActual": null,
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26010601",
+      "name": "윤희진",
+      "type": "인턴",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "인덱스 Part"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "여",
+      "hireDate": "2026-01-06",
+      "deptMoveDate": "2026-01-06",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DI26020201",
+      "name": "최형민",
+      "type": "단시간근로자",
+      "org": [
+        "경영기획본부",
+        "인사팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "여",
+      "hireDate": "2026-02-02",
+      "deptMoveDate": "2026-02-02",
+      "rndActual": null,
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26020202",
+      "name": "최형석",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "DB Part"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2026-02-02",
+      "deptMoveDate": "2026-02-02",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26020201",
+      "name": "박재우",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "기술관리팀"
+      ],
+      "title": null,
+      "age": 39,
+      "gender": "남",
+      "hireDate": "2026-02-02",
+      "deptMoveDate": "2026-02-02",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26020401",
+      "name": "곽동우",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "AI Platform팀",
+        "Optimization Part"
+      ],
+      "title": null,
+      "age": 34,
+      "gender": "남",
+      "hireDate": "2026-02-04",
+      "deptMoveDate": "2026-02-04",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26022301",
+      "name": "배우진",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "고객사업그룹",
+        "금융엔터사업팀"
+      ],
+      "title": "팀장",
+      "age": 44,
+      "gender": "남",
+      "hireDate": "2026-02-23",
+      "deptMoveDate": "2026-02-23",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26030101",
+      "name": "오승근",
+      "type": "정규직",
+      "org": [
+        "CEO 직속",
+        "DC 사업개발실"
+      ],
+      "title": null,
+      "age": 53,
+      "gender": "남",
+      "hireDate": "2026-03-01",
+      "deptMoveDate": "2026-03-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26030102",
+      "name": "김승원",
+      "type": "정규직",
+      "org": [
+        "CEO 직속",
+        "DC 사업개발실"
+      ],
+      "title": null,
+      "age": 45,
+      "gender": "남",
+      "hireDate": "2026-03-01",
+      "deptMoveDate": "2026-03-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26030103",
+      "name": "조동규",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 34,
+      "gender": "남",
+      "hireDate": "2026-03-01",
+      "deptMoveDate": "2026-03-01",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26030901",
+      "name": "하지현",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "경영기획팀"
+      ],
+      "title": "팀장",
+      "age": 42,
+      "gender": "여",
+      "hireDate": "2026-03-09",
+      "deptMoveDate": "2026-05-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26031601",
+      "name": "김시연",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀",
+        "Engine IP Part"
+      ],
+      "title": null,
+      "age": 30,
+      "gender": "남",
+      "hireDate": "2026-03-16",
+      "deptMoveDate": "2026-03-16",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26031602",
+      "name": "안우진",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "HW P.팀"
+      ],
+      "title": null,
+      "age": 42,
+      "gender": "남",
+      "hireDate": "2026-03-16",
+      "deptMoveDate": "2026-03-16",
+      "rndActual": "N-R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26032301",
+      "name": "한광신",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "고객사업그룹",
+        "금융엔터사업팀"
+      ],
+      "title": null,
+      "age": 56,
+      "gender": "남",
+      "hireDate": "2026-03-23",
+      "deptMoveDate": "2026-03-23",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26032601",
+      "name": "성기화",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "고객사업그룹",
+        "공공사업팀"
+      ],
+      "title": null,
+      "age": 51,
+      "gender": "남",
+      "hireDate": "2026-03-26",
+      "deptMoveDate": "2026-03-26",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26040101",
+      "name": "장철영",
+      "type": "정규직",
+      "org": [
+        "CEO 직속",
+        "DC 사업개발실"
+      ],
+      "title": null,
+      "age": 54,
+      "gender": "남",
+      "hireDate": "2026-04-01",
+      "deptMoveDate": "2026-07-08",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26040102",
+      "name": "김형록",
+      "type": "정규직",
+      "org": [
+        "CEO 직속",
+        "DC 사업개발실"
+      ],
+      "title": null,
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2026-04-01",
+      "deptMoveDate": "2026-04-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26040103",
+      "name": "최성진",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "프로젝트기획팀"
+      ],
+      "title": null,
+      "age": 34,
+      "gender": "여",
+      "hireDate": "2026-04-01",
+      "deptMoveDate": "2026-04-01",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26040601",
+      "name": "김동범",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "인사팀"
+      ],
+      "title": null,
+      "age": 26,
+      "gender": "남",
+      "hireDate": "2026-04-06",
+      "deptMoveDate": "2026-04-06",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26041001",
+      "name": "박철희",
+      "type": "계약직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "사업기획팀"
+      ],
+      "title": null,
+      "age": 45,
+      "gender": "여",
+      "hireDate": "2026-04-10",
+      "deptMoveDate": "2026-04-10",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26041301",
+      "name": "정창욱",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Agent팀"
+      ],
+      "title": null,
+      "age": 39,
+      "gender": "남",
+      "hireDate": "2026-04-13",
+      "deptMoveDate": "2026-04-21",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DO26042001",
+      "name": "남예현",
+      "type": "전문연구요원",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "인덱스 Part"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "남",
+      "hireDate": "2026-04-20",
+      "deptMoveDate": "2026-04-20",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26042101",
+      "name": "유철호",
+      "type": "정규직",
+      "org": [
+        "CEO 직속",
+        "전략팀"
+      ],
+      "title": null,
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2026-04-21",
+      "deptMoveDate": "2026-04-21",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DO26042701",
+      "name": "정민섭",
+      "type": "전문연구요원",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "LLM팀"
+      ],
+      "title": null,
+      "age": 26,
+      "gender": "남",
+      "hireDate": "2026-04-27",
+      "deptMoveDate": "2026-04-27",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26042702",
+      "name": "정문권",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "HW P.팀"
+      ],
+      "title": null,
+      "age": 40,
+      "gender": "남",
+      "hireDate": "2026-04-27",
+      "deptMoveDate": "2026-04-27",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DT26042701",
+      "name": "진민우",
+      "type": "인턴",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "남",
+      "hireDate": "2026-04-27",
+      "deptMoveDate": "2026-04-27",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26050601",
+      "name": "정연우",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "Vector Platform팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2026-05-06",
+      "deptMoveDate": "2026-05-06",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DT26051101",
+      "name": "최정인",
+      "type": "인턴",
+      "org": [
+        "CEO 직속",
+        "전략팀"
+      ],
+      "title": null,
+      "age": 29,
+      "gender": "여",
+      "hireDate": "2026-05-11",
+      "deptMoveDate": "2026-05-11",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26051801",
+      "name": "송지환",
+      "type": "인턴",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀"
+      ],
+      "title": null,
+      "age": 27,
+      "gender": "남",
+      "hireDate": "2026-05-18",
+      "deptMoveDate": "2026-05-18",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26051802",
+      "name": "유한울",
+      "type": "인턴",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "사업기획팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "여",
+      "hireDate": "2026-05-18",
+      "deptMoveDate": "2026-05-18",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26052101",
+      "name": "서지희",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀"
+      ],
+      "title": null,
+      "age": 27,
+      "gender": "여",
+      "hireDate": "2026-05-21",
+      "deptMoveDate": "2026-05-21",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26052601",
+      "name": "유흥식",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "AI Tech팀"
+      ],
+      "title": null,
+      "age": 43,
+      "gender": "남",
+      "hireDate": "2026-05-26",
+      "deptMoveDate": "2026-05-26",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26060101",
+      "name": "백승록",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "Storage/Cloud팀"
+      ],
+      "title": null,
+      "age": 31,
+      "gender": "남",
+      "hireDate": "2026-06-01",
+      "deptMoveDate": "2026-06-01",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26060102",
+      "name": "양재원",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "AI Tech팀"
+      ],
+      "title": null,
+      "age": 35,
+      "gender": "남",
+      "hireDate": "2026-06-01",
+      "deptMoveDate": "2026-06-01",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26060101",
+      "name": "서승연",
+      "type": "인턴",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 26,
+      "gender": "여",
+      "hireDate": "2026-06-01",
+      "deptMoveDate": "2026-06-01",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26060801",
+      "name": "이민희",
+      "type": "정규직",
+      "org": [
+        "CEO 직속",
+        "전략팀"
+      ],
+      "title": null,
+      "age": 30,
+      "gender": "남",
+      "hireDate": "2026-06-08",
+      "deptMoveDate": "2026-06-08",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26060802",
+      "name": "김벼리",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀",
+        "Engine IP Part"
+      ],
+      "title": null,
+      "age": 27,
+      "gender": "여",
+      "hireDate": "2026-06-08",
+      "deptMoveDate": "2026-06-08",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26060803",
+      "name": "손광섭",
+      "type": "정규직",
+      "org": [
+        "경영전략본부",
+        "재무팀"
+      ],
+      "title": null,
+      "age": 33,
+      "gender": "남",
+      "hireDate": "2026-06-08",
+      "deptMoveDate": "2026-06-08",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26062201",
+      "name": "김주호",
+      "type": "정규직",
+      "org": [
+        "사업본부"
+      ],
+      "title": null,
+      "age": 49,
+      "gender": "남",
+      "hireDate": "2026-06-22",
+      "deptMoveDate": "2026-06-22",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DT26062201",
+      "name": "윤표진",
+      "type": "인턴",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "남",
+      "hireDate": "2026-06-22",
+      "deptMoveDate": "2026-06-22",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26070101",
+      "name": "박정희",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Eng.팀"
+      ],
+      "title": null,
+      "age": 32,
+      "gender": "남",
+      "hireDate": "2026-07-01",
+      "deptMoveDate": "2026-07-01",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DN26070102",
+      "name": "김기태",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "Core그룹",
+        "S.SW팀"
+      ],
+      "title": null,
+      "age": 27,
+      "gender": "남",
+      "hireDate": "2026-07-01",
+      "deptMoveDate": "2026-07-01",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DT26070101",
+      "name": "이성진",
+      "type": "인턴",
+      "org": [
+        "R&D센터",
+        "AI그룹",
+        "Algo.팀"
+      ],
+      "title": null,
+      "age": 24,
+      "gender": "남",
+      "hireDate": "2026-07-01",
+      "deptMoveDate": "2026-07-01",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26070102",
+      "name": "최다원",
+      "type": "인턴",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀"
+      ],
+      "title": null,
+      "age": 25,
+      "gender": "여",
+      "hireDate": "2026-07-01",
+      "deptMoveDate": "2026-07-01",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DT26070103",
+      "name": "정민",
+      "type": "인턴",
+      "org": [
+        "R&D센터"
+      ],
+      "title": null,
+      "age": 25,
+      "gender": "여",
+      "hireDate": "2026-07-01",
+      "deptMoveDate": "2026-07-01",
+      "rndActual": "R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26070801",
+      "name": "이정훈",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "고객사업그룹"
+      ],
+      "title": "그룹장",
+      "age": 55,
+      "gender": "남",
+      "hireDate": "2026-07-08",
+      "deptMoveDate": "2026-07-08",
+      "rndActual": "N-R&D",
+      "rndRegistered": "X"
+    },
+    {
+      "empId": "DN26071301",
+      "name": "최항석",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design2팀"
+      ],
+      "title": "팀장",
+      "age": 50,
+      "gender": "남",
+      "hireDate": "2026-07-13",
+      "deptMoveDate": "2026-07-13",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    },
+    {
+      "empId": "DO26071501",
+      "name": "오호빈",
+      "type": "전문연구요원",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "Design1팀",
+        "Engine IP Part"
+      ],
+      "title": null,
+      "age": 24,
+      "gender": "남",
+      "hireDate": "2026-07-15",
+      "deptMoveDate": "2026-07-15",
+      "rndActual": "R&D",
+      "rndRegistered": "O"
+    }
+  ],
+  "upcoming": [
+    {
+      "empId": "DN26072001",
+      "name": "정미옥",
+      "type": "정규직",
+      "org": [
+        "경영기획본부",
+        "경영기획팀"
+      ],
+      "title": null,
+      "age": 36,
+      "gender": "여",
+      "hireDate": "2026-07-20",
+      "deptMoveDate": "2026-07-20",
+      "rndActual": "N-R&D",
+      "rndRegistered": "Staff"
+    },
+    {
+      "empId": "DN26072701",
+      "name": "장정윤",
+      "type": "정규직",
+      "org": [
+        "사업본부",
+        "사업개발그룹",
+        "사업기획팀"
+      ],
+      "title": null,
+      "age": 44,
+      "gender": "여",
+      "hireDate": "2026-07-27",
+      "deptMoveDate": "2026-07-27",
+      "rndActual": "N-R&D",
+      "rndRegistered": "Biz"
+    },
+    {
+      "empId": "DN26072702",
+      "name": "최은호",
+      "type": "정규직",
+      "org": [
+        "R&D센터",
+        "SoC그룹",
+        "DV팀"
+      ],
+      "title": null,
+      "age": 28,
+      "gender": "남",
+      "hireDate": "2026-07-27",
+      "deptMoveDate": "2026-07-27",
+      "rndActual": "R&D",
+      "rndRegistered": "연구원"
+    },
+    {
+      "empId": "DO26072701",
+      "name": "박재현",
+      "type": "전문연구요원",
+      "org": [
+        "사업본부",
+        "제품개발그룹",
+        "DB팀",
+        "인덱스 Part"
+      ],
+      "title": null,
+      "age": 55,
+      "gender": "남",
+      "hireDate": "2026-07-27",
+      "deptMoveDate": "2026-07-27",
+      "rndActual": "R&D",
+      "rndRegistered": "연구원"
+    }
+  ]
+},
+  "orgChart": {
+  "nodes": [
+    {
+      "id": "org1",
+      "name": "CEO 직속",
+      "level": "본부",
+      "members": [
+        {
+          "name": "정무경",
+          "title": "CEO",
+          "gender": "남",
+          "type": "임원",
+          "age": 50,
+          "newHire": false,
+          "deptMove": false,
+          "intern": false,
+          "concurrent": false
+        }
+      ],
+      "children": [
+        {
+          "id": "org2",
+          "name": "DC 사업개발실",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "기정수",
+              "title": "실장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 55,
+              "newHire": false,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "오승근",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 53,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "김승원",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 45,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "장철영",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 54,
+              "newHire": false,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "김형록",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 32,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org3",
+          "name": "전략팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "유철호",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 32,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "최정인",
+              "title": null,
+              "gender": "여",
+              "type": "인턴",
+              "age": 29,
+              "newHire": false,
+              "deptMove": false,
+              "intern": true,
+              "concurrent": false
+            },
+            {
+              "name": "이민희",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 30,
+              "newHire": true,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "org4",
+      "name": "경영기획본부",
+      "level": "본부",
+      "members": [
+        {
+          "name": "손준혁",
+          "title": "COO",
+          "gender": "남",
+          "type": "임원",
+          "age": 52,
+          "newHire": false,
+          "deptMove": false,
+          "intern": false,
+          "concurrent": false
+        }
+      ],
+      "children": [
+        {
+          "id": "org5",
+          "name": "인사팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "손성용",
+              "title": "팀장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 37,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "이재운",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 43,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "지준희",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 29,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "한채린",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 26,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "서지민",
+              "title": null,
+              "gender": "여",
+              "type": "단시간근로자",
+              "age": 31,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "최형민",
+              "title": null,
+              "gender": "여",
+              "type": "단시간근로자",
+              "age": 29,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "김동범",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 26,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org6",
+          "name": "지원팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "김진우",
+              "title": "팀장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 52,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "김언정",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 39,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org7",
+          "name": "경영기획팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "하지현",
+              "title": "팀장",
+              "gender": "여",
+              "type": "정규직",
+              "age": 42,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "권효상",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 37,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "org26",
+      "name": "경영전략본부",
+      "level": "본부",
+      "members": [],
+      "children": [
+        {
+          "id": "org27",
+          "name": "재무팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "구성학",
+              "title": "팀장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 51,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "정지원",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 29,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "김규리",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 28,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "손광섭",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 33,
+              "newHire": true,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org28",
+          "name": "프로젝트기획팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "차민영",
+              "title": "팀장",
+              "gender": "여",
+              "type": "정규직",
+              "age": 41,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "최성진",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 34,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org29",
+          "name": "PR팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "남수민",
+              "title": "팀장",
+              "gender": "여",
+              "type": "정규직",
+              "age": 40,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org30",
+          "name": "기술관리팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "양동석",
+              "title": "팀장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 40,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "권기룡",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 50,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "전재현",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 30,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "박재우",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 39,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org31",
+          "name": "법무 Part",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "심지은",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 38,
+              "newHire": false,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "org32",
+      "name": "사업본부",
+      "level": "본부",
+      "members": [
+        {
+          "name": "노홍찬",
+          "title": "본부장(CDO)",
+          "gender": "남",
+          "type": "임원",
+          "age": 47,
+          "newHire": false,
+          "deptMove": false,
+          "intern": false,
+          "concurrent": false
+        },
+        {
+          "name": "김주호",
+          "title": null,
+          "gender": "남",
+          "type": "정규직",
+          "age": 49,
+          "newHire": true,
+          "deptMove": true,
+          "intern": false,
+          "concurrent": false
+        }
+      ],
+      "children": [
+        {
+          "id": "org33",
+          "name": "사업개발그룹",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "이장원",
+              "title": "그룹장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 51,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": [
+            {
+              "id": "org34",
+              "name": "Applied Product팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "이정엄",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 49,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "박영민",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 44,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김성욱",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 49,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "성진우",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 33,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "박관우",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 29,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "신현우",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 44,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org35",
+              "name": "AI Tech팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "김남곤",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 31,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김현식",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "유흥식",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 43,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "양재원",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org36",
+              "name": "사업기획팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "김보경",
+                  "title": null,
+                  "gender": "여",
+                  "type": "정규직",
+                  "age": 31,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "박철희",
+                  "title": null,
+                  "gender": "여",
+                  "type": "계약직",
+                  "age": 45,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "유한울",
+                  "title": null,
+                  "gender": "여",
+                  "type": "인턴",
+                  "age": 28,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": true,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "org37",
+          "name": "제품개발그룹",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "한병전",
+              "title": "그룹장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 42,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": [
+            {
+              "id": "org38",
+              "name": "DB팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "남무현",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 36,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": [
+                {
+                  "id": "org39",
+                  "name": "인덱스 Part",
+                  "level": "Part",
+                  "members": [
+                    {
+                      "name": "오세현",
+                      "title": "파트리더",
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 32,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "성한승",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 36,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "윤희진",
+                      "title": null,
+                      "gender": "여",
+                      "type": "인턴",
+                      "age": 29,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": true,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "남예현",
+                      "title": null,
+                      "gender": "남",
+                      "type": "전문연구요원",
+                      "age": 29,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    }
+                  ],
+                  "children": []
+                },
+                {
+                  "id": "org40",
+                  "name": "DB Part",
+                  "level": "Part",
+                  "members": [
+                    {
+                      "name": "정주현",
+                      "title": "파트리더",
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 37,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "조현수",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 32,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "김주호",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 35,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "권윤옥",
+                      "title": null,
+                      "gender": "여",
+                      "type": "정규직",
+                      "age": 34,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "신주한",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 41,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "최형석",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 35,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "org41",
+              "name": "Storage/Cloud팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "양대곤",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 34,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "박동규",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 31,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "임근우",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "임종혁",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 36,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "황재상",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 26,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "이민철",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 34,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "송경태",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "조동규",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 34,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "백승록",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 31,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org42",
+              "name": "Agent팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "김영로",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 37,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "정창욱",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 39,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "org43",
+          "name": "해외사업팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "박형준",
+              "title": "팀장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 47,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "연지은",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 34,
+              "newHire": false,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "박수연",
+              "title": null,
+              "gender": "여",
+              "type": "정규직",
+              "age": 29,
+              "newHire": false,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org44",
+          "name": "고객사업그룹",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "이정훈",
+              "title": "그룹장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 55,
+              "newHire": true,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": [
+            {
+              "id": "org45",
+              "name": "금융엔터사업팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "배우진",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 44,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "한광신",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 56,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org46",
+              "name": "공공사업팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "성기화",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 51,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "org8",
+      "name": "R&D센터",
+      "level": "본부",
+      "members": [
+        {
+          "name": "양세현",
+          "title": "CTO",
+          "gender": "남",
+          "type": "임원",
+          "age": 51,
+          "newHire": false,
+          "deptMove": false,
+          "intern": false,
+          "concurrent": false
+        },
+        {
+          "name": "김현진",
+          "title": null,
+          "gender": "남",
+          "type": "정규직",
+          "age": 48,
+          "newHire": false,
+          "deptMove": false,
+          "intern": false,
+          "concurrent": false
+        },
+        {
+          "name": "정민",
+          "title": null,
+          "gender": "여",
+          "type": "인턴",
+          "age": 25,
+          "newHire": true,
+          "deptMove": true,
+          "intern": true,
+          "concurrent": false
+        }
+      ],
+      "children": [
+        {
+          "id": "org9",
+          "name": "Eng.팀",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "박용운",
+              "title": "팀장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 46,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "김철원",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 35,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "나동준",
+              "title": null,
+              "gender": "남",
+              "type": "전문연구요원",
+              "age": 28,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "한재흥",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 32,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            },
+            {
+              "name": "박정희",
+              "title": null,
+              "gender": "남",
+              "type": "정규직",
+              "age": 32,
+              "newHire": true,
+              "deptMove": true,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": []
+        },
+        {
+          "id": "org10",
+          "name": "AI그룹",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "이승재",
+              "title": "CAIO",
+              "gender": "남",
+              "type": "임원",
+              "age": 45,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": [
+            {
+              "id": "org11",
+              "name": "LLM팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "박상길",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 49,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김제민",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 48,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "이정엽",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 45,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "정민섭",
+                  "title": null,
+                  "gender": "남",
+                  "type": "전문연구요원",
+                  "age": 26,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org12",
+              "name": "Algo.팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "조두현",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 37,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "문성현",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 39,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "차정훈",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 30,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "조명훈",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 49,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "Aidyn",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 32,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "한동훈",
+                  "title": null,
+                  "gender": "남",
+                  "type": "전문연구요원",
+                  "age": 30,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "이우철",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 36,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "서승연",
+                  "title": null,
+                  "gender": "여",
+                  "type": "인턴",
+                  "age": 26,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": true,
+                  "concurrent": false
+                },
+                {
+                  "name": "이성진",
+                  "title": null,
+                  "gender": "남",
+                  "type": "인턴",
+                  "age": 24,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": true,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "org13",
+          "name": "SoC그룹",
+          "level": "그룹",
+          "members": [
+            {
+              "name": "권지웅",
+              "title": "그룹장",
+              "gender": "남",
+              "type": "정규직",
+              "age": 50,
+              "newHire": false,
+              "deptMove": false,
+              "intern": false,
+              "concurrent": false
+            }
+          ],
+          "children": [
+            {
+              "id": "org14",
+              "name": "HW P.팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "이창희",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 48,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김영일",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 37,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "안우진",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 42,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "정문권",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 40,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org15",
+              "name": "Design2팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "최항석",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 50,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "함은경",
+                  "title": null,
+                  "gender": "여",
+                  "type": "정규직",
+                  "age": 27,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "천종민",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "우고은",
+                  "title": null,
+                  "gender": "여",
+                  "type": "정규직",
+                  "age": 25,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "최지혁",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 29,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org16",
+              "name": "Design1팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "문승모",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 41,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "전유진",
+                  "title": null,
+                  "gender": "여",
+                  "type": "정규직",
+                  "age": 28,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "이동훈",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 53,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김은서",
+                  "title": null,
+                  "gender": "여",
+                  "type": "정규직",
+                  "age": 29,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "송지환",
+                  "title": null,
+                  "gender": "남",
+                  "type": "인턴",
+                  "age": 27,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": true,
+                  "concurrent": false
+                },
+                {
+                  "name": "서지희",
+                  "title": null,
+                  "gender": "여",
+                  "type": "정규직",
+                  "age": 27,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "최다원",
+                  "title": null,
+                  "gender": "여",
+                  "type": "인턴",
+                  "age": 25,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": true,
+                  "concurrent": false
+                }
+              ],
+              "children": [
+                {
+                  "id": "org17",
+                  "name": "Engine IP Part",
+                  "level": "Part",
+                  "members": [
+                    {
+                      "name": "최인준",
+                      "title": "파트리더",
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 37,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "김시연",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 30,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "김벼리",
+                      "title": null,
+                      "gender": "여",
+                      "type": "정규직",
+                      "age": 27,
+                      "newHire": true,
+                      "deptMove": true,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "오호빈",
+                      "title": null,
+                      "gender": "남",
+                      "type": "전문연구요원",
+                      "age": 24,
+                      "newHire": true,
+                      "deptMove": true,
+                      "intern": false,
+                      "concurrent": false
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "org18",
+              "name": "DV팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "정성훈",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 44,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "강영석",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "손현욱",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 30,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김준형",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 31,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "노창구",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 44,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "장건희",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 27,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            }
+          ]
+        },
+        {
+          "id": "org19",
+          "name": "Core그룹",
+          "level": "그룹",
+          "members": [],
+          "children": [
+            {
+              "id": "org20",
+              "name": "S.SW팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "Ranjit",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 50,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "서정원",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 47,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "이종성",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 46,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김성희",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 31,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "황영진",
+                  "title": null,
+                  "gender": "남",
+                  "type": "전문연구요원",
+                  "age": 26,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김영윤",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 32,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "진민우",
+                  "title": null,
+                  "gender": "남",
+                  "type": "인턴",
+                  "age": 28,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": true,
+                  "concurrent": false
+                },
+                {
+                  "name": "윤표진",
+                  "title": null,
+                  "gender": "남",
+                  "type": "인턴",
+                  "age": 28,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": true,
+                  "concurrent": false
+                },
+                {
+                  "name": "김기태",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 27,
+                  "newHire": true,
+                  "deptMove": true,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org21",
+              "name": "AI Platform팀",
+              "level": "팀",
+              "members": [],
+              "children": [
+                {
+                  "id": "org22",
+                  "name": "Optimization Part",
+                  "level": "Part",
+                  "members": [
+                    {
+                      "name": "장수형",
+                      "title": "팀장",
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 48,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "손진우",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 40,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "곽동우",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 34,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    }
+                  ],
+                  "children": []
+                },
+                {
+                  "id": "org23",
+                  "name": "Runtime Part",
+                  "level": "Part",
+                  "members": [
+                    {
+                      "name": "양희철",
+                      "title": "파트리더",
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 38,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    },
+                    {
+                      "name": "문진석",
+                      "title": null,
+                      "gender": "남",
+                      "type": "정규직",
+                      "age": 31,
+                      "newHire": false,
+                      "deptMove": false,
+                      "intern": false,
+                      "concurrent": false
+                    }
+                  ],
+                  "children": []
+                }
+              ]
+            },
+            {
+              "id": "org24",
+              "name": "Vector Platform팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "이동현",
+                  "title": "팀장",
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 42,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "박상현",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 31,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "김유찬",
+                  "title": null,
+                  "gender": "남",
+                  "type": "전문연구요원",
+                  "age": 28,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "이태준",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 29,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "정연우",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            },
+            {
+              "id": "org25",
+              "name": "Arch팀",
+              "level": "팀",
+              "members": [
+                {
+                  "name": "강동현",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 33,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "변우석",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 36,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "박내범",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 33,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "어성욱",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 38,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                },
+                {
+                  "name": "백진환",
+                  "title": null,
+                  "gender": "남",
+                  "type": "정규직",
+                  "age": 35,
+                  "newHire": false,
+                  "deptMove": false,
+                  "intern": false,
+                  "concurrent": false
+                }
+              ],
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }
 };
 /*DATA-END*/
@@ -1515,6 +6272,8 @@ function renderMain(){
   if (view.type === 'jdmanage') return renderJdManage();
   if (view.type === 'jddetail') return renderJdDetail(view.doc);
   if (view.type === 'candidate') return renderCandidateMatch();
+  if (view.type === 'headcount') return renderHeadcountDashboard();
+  if (view.type === 'orgchart') return renderOrgChart();
   return '';
 }
 
@@ -2319,6 +7078,380 @@ function renderCandidateMatch(){
   `;
 }
 
+/* ============ 인원 현황 대시보드 ============ */
+let dashboardDrillPath = [];
+
+function ageBracket(age){
+  if (age == null) return '미상';
+  const b = Math.floor(age / 10) * 10;
+  return b >= 60 ? '60대+' : b + '대';
+}
+
+function drillOrg(name){
+  dashboardDrillPath = [...dashboardDrillPath, name];
+  render();
+}
+window.drillOrg = drillOrg;
+
+function drillOrgUp(index){
+  dashboardDrillPath = dashboardDrillPath.slice(0, index);
+  render();
+}
+window.drillOrgUp = drillOrgUp;
+
+function orgCountsAtLevel(path){
+  const counts = {};
+  DATA.headcount.people.forEach(p => {
+    for (let i = 0; i < path.length; i++) { if (p.org[i] !== path[i]) return; }
+    const next = p.org[path.length];
+    const key = next || '(하위 조직 없이 직속)';
+    counts[key] = (counts[key] || 0) + 1;
+  });
+  return counts;
+}
+
+const SERIES_COLORS = ['var(--series-1)','var(--series-2)','var(--series-3)','var(--series-4)','var(--series-5)','var(--series-6)'];
+
+function barChartHtml(entries, opts){
+  opts = opts || {};
+  const max = Math.max(...entries.map(e => e[1]), 1);
+  const total = opts.total || entries.reduce((s,e)=>s+e[1],0);
+  return entries.map(([name, count], i) => `
+    <div class="bar-row ${opts.clickable ? 'clickable' : ''}" ${opts.clickable ? `onclick="drillOrg('${esc(name)}')"` : ''}>
+      <span class="bar-label">${esc(name)}</span>
+      <div class="bar-track"><div class="bar-fill" style="width:${(count/max*100).toFixed(1)}%; background:${(opts.colors || SERIES_COLORS)[i % (opts.colors || SERIES_COLORS).length]};"></div></div>
+      <span class="bar-value">${count}명${total ? ` (${(count/total*100).toFixed(0)}%)` : ''}</span>
+    </div>
+  `).join('');
+}
+
+function renderHeadcountDashboard(){
+  const people = DATA.headcount.people;
+  const total = people.length;
+
+  const orgCounts = {};
+  people.forEach(p => { const o = p.org[0] || '미분류'; orgCounts[o] = (orgCounts[o] || 0) + 1; });
+  const orgEntries = Object.entries(orgCounts).sort((a,b) => b[1]-a[1]);
+
+  const genderCounts = {};
+  people.forEach(p => { const g = p.gender || '미상'; genderCounts[g] = (genderCounts[g] || 0) + 1; });
+  const male = genderCounts['남'] || 0, female = genderCounts['여'] || 0;
+  const otherGender = total - male - female;
+
+  const ageCounts = {};
+  people.forEach(p => { const b = ageBracket(p.age); ageCounts[b] = (ageCounts[b] || 0) + 1; });
+  const ageOrder = ['20대','30대','40대','50대','60대+','미상'];
+  const ageColorMap = { '20대':'var(--age-1)','30대':'var(--age-2)','40대':'var(--age-3)','50대':'var(--age-4)','60대+':'var(--age-4)','미상':'var(--ink-faint)' };
+  const ageEntries = ageOrder.filter(k => ageCounts[k]).map(k => [k, ageCounts[k]]);
+  const agesKnown = people.filter(p => p.age != null);
+  const avgAge = agesKnown.length ? (agesKnown.reduce((s,p) => s+p.age, 0) / agesKnown.length).toFixed(1) : '-';
+
+  const typeCounts = {};
+  people.forEach(p => { const t = p.type || '미상'; typeCounts[t] = (typeCounts[t] || 0) + 1; });
+  const typeOrder = ['임원','정규직','전문연구요원','인턴','단시간근로자','계약직'];
+  const typeEntries = typeOrder.filter(k => typeCounts[k]).map(k => [k, typeCounts[k]])
+    .concat(Object.entries(typeCounts).filter(([k]) => !typeOrder.includes(k)));
+
+  let rr=0, rx=0, nr=0, nx=0;
+  people.forEach(p => {
+    const isRnd = p.rndActual === 'R&D';
+    const isReg = p.rndRegistered === 'O';
+    if (isRnd && isReg) rr++;
+    else if (isRnd && !isReg) rx++;
+    else if (!isRnd && isReg) nr++;
+    else nx++;
+  });
+
+  const orgHeaderCounts = orgCountsAtLevel([]);
+  const drillCounts = orgCountsAtLevel(dashboardDrillPath);
+  const drillEntries = Object.entries(drillCounts).sort((a,b) => b[1]-a[1]);
+  const drillTotal = Object.values(drillCounts).reduce((a,b)=>a+b,0);
+  const canDrillDeeper = dashboardDrillPath.length < 3;
+  const breadcrumb = ['<button onclick="drillOrgUp(0)">전체</button>']
+    .concat(dashboardDrillPath.map((seg,i) => `<button onclick="drillOrgUp(${i+1})">${esc(seg)}</button>`))
+    .join(' <span style="opacity:.5;">›</span> ');
+
+  const upcoming = DATA.headcount.upcoming || [];
+  const upcomingHtml = upcoming.length ? `
+    <div class="chart-card">
+      <h3>📅 입사예정 (${upcoming.length}명)</h3>
+      <div class="upcoming-list">${upcoming.map(p => `<span class="up-chip">${esc(p.name)} · ${esc((p.org||[]).join(' > '))} · ${esc(p.type||'')}</span>`).join('')}</div>
+      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">※ 위 인원은 아직 재직 중이 아니므로 아래 통계에는 포함되지 않았습니다.</p>
+    </div>
+  ` : '';
+
+  return `
+    <p class="doc-eyebrow">07 · 인원 현황 관리</p>
+    <h2>📊 인원 현황 대시보드</h2>
+    <p class="lede">${esc(DATA.headcount.asOf)} 기준 재직 인원 ${total}명의 현황입니다. (업로드하신 인원 명단을 바탕으로 자동 집계되었으며, 개인정보이므로 이 파일을 다룰 때 주의해주세요.)</p>
+
+    <div class="stat-row">
+      <div class="stat-tile"><div class="stat-label">전체 재직 인원</div><div class="stat-value">${total}명</div></div>
+      <div class="stat-tile"><div class="stat-label">본부 수</div><div class="stat-value">${orgEntries.length}개</div></div>
+      <div class="stat-tile"><div class="stat-label">평균 연령(만)</div><div class="stat-value">${avgAge}세</div></div>
+      <div class="stat-tile"><div class="stat-label">여성 비율</div><div class="stat-value">${total ? Math.round(female/total*100) : 0}%</div></div>
+    </div>
+
+    <div class="chart-card">
+      <h3>🏢 조직별 인원 · 구성</h3>
+      <div class="breadcrumb-mini">${breadcrumb}</div>
+      ${barChartHtml(dashboardDrillPath.length ? drillEntries : orgEntries, { clickable: canDrillDeeper, total: dashboardDrillPath.length ? drillTotal : total })}
+      ${!canDrillDeeper ? '<p style="font-size:.78rem;color:var(--ink-faint);">더 이상 하위 조직이 없거나, Part 단계까지 펼쳤습니다.</p>' : ''}
+    </div>
+
+    <div class="chart-card">
+      <h3>⚖️ 남녀 비율</h3>
+      <div class="stack-bar">
+        <div style="width:${total?(male/total*100):0}%; background:var(--series-1);">${male > 0 ? `남 ${male}명 (${Math.round(male/total*100)}%)` : ''}</div>
+        <div style="width:${total?(female/total*100):0}%; background:var(--series-3);">${female > 0 ? `여 ${female}명 (${Math.round(female/total*100)}%)` : ''}</div>
+        ${otherGender > 0 ? `<div style="width:${(otherGender/total*100)}%; background:var(--ink-faint);"></div>` : ''}
+      </div>
+      <div class="legend-row">
+        <span><span class="sw" style="background:var(--series-1);"></span>남 ${male}명</span>
+        <span><span class="sw" style="background:var(--series-3);"></span>여 ${female}명</span>
+        ${otherGender>0?`<span><span class="sw" style="background:var(--ink-faint);"></span>미상 ${otherGender}명</span>`:''}
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <h3>🎂 연령 분포 (만 나이 기준)</h3>
+      ${barChartHtml(ageEntries, { colors: ageEntries.map(([k]) => ageColorMap[k] || 'var(--ink-faint)'), total })}
+    </div>
+
+    <div class="chart-card">
+      <h3>💼 고용형태 분포</h3>
+      ${barChartHtml(typeEntries, { total })}
+    </div>
+
+    <div class="chart-card">
+      <h3>🔬 연구원 현황 (케이스별)</h3>
+      <p style="font-size:.83rem;color:var(--ink-soft);margin-top:0;">"실질 R&D 인력"은 실제로 연구개발 업무를 수행하는지 여부이고, "산기협 연구원 등록"은 기업부설연구소에 정식으로 연구원으로 등록되어 있는지 여부입니다. 두 기준이 항상 일치하지는 않아 4가지 경우로 나눠 보여드립니다.</p>
+      <div class="table-wrap"><table class="rnd-cross">
+        <thead><tr><th></th><th>산기협 등록 O</th><th>산기협 등록 X</th></tr></thead>
+        <tbody>
+          <tr><th>실질 R&D 인력</th><td class="hi">${rr}명</td><td>${rx}명</td></tr>
+          <tr><th>실질 R&D 아님</th><td>${nr}명</td><td class="lo">${nx}명</td></tr>
+        </tbody>
+      </table></div>
+      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">기업부설연구소 정식 연구원 수(산기협 등록 기준) = ${rr+nr}명 · 실질 R&D 인력 수 = ${rr+rx}명</p>
+    </div>
+
+    ${upcomingHtml}
+
+    <p style="font-size:.78rem;color:var(--ink-faint);">※ 이 대시보드는 업로드된 엑셀 파일 기준 스냅샷입니다. 인원 변동이 있으면 최신 명단으로 다시 만들어야 합니다.</p>
+  `;
+}
+
+/* ============ 조직도 (편집 가능) ============ */
+let orgEditingNodeId = null;
+let orgIdSeq = 0;
+(function initOrgIdSeq(){
+  function walk(nodes){
+    nodes.forEach(n => {
+      const num = parseInt(String(n.id).replace('org', ''), 10);
+      if (!isNaN(num) && num > orgIdSeq) orgIdSeq = num;
+      walk(n.children);
+    });
+  }
+  walk(DATA.orgChart.nodes);
+})();
+function nextOrgId(){ orgIdSeq++; return 'org' + orgIdSeq; }
+
+function findOrgNode(id, nodes){
+  nodes = nodes || DATA.orgChart.nodes;
+  for (let i = 0; i < nodes.length; i++) {
+    if (nodes[i].id === id) return { node: nodes[i], siblings: nodes, index: i };
+    const found = findOrgNode(id, nodes[i].children);
+    if (found) return found;
+  }
+  return null;
+}
+
+function countOrgSubtree(node){
+  let n = node.members.length;
+  node.children.forEach(c => n += countOrgSubtree(c));
+  return n;
+}
+
+function toggleOrgEdit(id){
+  orgEditingNodeId = (orgEditingNodeId === id) ? null : id;
+  render();
+}
+window.toggleOrgEdit = toggleOrgEdit;
+
+function addOrgNode(parentId){
+  const name = (prompt('새 조직 이름을 입력하세요 (예: 지원팀)') || '').trim();
+  if (!name) return;
+  const newNode = { id: nextOrgId(), name, level: '본부', members: [], children: [] };
+  if (!parentId) {
+    DATA.orgChart.nodes.push(newNode);
+  } else {
+    const found = findOrgNode(parentId);
+    if (!found) return;
+    newNode.level = found.node.level === '본부' ? '그룹' : found.node.level === '그룹' ? '팀' : 'Part';
+    found.node.children.push(newNode);
+    orgEditingNodeId = null;
+  }
+  persist();
+  render();
+}
+window.addOrgNode = addOrgNode;
+
+function renameOrgNode(id){
+  const found = findOrgNode(id);
+  if (!found) return;
+  const name = prompt('조직 이름 수정', found.node.name);
+  if (!name) return;
+  found.node.name = name.trim();
+  persist(); render();
+}
+window.renameOrgNode = renameOrgNode;
+
+function deleteOrgNode(id){
+  const found = findOrgNode(id);
+  if (!found) return;
+  const total = countOrgSubtree(found.node);
+  if (!confirm(`"${found.node.name}"(${total}명)를 삭제할까요? 하위 조직과 구성원 정보도 함께 삭제됩니다.`)) return;
+  found.siblings.splice(found.index, 1);
+  if (orgEditingNodeId === id) orgEditingNodeId = null;
+  persist(); render();
+}
+window.deleteOrgNode = deleteOrgNode;
+
+function addOrgMember(nodeId){
+  const found = findOrgNode(nodeId);
+  if (!found) return;
+  const name = (prompt('구성원 이름') || '').trim();
+  if (!name) return;
+  found.node.members.push({ name, title: null, gender: null, type: '정규직', age: null, newHire: false, deptMove: false, intern: false, concurrent: false });
+  persist(); render();
+}
+window.addOrgMember = addOrgMember;
+
+function deleteOrgMember(nodeId, idx){
+  const found = findOrgNode(nodeId);
+  if (!found) return;
+  if (!confirm('이 구성원을 삭제할까요?')) return;
+  found.node.members.splice(idx, 1);
+  persist(); render();
+}
+window.deleteOrgMember = deleteOrgMember;
+
+function updateOrgMemberField(nodeId, idx, field, value){
+  const found = findOrgNode(nodeId);
+  if (!found) return;
+  found.node.members[idx][field] = value;
+  persist();
+}
+window.updateOrgMemberField = updateOrgMemberField;
+
+function toggleOrgMemberTag(nodeId, idx, field){
+  const found = findOrgNode(nodeId);
+  if (!found) return;
+  found.node.members[idx][field] = !found.node.members[idx][field];
+  persist(); render();
+}
+window.toggleOrgMemberTag = toggleOrgMemberTag;
+
+function orgMemberChip(m){
+  const tags = [];
+  if (m.intern) tags.push('인');
+  if (m.concurrent) tags.push('겸');
+  const cls = ['org-member-chip'];
+  if (m.newHire) cls.push('new-hire');
+  if (m.deptMove) cls.push('dept-move');
+  return `<div class="${cls.join(' ')}">${esc(m.name)}${tags.length ? `<span class="tag"> (${tags.join(',')})</span>` : ''}</div>`;
+}
+
+function renderOrgBox(node){
+  const leaders = node.members.filter(m => m.title);
+  const staff = node.members.filter(m => !m.title);
+  const leaderLine = leaders.map(l => `${esc(l.name)}${l.concurrent ? '(겸)' : ''}`).join(', ');
+  const levelClass = node.level === 'Part' ? 'Part' : node.level;
+  return `
+    <div class="org-box lvl-${levelClass}">
+      <button class="org-edit-btn" onclick="toggleOrgEdit('${node.id}')" title="편집">✎</button>
+      <div class="org-box-name">${esc(node.name)}</div>
+      ${leaderLine ? `<div class="org-box-leader">${leaderLine}</div>` : ''}
+      <div class="org-box-count">${countOrgSubtree(node)}명</div>
+      ${staff.length ? `<div class="org-member-grid">${staff.map(m => orgMemberChip(m)).join('')}</div>` : ''}
+    </div>
+  `;
+}
+
+function renderOrgEditPanel(node){
+  const memberRows = node.members.map((m, idx) => `
+    <div class="org-member-row">
+      <input type="text" value="${esc(m.name)}" onchange="updateOrgMemberField('${node.id}',${idx},'name',this.value)" placeholder="이름">
+      <input type="text" value="${esc(m.title || '')}" onchange="updateOrgMemberField('${node.id}',${idx},'title',this.value)" placeholder="직책(비우면 일반 구성원)" style="width:130px;">
+      <button class="tag-btn ${m.intern ? 'active' : ''}" onclick="toggleOrgMemberTag('${node.id}',${idx},'intern')">인턴</button>
+      <button class="tag-btn ${m.concurrent ? 'active' : ''}" onclick="toggleOrgMemberTag('${node.id}',${idx},'concurrent')">겸직</button>
+      <button class="tag-btn ${m.newHire ? 'active' : ''}" onclick="toggleOrgMemberTag('${node.id}',${idx},'newHire')">신규입사</button>
+      <button class="tag-btn ${m.deptMove ? 'active' : ''}" onclick="toggleOrgMemberTag('${node.id}',${idx},'deptMove')">부서이동</button>
+      <button class="jd-del" onclick="deleteOrgMember('${node.id}',${idx})">삭제</button>
+    </div>
+  `).join('');
+  return `
+    <div class="org-edit-panel">
+      <h4>"${esc(node.name)}" 편집</h4>
+      <div class="field">
+        <label>조직</label>
+        <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+          <button class="btn" onclick="renameOrgNode('${node.id}')">✎ 이름 변경</button>
+          <button class="btn" onclick="addOrgNode('${node.id}')">+ 하위 조직 추가</button>
+          <button class="btn" style="color:var(--seal);" onclick="deleteOrgNode('${node.id}')">이 조직 삭제</button>
+        </div>
+      </div>
+      <div class="field">
+        <label>구성원 (${node.members.length}명) — 직책을 입력하면 박스 상단에 리더로 표시됩니다</label>
+        ${memberRows || '<p style="font-size:.8rem;color:var(--ink-faint);">구성원이 없습니다.</p>'}
+        <button class="btn" style="margin-top:.5rem;" onclick="addOrgMember('${node.id}')">+ 구성원 추가</button>
+      </div>
+      <button class="btn primary" onclick="toggleOrgEdit('${node.id}')">편집 닫기</button>
+    </div>
+  `;
+}
+
+function renderOrgNodeColumn(node){
+  const isEditing = orgEditingNodeId === node.id;
+  const childrenHtml = node.children.length ? `
+    <div class="org-children">
+      ${node.children.map(c => `<div class="org-col">${renderOrgNodeColumn(c)}</div>`).join('')}
+    </div>
+  ` : '';
+  return `
+    ${renderOrgBox(node)}
+    ${isEditing ? renderOrgEditPanel(node) : ''}
+    ${childrenHtml}
+  `;
+}
+
+function renderOrgChart(){
+  const total = DATA.orgChart.nodes.reduce((n, node) => n + countOrgSubtree(node), 0);
+  return `
+    <p class="doc-eyebrow">07 · 인원 현황 관리</p>
+    <h2>🗂️ 조직도</h2>
+    <p class="lede">${esc(DATA.headcount.asOf)} 기준 인원 데이터를 바탕으로 자동 생성되었습니다. 박스에 마우스를 올리면 나오는 ✎ 버튼으로 이름 변경, 하위 조직·구성원 추가/삭제, 신규입사·부서이동·인턴·겸직 표시를 바로 편집할 수 있습니다.</p>
+    <div class="orgchart-toolbar">
+      <button class="btn primary" onclick="addOrgNode(null)">+ 최상위 조직 추가</button>
+      <span style="font-size:.82rem;color:var(--ink-soft);">전체 ${total}명</span>
+    </div>
+    <div class="orgchart-wrap">
+      <div class="org-tree">
+        ${DATA.orgChart.nodes.map(n => `<div class="org-col">${renderOrgNodeColumn(n)}</div>`).join('')}
+      </div>
+    </div>
+    <div class="org-legend">
+      <span><span class="sw" style="background:var(--org-div-bg);"></span>본부</span>
+      <span><span class="sw" style="background:var(--org-group-bg);"></span>그룹</span>
+      <span><span class="sw" style="background:var(--org-team-bg);border:1px solid var(--line);"></span>팀 / Part</span>
+      <span><span class="sw" style="background:var(--org-newhire-bg);"></span>신규입사</span>
+      <span><span class="sw" style="background:var(--org-move-bg);"></span>부서이동</span>
+      <span>(인) 인턴 · (겸) 겸직</span>
+    </div>
+  `;
+}
+
 function renderBuiltin(key){
   const b = DATA.builtins[key];
   const note = DATA.notes[key] || '';
@@ -2386,6 +7519,26 @@ function renderDomain(domainId){
           <span class="dashboard-badge">베타</span>
         </div>
         <div class="card-desc">이력서·포트폴리오 PDF를 첨부하면 ${jdCount}개 포지션 중 자격요건이 겹치는 포지션과 근거를 찾아줍니다.</div>
+      </button>
+    `;
+  }
+  if (domainId === 'd07') {
+    const hcTotal = DATA.headcount.people.length;
+    const orgNodeCount = DATA.orgChart.nodes.length;
+    dashboardCard = `
+      <button class="dashboard-card" onclick="go('headcount')">
+        <div class="card-top">
+          <span class="card-title">📊 인원 현황 대시보드</span>
+          <span class="dashboard-badge">${DATA.headcount.asOf} · ${hcTotal}명</span>
+        </div>
+        <div class="card-desc">조직별 인원, 남녀 비율, 연령·고용형태 분포, 연구원 현황을 한눈에 확인합니다.</div>
+      </button>
+      <button class="dashboard-card" onclick="go('orgchart')">
+        <div class="card-top">
+          <span class="card-title">🗂️ 조직도</span>
+          <span class="dashboard-badge">${orgNodeCount}개 본부</span>
+        </div>
+        <div class="card-desc">조직·구성원을 트리 형태로 보고, 이 안에서 바로 추가·수정·삭제할 수 있습니다.</div>
       </button>
     `;
   }
