@@ -2044,19 +2044,30 @@ const DOCX_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Rel
 const DOCX_DOCUMENT_RELS = `<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"></Relationships>`;
 
 function downloadJdWord(id){
-  const p = findJd(id);
-  const enc = new TextEncoder();
-  const entries = [
-    { name: '[Content_Types].xml', data: enc.encode(DOCX_CONTENT_TYPES) },
-    { name: '_rels/.rels', data: enc.encode(DOCX_RELS) },
-    { name: 'word/document.xml', data: enc.encode(buildJdDocumentXml(id)) },
-    { name: 'word/_rels/document.xml.rels', data: enc.encode(DOCX_DOCUMENT_RELS) },
-  ];
-  const blob = makeZip(entries);
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `JD_${String(p.title).replace(/[\\/:*?"<>|]/g, '_')}.docx`;
-  a.click();
+  const flag = document.getElementById('jdDetailSaveFlag');
+  try {
+    const p = findJd(id);
+    const enc = new TextEncoder();
+    const entries = [
+      { name: '[Content_Types].xml', data: enc.encode(DOCX_CONTENT_TYPES) },
+      { name: '_rels/.rels', data: enc.encode(DOCX_RELS) },
+      { name: 'word/document.xml', data: enc.encode(buildJdDocumentXml(id)) },
+      { name: 'word/_rels/document.xml.rels', data: enc.encode(DOCX_DOCUMENT_RELS) },
+    ];
+    const blob = makeZip(entries);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `JD_${String(p.title).replace(/[\\/:*?"<>|]/g, '_')}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+    if (flag) flag.textContent = '워드 파일 다운로드됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+  } catch (err) {
+    if (flag) flag.textContent = '⚠ 다운로드 실패: ' + ((err && err.message) ? err.message : String(err));
+    console.error('downloadJdWord failed:', err);
+  }
 }
 window.downloadJdWord = downloadJdWord;
 
