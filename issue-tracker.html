@@ -331,7 +331,7 @@ async function exportFile(){
   const blob = new Blob(['<!DOCTYPE html>\n' + newSource], { type:'text/html' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `구성원-이슈-트래커-${todayStr()}.html`;
+  a.download = `issue-tracker.html`;
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
