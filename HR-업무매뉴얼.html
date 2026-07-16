@@ -6427,6 +6427,7 @@ function renderMain(){
   if (view.type === 'recruit') return renderRecruit();
   if (view.type === 'jdmanage') return renderJdManage();
   if (view.type === 'jddetail') return renderJdDetail(view.doc);
+  if (view.type === 'jdimport') return renderJdImport();
   if (view.type === 'candidate') return renderCandidateMatch();
   if (view.type === 'headcount') return renderHeadcountDashboard();
   if (view.type === 'orgchart') return renderOrgChart();
@@ -6674,6 +6675,7 @@ function renderJdManage(){
     <h3 style="margin-top:2rem;">포지션 목록 (${DATA.jd.positions.length}개)</h3>
     <div class="row-actions" style="margin-bottom:1rem;">
       <button class="btn primary" onclick="addJdPosition()">+ 새 포지션 추가</button>
+      <button class="btn" onclick="go('jdimport')">📎 JD 파일로 새 포지션 만들기</button>
     </div>
     ${listHtml}
   `;
@@ -7009,6 +7011,319 @@ function copyFullJd(id){
   }
 }
 window.copyFullJd = copyFullJd;
+
+/* ============ JD 파일에서 새 포지션 자동 생성 ============
+   Word(.docx)/PDF 파일에서 텍스트를 뽑아 "직무소개/담당업무/자격요건/우대사항" 네 항목을
+   자동으로 나눠 채웁니다. 회사소개·복리후생·채용절차 같은 공통 항목은 건드리지 않습니다.
+   완전히 정확하지 않을 수 있어 저장 전에 항상 미리보기 화면에서 수정할 수 있게 했습니다. */
+let jdImportFile = null;
+let jdImportPastedText = '';
+let jdImportParsed = null;
+let jdImportError = '';
+let jdImportBusy = false;
+
+function findZipEOCD(bytes){
+  const minLen = Math.max(0, bytes.length - 65558);
+  for (let i = bytes.length - 22; i >= minLen; i--) {
+    if (bytes[i] === 0x50 && bytes[i+1] === 0x4b && bytes[i+2] === 0x05 && bytes[i+3] === 0x06) return i;
+  }
+  return -1;
+}
+
+async function inflateRawRaw(bytes){
+  const ds = new DecompressionStream('deflate-raw');
+  const writer = ds.writable.getWriter();
+  writer.write(bytes);
+  writer.close();
+  const chunks = [];
+  const reader = ds.readable.getReader();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+  }
+  const total = chunks.reduce((n,c) => n + c.length, 0);
+  const out = new Uint8Array(total);
+  let off = 0;
+  chunks.forEach(c => { out.set(c, off); off += c.length; });
+  return out;
+}
+
+async function readZipEntry(arrayBuffer, targetName){
+  const bytes = new Uint8Array(arrayBuffer);
+  const view = new DataView(arrayBuffer);
+  const eocd = findZipEOCD(bytes);
+  if (eocd === -1) throw new Error('올바른 zip(docx) 구조를 찾을 수 없습니다.');
+  const centralDirOffset = view.getUint32(eocd + 16, true);
+  const centralDirCount = view.getUint16(eocd + 10, true);
+  const dec = new TextDecoder('utf-8');
+  let offset = centralDirOffset;
+  for (let i = 0; i < centralDirCount; i++) {
+    if (view.getUint32(offset, true) !== 0x02014b50) break;
+    const compMethod = view.getUint16(offset + 10, true);
+    const compSize = view.getUint32(offset + 20, true);
+    const nameLen = view.getUint16(offset + 28, true);
+    const extraLen = view.getUint16(offset + 30, true);
+    const commentLen = view.getUint16(offset + 32, true);
+    const localHeaderOffset = view.getUint32(offset + 42, true);
+    const name = dec.decode(bytes.slice(offset + 46, offset + 46 + nameLen));
+    if (name === targetName) {
+      const lNameLen = view.getUint16(localHeaderOffset + 26, true);
+      const lExtraLen = view.getUint16(localHeaderOffset + 28, true);
+      const dataStart = localHeaderOffset + 30 + lNameLen + lExtraLen;
+      const compData = bytes.slice(dataStart, dataStart + compSize);
+      if (compMethod === 0) return compData;
+      if (compMethod === 8) return await inflateRawRaw(compData);
+      throw new Error('지원하지 않는 압축 방식(' + compMethod + ')입니다.');
+    }
+    offset += 46 + nameLen + extraLen + commentLen;
+  }
+  throw new Error(targetName + ' 항목을 찾을 수 없습니다. 올바른 .docx 파일인지 확인해주세요.');
+}
+
+function unescapeXmlEntities(s){
+  return String(s || '')
+    .replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'").replace(/&amp;/g, '&');
+}
+
+function docxXmlToLines(xml){
+  const paraRe = /<w:p\b[^>]*>([\s\S]*?)<\/w:p>/g;
+  const runRe = /<w:t(?:\s[^>]*)?>([\s\S]*?)<\/w:t>/g;
+  const lines = [];
+  let pm;
+  while ((pm = paraRe.exec(xml))) {
+    let line = '';
+    let rm;
+    runRe.lastIndex = 0;
+    while ((rm = runRe.exec(pm[1]))) line += unescapeXmlEntities(rm[1]);
+    lines.push(line);
+  }
+  return lines;
+}
+
+async function extractDocxLines(file){
+  const buf = await file.arrayBuffer();
+  const xmlBytes = await readZipEntry(buf, 'word/document.xml');
+  const xml = new TextDecoder('utf-8').decode(xmlBytes);
+  return docxXmlToLines(xml);
+}
+
+async function extractPdfLines(file){
+  const buf = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: buf }).promise;
+  const lines = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    let lastY = null;
+    let currentLine = '';
+    content.items.forEach(item => {
+      const y = item.transform[5];
+      if (lastY !== null && Math.abs(y - lastY) > 2) {
+        if (currentLine.trim()) lines.push(currentLine.trim());
+        currentLine = '';
+      }
+      currentLine += item.str;
+      lastY = y;
+    });
+    if (currentLine.trim()) lines.push(currentLine.trim());
+  }
+  return lines;
+}
+
+const JD_SECTION_PATTERNS = {
+  intro: ['직무소개','직무 소개','포지션소개','포지션 소개','직무개요','직무 개요','role overview','position overview','job description','소개','about the role'],
+  duties: ['담당업무','담당 업무','주요업무','주요 업무','업무내용','업무 내용','수행업무','수행 업무','역할과 책임','responsibilities',"what you'll do",'role and responsibilities'],
+  qualifications: ['자격요건','자격 요건','필수요건','필수 요건','지원자격','지원 자격','자격조건','필수 조건','requirements','qualifications'],
+  preferred: ['우대사항','우대 사항','우대조건','우대 조건','우대 요건','preferred qualifications','preferred','nice to have']
+};
+const JD_STOP_PATTERNS = ['회사소개','회사 소개','복리후생','복지제도','복지 제도','채용절차','전형절차','전형 절차','지원방법','지원 방법','제출서류','제출 서류','근무조건','근무 조건','급여','연봉','benefits','perks','hiring process','how to apply'];
+
+function normalizeJdHeaderLine(line){
+  return String(line || '').replace(/^[#>\-\*\d\.\)\s]+/, '').replace(/[:：]\s*$/, '').trim();
+}
+
+function matchJdSectionHeader(line){
+  const norm = normalizeJdHeaderLine(line);
+  if (!norm || norm.length > 20) return null;
+  const lower = norm.toLowerCase();
+  for (const key of Object.keys(JD_SECTION_PATTERNS)) {
+    if (JD_SECTION_PATTERNS[key].some(p => lower === p.toLowerCase() || lower.startsWith(p.toLowerCase()))) return key;
+  }
+  return null;
+}
+function isJdStopHeader(line){
+  const norm = normalizeJdHeaderLine(line);
+  if (!norm || norm.length > 20) return false;
+  const lower = norm.toLowerCase();
+  return JD_STOP_PATTERNS.some(p => lower === p.toLowerCase() || lower.startsWith(p.toLowerCase()));
+}
+
+function parseJdSections(lines){
+  const result = { intro: '', duties: [], qualifications: [], preferred: [] };
+  let current = null;
+  lines.map(l => String(l || '').trim()).filter(l => l.length > 0).forEach(line => {
+    const sec = matchJdSectionHeader(line);
+    if (sec) { current = sec; return; }
+    if (isJdStopHeader(line)) { current = null; return; }
+    if (!current) return;
+    if (current === 'intro') {
+      result.intro += (result.intro ? ' ' : '') + line;
+    } else {
+      const cleaned = line.replace(/^[-•▪◦‣∙·*]\s*/, '').replace(/^\d+[\.\)]\s*/, '').trim();
+      if (cleaned) result[current].push(cleaned);
+    }
+  });
+  return result;
+}
+
+function guessJdTitleFromLines(lines, filename){
+  const first = lines.map(l => String(l || '').trim()).find(l => l.length > 0 && l.length <= 40);
+  if (first && !matchJdSectionHeader(first) && !isJdStopHeader(first)) return first;
+  return (filename || '').replace(/\.(docx|pdf)$/i, '');
+}
+
+function onJdImportFilePicked(input){
+  const f = (input.files || [])[0];
+  if (!f) return;
+  jdImportFile = f;
+  jdImportPastedText = '';
+  jdImportParsed = null;
+  jdImportError = '';
+  input.value = '';
+  render();
+}
+window.onJdImportFilePicked = onJdImportFilePicked;
+
+function removeJdImportFile(){
+  jdImportFile = null;
+  jdImportParsed = null;
+  render();
+}
+window.removeJdImportFile = removeJdImportFile;
+
+async function runJdImportExtract(){
+  const pasted = (document.getElementById('jdImportPasteArea') || {}).value || '';
+  jdImportPastedText = pasted;
+  if (!jdImportFile && !pasted.trim()) return;
+  jdImportBusy = true;
+  jdImportError = '';
+  jdImportParsed = null;
+  render();
+  try {
+    let lines;
+    let titleGuess = '';
+    if (pasted.trim()) {
+      lines = pasted.split('\n');
+      titleGuess = guessJdTitleFromLines(lines, '');
+    } else {
+      const name = jdImportFile.name.toLowerCase();
+      if (name.endsWith('.pdf')) {
+        if (typeof pdfjsLib === 'undefined') throw new Error('PDF 읽기 기능을 사용할 수 없는 화면입니다. 다운로드한 HR-업무매뉴얼.html 파일에서 열어주세요 (미리보기에서는 지원되지 않습니다).');
+        lines = await extractPdfLines(jdImportFile);
+      } else if (name.endsWith('.docx')) {
+        lines = await extractDocxLines(jdImportFile);
+      } else {
+        throw new Error('.docx 또는 .pdf 파일만 지원합니다. 다른 형식이면 내용을 복사해서 붙여넣어 주세요.');
+      }
+      titleGuess = guessJdTitleFromLines(lines, jdImportFile.name);
+    }
+    const sections = parseJdSections(lines);
+    jdImportParsed = {
+      title: titleGuess,
+      intro: sections.intro,
+      duties: sections.duties.join('\n'),
+      qualifications: sections.qualifications.join('\n'),
+      preferred: sections.preferred.join('\n'),
+    };
+  } catch (err) {
+    jdImportError = (err && err.message) ? err.message : String(err);
+  }
+  jdImportBusy = false;
+  render();
+}
+window.runJdImportExtract = runJdImportExtract;
+
+function saveJdImportResult(){
+  const title = (document.getElementById('jdImportTitle').value || '').trim();
+  if (!title) { alert('포지션 이름을 입력해주세요.'); return; }
+  const id = 'jd' + (DATA.jd.positions.reduce((m,p) => Math.max(m, parseInt(String(p.id).replace('jd',''),10) || 0), 0) + 1);
+  const newPos = {
+    id, title, group: '',
+    intro: document.getElementById('jdImportIntro').value.trim(),
+    duties: document.getElementById('jdImportDuties').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    qualifications: document.getElementById('jdImportQual').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    preferred: document.getElementById('jdImportPreferred').value.split('\n').map(s=>s.trim()).filter(Boolean),
+  };
+  DATA.jd.positions.push(newPos);
+  jdImportFile = null; jdImportParsed = null; jdImportPastedText = ''; jdImportError = '';
+  persist();
+  go('jddetail', null, id);
+}
+window.saveJdImportResult = saveJdImportResult;
+
+function renderJdImport(){
+  let bodyHtml = '';
+  if (jdImportBusy) {
+    bodyHtml = `<div class="candidate-loading">파일에서 텍스트를 뽑아 항목을 나누는 중입니다…</div>`;
+  } else if (jdImportError) {
+    bodyHtml = `<div class="anomaly-box"><h4>⚠ 추출 중 문제가 발생했습니다</h4><p>${esc(jdImportError)}</p></div>`;
+  } else if (jdImportParsed) {
+    const p = jdImportParsed;
+    bodyHtml = `
+      <div class="callout"><b>⚠ 자동 추출 결과입니다</b> — 문서 형식에 따라 항목이 잘못 나뉘거나 빠질 수 있습니다. 저장하기 전에 아래 내용을 꼭 확인하고 고쳐주세요.</div>
+      <div class="jd-field">
+        <label>포지션 이름</label>
+        <input type="text" id="jdImportTitle" value="${esc(p.title)}" style="width:100%;padding:.5rem .7rem;border:1px solid var(--line);border-radius:6px;font-family:var(--sans);background:var(--paper-raised);color:var(--ink);">
+      </div>
+      <div class="jd-field">
+        <label>직무소개</label>
+        <textarea id="jdImportIntro" style="min-height:110px;">${esc(p.intro)}</textarea>
+      </div>
+      <div class="jd-field">
+        <label>담당업무 (한 줄에 하나씩)</label>
+        <textarea id="jdImportDuties" style="min-height:130px;">${esc(p.duties)}</textarea>
+      </div>
+      <div class="jd-field">
+        <label>자격요건 (한 줄에 하나씩)</label>
+        <textarea id="jdImportQual" style="min-height:130px;">${esc(p.qualifications)}</textarea>
+      </div>
+      <div class="jd-field">
+        <label>우대사항 (한 줄에 하나씩)</label>
+        <textarea id="jdImportPreferred" style="min-height:110px;">${esc(p.preferred)}</textarea>
+      </div>
+      <div class="row-actions">
+        <button class="btn primary" onclick="saveJdImportResult()">이 내용으로 새 포지션 저장</button>
+        <button class="btn" onclick="removeJdImportFile()">다시 추출하기</button>
+      </div>
+    `;
+  }
+
+  return `
+    <p class="doc-eyebrow">09 · 채용 현황 관리 · JD 관리</p>
+    <h2>📎 JD 파일로 새 포지션 만들기</h2>
+    <p class="lede">Word(.docx) 또는 PDF로 된 JD 파일을 올리면 "직무소개·담당업무·자격요건·우대사항" 네 항목을 자동으로 나눠 채워드립니다. 회사소개·복리후생·채용절차 같은 공통 항목은 건드리지 않습니다.</p>
+    <div class="callout"><b>💡 참고</b> — 진짜로 문서를 이해하는 AI가 아니라, "직무소개", "담당업무" 같은 흔한 소제목을 찾아서 그 아래 내용을 해당 항목에 넣는 방식입니다. 소제목이 다른 표현이거나 아예 없는 문서는 잘 안 나뉠 수 있습니다.</div>
+    <div class="candidate-box">
+      ${jdImportFile ? `
+        <div class="candidate-file-item">
+          <span>📄 ${esc(jdImportFile.name)}</span>
+          <button onclick="removeJdImportFile()">삭제</button>
+        </div>
+      ` : `
+        <label class="candidate-drop" for="jdImportFileInput">📎 클릭해서 JD 파일 첨부 (.docx, .pdf)</label>
+        <input type="file" id="jdImportFileInput" accept=".docx,.pdf" style="display:none;" onchange="onJdImportFilePicked(this)">
+        <p style="text-align:center;font-size:.8rem;color:var(--ink-faint);margin:.8rem 0 .4rem;">또는 아래에 내용을 직접 복사해서 붙여넣어도 됩니다</p>
+        <textarea id="jdImportPasteArea" placeholder="JD 내용을 여기에 붙여넣기..." style="min-height:120px;"></textarea>
+      `}
+      <div style="margin-top:1rem;">
+        <button class="btn primary" onclick="runJdImportExtract()">추출하기</button>
+      </div>
+    </div>
+    ${bodyHtml}
+  `;
+}
 
 /* ============ 후보자 적합도 분석 (이력서/포트폴리오 PDF ↔ JD 키워드 매칭) ============
    실제 사람이 이해하는 AI 분석이 아니라, 이력서 텍스트와 JD의 자격요건/우대사항/담당업무
