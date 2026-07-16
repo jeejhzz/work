@@ -8399,6 +8399,18 @@ function renderDomain(domainId){
     </button>
   `).join('');
   let dashboardCard = '';
+  if (domainId === 'd04') {
+    dashboardCard = `
+      <a class="dashboard-card" href="04-구성원-간담회/자료/구성원-이슈-트래커.html" target="_blank" rel="noopener" style="display:block;text-decoration:none;">
+        <div class="card-top">
+          <span class="card-title">🔒 구성원 이슈 트래커</span>
+          <span class="dashboard-badge">비밀번호 필요</span>
+        </div>
+        <div class="card-desc">간담회 등에서 파악된 민감한 관찰 사항·공식 조사 기록을 관리하는 별도 암호화 파일입니다. 이 매뉴얼과는 다른 파일이며, 접근 권한이 있는 극소수만 비밀번호를 알아야 합니다.</div>
+      </a>
+      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:-.6rem;">※ 위 링크는 이 매뉴얼 파일과 "04-구성원-간담회/자료/구성원-이슈-트래커.html"가 같은 폴더 구조로 함께 있을 때만 열립니다. 폴더 구조가 다르면 저장소에서 해당 파일을 직접 여세요.</p>
+    `;
+  }
   if (domainId === 'd09') {
     const openCount = DATA.recruitment.groups.reduce((n,g)=>n+g.positions.length,0);
     const jdCount = DATA.jd.positions.length;
