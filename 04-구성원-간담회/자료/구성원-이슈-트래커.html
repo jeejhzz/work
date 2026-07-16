@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>구성원 이슈 트래커</title>
+<style>
+  :root {
+    --paper: #f2f0e9; --paper-raised: #fdfcf9; --ink: #23241f; --ink-soft: #63625a; --ink-faint: #93918d;
+    --accent: #1f4e52; --accent-strong: #163a3d; --accent-tint: #e2ebe9;
+    --seal: #a4392c; --seal-tint: #f5e3df;
+    --line: #ddd9cc; --line-soft: #eae7dc; --shadow: 0 1px 2px rgba(35,36,31,.06),0 6px 20px rgba(35,36,31,.05);
+    --st-low:#2f7a4f; --st-low-bg:#dcefe1;
+    --st-mid:#a06a1f; --st-mid-bg:#f3e6cf;
+    --st-high:#a4392c; --st-high-bg:#f5e3df;
+    --serif:"Noto Serif KR","Nanum Myeongjo",Georgia,serif;
+    --sans:"Pretendard","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",system-ui,-apple-system,sans-serif;
+    --mono: ui-monospace,"SFMono-Regular","Menlo","D2Coding",Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --paper:#1b1c19; --paper-raised:#232420; --ink:#eae7de; --ink-soft:#a8a598; --ink-faint:#726f63;
+      --accent:#6cb2ac; --accent-strong:#8ac9c2; --accent-tint:#223330; --seal:#d9705f; --seal-tint:#362321;
+      --line:#37372f; --line-soft:#2b2b25; --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);
+      --st-low:#7ecb99; --st-low-bg:#1f3327; --st-mid:#d9ac5c; --st-mid-bg:#3a2f1c; --st-high:#d9705f; --st-high-bg:#362321; }
+  }
+  * { box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{ background:var(--paper); color:var(--ink); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+  h1,h2,h3{ text-wrap:balance; font-family:var(--serif); }
+  p{ text-wrap:pretty; }
+
+  .lock-wrap{ min-height:100vh; display:flex; align-items:center; justify-content:center; padding:2rem; }
+  .lock-box{ max-width:420px; width:100%; background:var(--paper-raised); border:1px solid var(--line); border-radius:14px; padding:2rem 2.2rem; box-shadow:var(--shadow); }
+  .lock-box h1{ font-size:1.3rem; margin:0 0 .4rem; }
+  .lock-box p{ font-size:.85rem; color:var(--ink-soft); line-height:1.6; }
+  .lock-box input[type=password]{ width:100%; padding:.7rem .9rem; border:1px solid var(--line); border-radius:8px; font-family:var(--sans); font-size:1rem; background:var(--paper); color:var(--ink); margin-top:.8rem; }
+  .lock-box .btn{ margin-top:1rem; width:100%; }
+  .lock-err{ color:var(--seal); font-size:.82rem; margin-top:.6rem; min-height:1.2em; }
+  .lock-warn{ margin-top:1.2rem; padding:.8rem 1rem; background:var(--seal-tint); border-left:3px solid var(--seal); border-radius:0 8px 8px 0; font-size:.78rem; color:var(--ink-soft); line-height:1.6; }
+
+  .app{ max-width:1100px; margin:0 auto; padding:0 1.5rem 4rem; }
+  .topbar{ display:flex; align-items:center; justify-content:space-between; gap:1rem; padding:1.3rem 0; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+  .topbar h1{ font-size:1.25rem; margin:0; }
+  .topbar .actions{ display:flex; gap:.6rem; flex-wrap:wrap; }
+
+  .btn{ font-family:var(--sans); font-size:.82rem; font-weight:600; border-radius:8px; padding:.55rem 1rem; cursor:pointer; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); }
+  .btn:hover{ filter:brightness(0.97); }
+  .btn.primary{ background:var(--accent); border-color:var(--accent); color:#fdfcf9; }
+  .btn.primary:hover{ background:var(--accent-strong); }
+  .btn.danger{ color:var(--seal); }
+
+  .callout{ border-left:3px solid var(--seal); background:var(--seal-tint); padding:.8rem 1.05rem; border-radius:0 8px 8px 0; margin:1.2rem 0; font-size:.85rem; line-height:1.65; }
+
+  .tabs{ display:flex; gap:.5rem; margin:1.3rem 0 1rem; border-bottom:1px solid var(--line); }
+  .tab-btn{ font-family:var(--sans); font-size:.85rem; font-weight:600; padding:.6rem 1rem; border:none; background:none; color:var(--ink-soft); cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; }
+  .tab-btn.active{ color:var(--accent-strong); border-bottom-color:var(--accent); }
+
+  .filter-row{ display:flex; gap:.6rem; flex-wrap:wrap; margin-bottom:1.1rem; align-items:center; }
+  .filter-row select,.filter-row input[type=text]{ padding:.4rem .6rem; border:1px solid var(--line); border-radius:6px; font-family:var(--sans); font-size:.82rem; background:var(--paper-raised); color:var(--ink); }
+
+  .entry-card{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:1rem 1.2rem; box-shadow:var(--shadow); margin-bottom:.9rem; cursor:pointer; }
+  .entry-card:hover{ border-color:var(--accent); }
+  .entry-top{ display:flex; align-items:center; justify-content:space-between; gap:.8rem; flex-wrap:wrap; margin-bottom:.4rem; }
+  .entry-subjects{ font-weight:700; font-family:var(--serif); font-size:1rem; }
+  .entry-meta{ font-size:.76rem; color:var(--ink-faint); margin-top:.15rem; }
+  .entry-summary{ font-size:.87rem; color:var(--ink-soft); margin-top:.3rem; line-height:1.55; }
+  .badge{ display:inline-block; font-size:.68rem; font-weight:700; padding:.2em .7em; border-radius:999px; white-space:nowrap; }
+  .badge.sev-낮음{ color:var(--st-low); background:var(--st-low-bg); }
+  .badge.sev-중간{ color:var(--st-mid); background:var(--st-mid-bg); }
+  .badge.sev-높음{ color:var(--st-high); background:var(--st-high-bg); }
+  .badge.type-패턴관찰{ color:var(--accent-strong); background:var(--accent-tint); }
+  .badge.type-공식조사{ color:var(--seal); background:var(--seal-tint); }
+  .badge.status{ color:var(--ink-soft); background:var(--line-soft); }
+
+  .person-card{ border:1px solid var(--line); border-radius:12px; background:var(--paper-raised); padding:1rem 1.2rem; box-shadow:var(--shadow); margin-bottom:.9rem; cursor:pointer; display:flex; align-items:center; justify-content:space-between; }
+  .person-card:hover{ border-color:var(--accent); }
+  .person-name{ font-family:var(--serif); font-weight:700; font-size:1.05rem; }
+  .person-count{ font-family:var(--mono); font-size:.82rem; color:var(--ink-soft); }
+  .person-count.warn{ color:var(--seal); font-weight:700; }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(20,20,16,.55); z-index:50; display:none; align-items:flex-start; justify-content:center; overflow-y:auto; padding:3rem 1.5rem; }
+  .modal-overlay.open{ display:flex; }
+  .modal{ background:var(--paper-raised); border-radius:16px; max-width:640px; width:100%; padding:1.8rem 2rem 2rem; box-shadow:var(--shadow); }
+  .modal h2{ font-size:1.2rem; margin:0 0 1rem; display:flex; justify-content:space-between; align-items:center; }
+  .modal .close-x{ background:none; border:none; font-size:1.4rem; color:var(--ink-faint); cursor:pointer; line-height:1; }
+  .field{ margin-bottom:.9rem; }
+  .field label{ display:block; font-size:.78rem; color:var(--ink-soft); margin-bottom:.3rem; font-weight:600; }
+  .field input[type=text],.field input[type=date],.field select,.field textarea{ width:100%; padding:.55rem .7rem; border:1px solid var(--line); border-radius:7px; font-family:var(--sans); font-size:.87rem; background:var(--paper); color:var(--ink); }
+  .field textarea{ min-height:90px; resize:vertical; }
+  .field-hint{ font-size:.72rem; color:var(--ink-faint); margin-top:.25rem; }
+  .row2{ display:grid; grid-template-columns:1fr 1fr; gap:.8rem; }
+  .row-actions{ display:flex; gap:.6rem; align-items:center; margin-top:1.2rem; flex-wrap:wrap; }
+  .save-flag{ font-size:.78rem; color:var(--ink-soft); }
+
+  .action-log{ margin-top:.3rem; }
+  .action-item{ font-size:.82rem; border-left:2px solid var(--line); padding:.3rem .8rem; margin-bottom:.5rem; color:var(--ink-soft); }
+  .action-item b{ color:var(--ink); }
+
+  .empty-note{ text-align:center; padding:3rem 1rem; color:var(--ink-faint); font-size:.9rem; border:1px dashed var(--line); border-radius:12px; }
+</style>
+</head>
+<body>
+
+<div class="app" id="app"></div>
+
+<script>
+/*ENC-START*/
+let ENCRYPTED = null;
+/*ENC-END*/
+
+const ORIGINAL_HTML = document.documentElement.outerHTML;
+
+/* ============ 암호화 (AES-256-GCM + PBKDF2) ============
+   이 파일은 서버가 없는 단일 HTML 파일이라 "진짜" 보안은 아닙니다.
+   비밀번호를 모르는 사람이 파일을 열어도 내용이 실제로 암호화되어 있어
+   그냥 파일을 텍스트 에디터로 열어보거나 개발자도구로 봐도 평문이 보이지
+   않도록 하는 정도의 보호입니다. 비밀번호를 아는 사람에게는 당연히
+   그 이상의 보호를 제공하지 못합니다. */
+function bufToB64(buf){ return btoa(String.fromCharCode(...new Uint8Array(buf))); }
+function b64ToBuf(b64){ return Uint8Array.from(atob(b64), c => c.charCodeAt(0)); }
+
+async function deriveKey(password, salt){
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
+  return crypto.subtle.deriveKey(
+    { name:'PBKDF2', salt, iterations:150000, hash:'SHA-256' },
+    keyMaterial,
+    { name:'AES-GCM', length:256 },
+    false,
+    ['encrypt','decrypt']
+  );
+}
+
+async function encryptJson(obj, password){
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const key = await deriveKey(password, salt);
+  const enc = new TextEncoder();
+  const ciphertext = await crypto.subtle.encrypt({ name:'AES-GCM', iv }, key, enc.encode(JSON.stringify(obj)));
+  return { salt: bufToB64(salt), iv: bufToB64(iv), data: bufToB64(ciphertext) };
+}
+
+async function decryptJson(enc, password){
+  const salt = b64ToBuf(enc.salt);
+  const iv = b64ToBuf(enc.iv);
+  const data = b64ToBuf(enc.data);
+  const key = await deriveKey(password, salt);
+  const plaintext = await crypto.subtle.decrypt({ name:'AES-GCM', iv }, key, data);
+  return JSON.parse(new TextDecoder().decode(plaintext));
+}
+
+/* ============ 상태 ============ */
+let sessionPassword = null;
+let DATA = null; // { entries: [...] }  복호화 후에만 채워짐
+let view = { type:'timeline' };
+let filterType = '', filterStatus = '', filterSeverity = '', filterSubject = '';
+let openEntryId = null;
+let isNewEntry = false;
+
+const STORAGE_KEY = 'issue-tracker-enc-v1';
+
+function esc(s){ return String(s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+function getStoredEncrypted(){
+  const fromStorage = localStorage.getItem(STORAGE_KEY);
+  if (fromStorage) { try { return JSON.parse(fromStorage); } catch(e) {} }
+  return ENCRYPTED;
+}
+
+async function persistEncrypted(){
+  const enc = await encryptJson(DATA, sessionPassword);
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(enc));
+  return enc;
+}
+
+/* ============ 잠금 화면 ============ */
+function renderLockScreen(mode, errMsg){
+  const isSetup = mode === 'setup';
+  document.getElementById('app').innerHTML = `
+    <div class="lock-wrap">
+      <div class="lock-box">
+        <h1>🔒 구성원 이슈 트래커</h1>
+        <p>${isSetup ? '이 파일을 처음 여셨습니다. 앞으로 이 파일을 열 때 사용할 비밀번호를 정해주세요.' : '비밀번호를 입력해야 내용을 볼 수 있습니다.'}</p>
+        <input type="password" id="lockPw" placeholder="비밀번호" autofocus>
+        ${isSetup ? '<input type="password" id="lockPw2" placeholder="비밀번호 확인" style="margin-top:.6rem;">' : ''}
+        <button class="btn primary" onclick="${isSetup ? 'submitSetupPassword()' : 'submitUnlockPassword()'}">${isSetup ? '비밀번호 설정하고 시작하기' : '열기'}</button>
+        <div class="lock-err">${esc(errMsg||'')}</div>
+        <div class="lock-warn">⚠ 이 비밀번호는 서버에 저장되지 않고 이 파일 안에서만 씁니다. <b>비밀번호를 잊으면 아무도 복구해드릴 수 없습니다.</b> 또한 이 잠금은 브라우저 개발자도구 등으로 우회 가능한 수준이라 완전한 보안은 아니며, 실수로 여는 것을 막는 정도로 생각해주세요.</div>
+      </div>
+    </div>
+  `;
+  const pwEl = document.getElementById('lockPw');
+  pwEl.addEventListener('keydown', e => { if (e.key === 'Enter' && !isSetup) submitUnlockPassword(); });
+}
+
+async function submitSetupPassword(){
+  const pw = document.getElementById('lockPw').value;
+  const pw2 = document.getElementById('lockPw2').value;
+  if (!pw || pw.length < 4) { renderLockScreen('setup', '비밀번호는 4자 이상으로 설정해주세요.'); return; }
+  if (pw !== pw2) { renderLockScreen('setup', '비밀번호가 서로 다릅니다.'); return; }
+  sessionPassword = pw;
+  DATA = { entries: [] };
+  await persistEncrypted();
+  render();
+}
+window.submitSetupPassword = submitSetupPassword;
+
+async function submitUnlockPassword(){
+  const pw = document.getElementById('lockPw').value;
+  const enc = getStoredEncrypted();
+  try {
+    DATA = await decryptJson(enc, pw);
+    sessionPassword = pw;
+    render();
+  } catch (e) {
+    renderLockScreen('unlock', '비밀번호가 올바르지 않습니다.');
+  }
+}
+window.submitUnlockPassword = submitUnlockPassword;
+
+function lockAgain(){
+  sessionPassword = null;
+  DATA = null;
+  view = { type:'timeline' };
+  boot();
+}
+window.lockAgain = lockAgain;
+
+/* ============ 데이터 조작 ============ */
+let entryIdSeq = 0;
+function nextEntryId(){ entryIdSeq++; return 'iss' + Date.now() + entryIdSeq; }
+
+function openNewEntry(){
+  openEntryId = null;
+  isNewEntry = true;
+  render();
+}
+window.openNewEntry = openNewEntry;
+
+function openEntry(id){
+  openEntryId = id;
+  isNewEntry = false;
+  render();
+}
+window.openEntry = openEntry;
+
+function closeEntryModal(){
+  openEntryId = null;
+  isNewEntry = false;
+  render();
+}
+window.closeEntryModal = closeEntryModal;
+
+async function saveEntryForm(){
+  const subjects = document.getElementById('fSubjects').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const reporters = document.getElementById('fReporters').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const entry = {
+    id: openEntryId || nextEntryId(),
+    type: document.getElementById('fType').value,
+    date: document.getElementById('fDate').value || todayStr(),
+    source: document.getElementById('fSource').value.trim(),
+    subjects, reporters,
+    summary: document.getElementById('fSummary').value.trim(),
+    details: document.getElementById('fDetails').value.trim(),
+    severity: document.getElementById('fSeverity').value,
+    status: document.getElementById('fStatus').value,
+    actions: (isNewEntry ? [] : (DATA.entries.find(e=>e.id===openEntryId) || {}).actions) || [],
+  };
+  if (isNewEntry) {
+    DATA.entries.push(entry);
+  } else {
+    const idx = DATA.entries.findIndex(e => e.id === openEntryId);
+    if (idx >= 0) DATA.entries[idx] = entry;
+  }
+  await persistEncrypted();
+  openEntryId = entry.id;
+  isNewEntry = false;
+  render();
+}
+window.saveEntryForm = saveEntryForm;
+
+async function deleteEntry(id){
+  if (!confirm('이 기록을 삭제할까요? 되돌릴 수 없습니다.')) return;
+  DATA.entries = DATA.entries.filter(e => e.id !== id);
+  await persistEncrypted();
+  closeEntryModal();
+}
+window.deleteEntry = deleteEntry;
+
+async function addActionLog(id){
+  const text = (prompt('조치/진행 내용을 입력하세요') || '').trim();
+  if (!text) return;
+  const entry = DATA.entries.find(e => e.id === id);
+  if (!entry) return;
+  entry.actions = entry.actions || [];
+  entry.actions.push({ date: todayStr(), text });
+  await persistEncrypted();
+  render();
+}
+window.addActionLog = addActionLog;
+
+function setFilter(field, value){
+  if (field === 'type') filterType = value;
+  else if (field === 'status') filterStatus = value;
+  else if (field === 'severity') filterSeverity = value;
+  else if (field === 'subject') filterSubject = value;
+  render();
+}
+window.setFilter = setFilter;
+
+function setTab(t){
+  view = { type: t };
+  render();
+}
+window.setTab = setTab;
+
+function viewPerson(name){
+  view = { type:'person', name };
+  render();
+}
+window.viewPerson = viewPerson;
+
+/* ============ 내보내기 ============ */
+async function exportFile(){
+  const enc = await persistEncrypted();
+  const newSource = ORIGINAL_HTML.replace(
+    /\/\*ENC-START\*\/[\s\S]*?\/\*ENC-END\*\//,
+    `/*ENC-START*/\nlet ENCRYPTED = ${JSON.stringify(enc)};\n/*ENC-END*/`
+  );
+  const blob = new Blob(['<!DOCTYPE html>\n' + newSource], { type:'text/html' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `구성원-이슈-트래커-${todayStr()}.html`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  const flag = document.getElementById('saveFlag');
+  if (flag) flag.textContent = '파일로 저장됨 · ' + new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
+}
+window.exportFile = exportFile;
+
+/* ============ 렌더링 ============ */
+function typeBadge(t){ return `<span class="badge type-${esc(t)}">${esc(t)}</span>`; }
+function sevBadge(s){ return `<span class="badge sev-${esc(s)}">${esc(s)}</span>`; }
+function statusBadge(s){ return `<span class="badge status">${esc(s)}</span>`; }
+
+function allSubjects(){
+  const set = new Set();
+  DATA.entries.forEach(e => (e.subjects||[]).forEach(s => set.add(s)));
+  return [...set].sort();
+}
+
+function filteredEntries(){
+  return DATA.entries.filter(e => {
+    if (filterType && e.type !== filterType) return false;
+    if (filterStatus && e.status !== filterStatus) return false;
+    if (filterSeverity && e.severity !== filterSeverity) return false;
+    if (filterSubject && !(e.subjects||[]).includes(filterSubject)) return false;
+    return true;
+  }).sort((a,b) => b.date.localeCompare(a.date));
+}
+
+function renderEntryCard(e){
+  return `
+    <div class="entry-card" onclick="openEntry('${e.id}')">
+      <div class="entry-top">
+        <span class="entry-subjects">${esc((e.subjects||[]).join(', ') || '(대상 미지정)')}</span>
+        <span>${typeBadge(e.type)} ${sevBadge(e.severity)} ${statusBadge(e.status)}</span>
+      </div>
+      <div class="entry-meta">${esc(e.date)} · ${esc(e.source || '출처 미기재')}</div>
+      <div class="entry-summary">${esc(e.summary)}</div>
+    </div>
+  `;
+}
+
+function renderTimelineTab(){
+  const entries = filteredEntries();
+  const subjects = allSubjects();
+  return `
+    <div class="filter-row">
+      <select onchange="setFilter('type', this.value)">
+        <option value="">구분 전체</option>
+        <option value="패턴관찰" ${filterType==='패턴관찰'?'selected':''}>패턴관찰</option>
+        <option value="공식조사" ${filterType==='공식조사'?'selected':''}>공식조사</option>
+      </select>
+      <select onchange="setFilter('status', this.value)">
+        <option value="">상태 전체</option>
+        <option value="관찰중" ${filterStatus==='관찰중'?'selected':''}>관찰중</option>
+        <option value="조사중" ${filterStatus==='조사중'?'selected':''}>조사중</option>
+        <option value="조치완료" ${filterStatus==='조치완료'?'selected':''}>조치완료</option>
+        <option value="종결" ${filterStatus==='종결'?'selected':''}>종결</option>
+      </select>
+      <select onchange="setFilter('severity', this.value)">
+        <option value="">심각도 전체</option>
+        <option value="낮음" ${filterSeverity==='낮음'?'selected':''}>낮음</option>
+        <option value="중간" ${filterSeverity==='중간'?'selected':''}>중간</option>
+        <option value="높음" ${filterSeverity==='높음'?'selected':''}>높음</option>
+      </select>
+      <select onchange="setFilter('subject', this.value)">
+        <option value="">관련 인물 전체</option>
+        ${subjects.map(s => `<option value="${esc(s)}" ${filterSubject===s?'selected':''}>${esc(s)}</option>`).join('')}
+      </select>
+    </div>
+    ${entries.length ? entries.map(renderEntryCard).join('') : '<div class="empty-note">조건에 맞는 기록이 없습니다.</div>'}
+  `;
+}
+
+function renderPeopleTab(){
+  const counts = {};
+  DATA.entries.forEach(e => (e.subjects||[]).forEach(s => { counts[s] = (counts[s]||0) + 1; }));
+  const names = Object.keys(counts).sort((a,b) => counts[b]-counts[a]);
+  return `
+    <p style="font-size:.85rem;color:var(--ink-soft);">같은 사람에 대한 기록이 여러 건 쌓이면(특히 서로 다른 시점·출처에서) 눈여겨볼 필요가 있는 패턴일 수 있습니다. 인원수 기준으로 정렬되어 있습니다.</p>
+    ${names.length ? names.map(name => `
+      <div class="person-card" onclick="viewPerson('${esc(name)}')">
+        <span class="person-name">${esc(name)}</span>
+        <span class="person-count ${counts[name]>=3?'warn':''}">${counts[name]}건</span>
+      </div>
+    `).join('') : '<div class="empty-note">아직 기록이 없습니다.</div>'}
+  `;
+}
+
+function renderPersonView(name){
+  const entries = DATA.entries.filter(e => (e.subjects||[]).includes(name)).sort((a,b) => b.date.localeCompare(a.date));
+  return `
+    <button class="btn" onclick="setTab('people')" style="margin-bottom:1rem;">← 인물별 목록으로</button>
+    <h2>${esc(name)} 관련 기록 (${entries.length}건)</h2>
+    ${entries.length ? entries.map(renderEntryCard).join('') : '<div class="empty-note">기록이 없습니다.</div>'}
+  `;
+}
+
+function renderEntryModal(){
+  if (!isNewEntry && !openEntryId) return '';
+  const e = isNewEntry ? { type:'패턴관찰', date: todayStr(), source:'', subjects:[], reporters:[], summary:'', details:'', severity:'낮음', status:'관찰중', actions:[] }
+    : DATA.entries.find(x => x.id === openEntryId);
+  if (!e) return '';
+  const actionsHtml = (e.actions||[]).map(a => `<div class="action-item"><b>${esc(a.date)}</b> — ${esc(a.text)}</div>`).join('');
+  return `
+    <div class="modal-overlay open" onclick="if(event.target===this) closeEntryModal()">
+      <div class="modal">
+        <h2>${isNewEntry ? '새 기록 추가' : '기록 상세/수정'} <button class="close-x" onclick="closeEntryModal()">&times;</button></h2>
+        <div class="row2">
+          <div class="field"><label>구분</label>
+            <select id="fType">
+              <option value="패턴관찰" ${e.type==='패턴관찰'?'selected':''}>패턴관찰 (간담회 등에서 나온 우려/관찰)</option>
+              <option value="공식조사" ${e.type==='공식조사'?'selected':''}>공식조사 (조사/징계 진행 사안)</option>
+            </select>
+          </div>
+          <div class="field"><label>날짜</label><input type="date" id="fDate" value="${esc(e.date)}"></div>
+        </div>
+        <div class="field"><label>출처 (예: 2026 Q3 구성원 간담회)</label><input type="text" id="fSource" value="${esc(e.source)}"></div>
+        <div class="field"><label>관련 인물 (쉼표로 여러 명 구분)</label><input type="text" id="fSubjects" value="${esc((e.subjects||[]).join(', '))}"></div>
+        <div class="field"><label>제보자/출처 인물 (선택, 쉼표로 구분 — 익명 보호가 필요하면 비워두거나 "비공개"로)</label><input type="text" id="fReporters" value="${esc((e.reporters||[]).join(', '))}"></div>
+        <div class="field"><label>요약 (한 줄)</label><input type="text" id="fSummary" value="${esc(e.summary)}"></div>
+        <div class="field"><label>상세 내용</label><textarea id="fDetails">${esc(e.details)}</textarea></div>
+        <div class="row2">
+          <div class="field"><label>심각도</label>
+            <select id="fSeverity">
+              <option value="낮음" ${e.severity==='낮음'?'selected':''}>낮음</option>
+              <option value="중간" ${e.severity==='중간'?'selected':''}>중간</option>
+              <option value="높음" ${e.severity==='높음'?'selected':''}>높음</option>
+            </select>
+          </div>
+          <div class="field"><label>상태</label>
+            <select id="fStatus">
+              <option value="관찰중" ${e.status==='관찰중'?'selected':''}>관찰중</option>
+              <option value="조사중" ${e.status==='조사중'?'selected':''}>조사중</option>
+              <option value="조치완료" ${e.status==='조치완료'?'selected':''}>조치완료</option>
+              <option value="종결" ${e.status==='종결'?'selected':''}>종결</option>
+            </select>
+          </div>
+        </div>
+        ${!isNewEntry ? `
+          <div class="field"><label>조치/진행 기록</label>
+            <div class="action-log">${actionsHtml || '<p style="font-size:.8rem;color:var(--ink-faint);">아직 없음</p>'}</div>
+            <button class="btn" onclick="addActionLog('${e.id}')" type="button">+ 조치 기록 추가</button>
+          </div>
+        ` : ''}
+        <div class="row-actions">
+          <button class="btn primary" onclick="saveEntryForm()">저장</button>
+          ${!isNewEntry ? `<button class="btn danger" onclick="deleteEntry('${e.id}')">삭제</button>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function render(){
+  if (!DATA) return;
+  const tabsHtml = `
+    <div class="tabs">
+      <button class="tab-btn ${view.type==='timeline'?'active':''}" onclick="setTab('timeline')">전체 타임라인</button>
+      <button class="tab-btn ${(view.type==='people'||view.type==='person')?'active':''}" onclick="setTab('people')">인물별 보기</button>
+    </div>
+  `;
+  let body = '';
+  if (view.type === 'timeline') body = renderTimelineTab();
+  else if (view.type === 'people') body = renderPeopleTab();
+  else if (view.type === 'person') body = renderPersonView(view.name);
+
+  document.getElementById('app').innerHTML = `
+    <div class="topbar">
+      <h1>🔒 구성원 이슈 트래커</h1>
+      <div class="actions">
+        <span class="save-flag" id="saveFlag"></span>
+        <button class="btn" onclick="exportFile()">⬇ 파일로 저장</button>
+        <button class="btn" onclick="lockAgain()">🔒 다시 잠그기</button>
+        <button class="btn primary" onclick="openNewEntry()">+ 새 기록 추가</button>
+      </div>
+    </div>
+    <div class="callout">⚠ 이 자료는 민감한 인사 정보를 담을 수 있습니다. 접근 권한이 있는 극소수 외에는 화면을 공유하거나 파일을 전달하지 마세요. 이 잠금은 완전한 보안이 아니라 실수로 열람되는 것을 막는 정도입니다.</div>
+    ${tabsHtml}
+    ${body}
+    ${renderEntryModal()}
+  `;
+}
+
+/* ============ 부팅 ============ */
+function boot(){
+  const enc = getStoredEncrypted();
+  if (enc) renderLockScreen('unlock');
+  else renderLockScreen('setup');
+}
+boot();
+</script>
+</body>
+</html>
