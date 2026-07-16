@@ -272,6 +272,15 @@
   .org-member-chip .tag{ font-size:.65rem; opacity:.8; }
   .org-legend{ display:flex; flex-wrap:wrap; gap:1rem; font-size:.78rem; color:var(--ink-soft); margin-top:1rem; padding:.7rem 1rem; background:var(--paper); border:1px solid var(--line); border-radius:8px; }
   .org-legend .sw{ display:inline-block; width:14px; height:14px; border-radius:3px; margin-right:.4em; vertical-align:middle; }
+  .org-toggle{ display:inline-block; width:1em; font-size:.75em; opacity:.7; }
+  .org-collapsed-note{ margin-top:.5rem; font-size:.72rem; color:var(--accent-strong); background:var(--accent-tint); border-radius:6px; padding:.3rem .5rem; cursor:pointer; text-align:center; }
+  .org-collapsed-note:hover{ filter:brightness(0.97); }
+  .org-leader-name{ cursor:pointer; }
+  .org-leader-name:hover{ text-decoration:underline; }
+  .org-box.drag-over{ outline:2px dashed var(--accent); outline-offset:2px; }
+  .org-trash-zone{ display:none; align-items:center; justify-content:center; font-size:.8rem; color:var(--seal); border:2px dashed var(--seal); border-radius:8px; padding:.4rem 1rem; background:var(--seal-tint); }
+  .org-trash-zone.show{ display:flex; }
+  .org-trash-zone.drag-over{ background:var(--seal); color:#fff; }
   .org-edit-panel{ border:1px solid var(--accent); border-radius:10px; background:var(--accent-tint); padding:1rem 1.2rem; margin-bottom:1.2rem; }
   .org-edit-panel h4{ margin:0 0 .7rem; font-size:.9rem; }
   .org-edit-panel .field{ margin-bottom:.6rem; }
@@ -7725,6 +7734,9 @@ function renderHeadcountDashboard(){
 
 /* ============ 조직도 (편집 가능) ============ */
 let orgEditingNodeId = null;
+let orgProfileMember = null; // { nodeId, idx } for the open profile card
+let orgDraggedMember = null; // { nodeId, idx } during a member drag
+let orgCollapsedNodes = null; // Set of node ids whose children are hidden; lazy-initialized
 let orgIdSeq = 0;
 (function initOrgIdSeq(){
   function walk(nodes){
@@ -7753,6 +7765,151 @@ function countOrgSubtree(node){
   node.children.forEach(c => n += countOrgSubtree(c));
   return n;
 }
+
+function orgNodePath(id, nodes, trail){
+  nodes = nodes || DATA.orgChart.nodes;
+  trail = trail || [];
+  for (const n of nodes) {
+    const newTrail = [...trail, n.name];
+    if (n.id === id) return newTrail.join(' > ');
+    const found = orgNodePath(id, n.children, newTrail);
+    if (found) return found;
+  }
+  return null;
+}
+
+function initOrgCollapse(){
+  if (orgCollapsedNodes !== null) return;
+  orgCollapsedNodes = new Set();
+  function walk(nodes, depth){
+    nodes.forEach(n => {
+      if (depth >= 1 && n.children.length) orgCollapsedNodes.add(n.id);
+      walk(n.children, depth + 1);
+    });
+  }
+  walk(DATA.orgChart.nodes, 0);
+}
+
+function toggleOrgCollapse(id){
+  initOrgCollapse();
+  if (orgCollapsedNodes.has(id)) orgCollapsedNodes.delete(id); else orgCollapsedNodes.add(id);
+  render();
+}
+window.toggleOrgCollapse = toggleOrgCollapse;
+
+function expandAllOrg(){
+  orgCollapsedNodes = new Set();
+  render();
+}
+window.expandAllOrg = expandAllOrg;
+
+function collapseAllOrg(){
+  orgCollapsedNodes = new Set();
+  function walk(nodes){ nodes.forEach(n => { if (n.children.length) orgCollapsedNodes.add(n.id); walk(n.children); }); }
+  walk(DATA.orgChart.nodes);
+  render();
+}
+window.collapseAllOrg = collapseAllOrg;
+
+function openOrgProfile(nodeId, idx){
+  orgProfileMember = { nodeId, idx };
+  render();
+}
+window.openOrgProfile = openOrgProfile;
+
+function closeOrgProfile(){
+  orgProfileMember = null;
+  render();
+}
+window.closeOrgProfile = closeOrgProfile;
+
+function deleteOrgMemberFromProfile(){
+  if (!orgProfileMember) return;
+  const { nodeId, idx } = orgProfileMember;
+  const found = findOrgNode(nodeId);
+  if (!found) return;
+  const person = found.node.members[idx];
+  if (!person) return;
+  if (!confirm(`"${person.name}"님을 삭제(퇴사 처리)할까요?`)) return;
+  found.node.members.splice(idx, 1);
+  orgProfileMember = null;
+  persist();
+  render();
+}
+window.deleteOrgMemberFromProfile = deleteOrgMemberFromProfile;
+
+function onOrgMemberDragStart(e, nodeId, idx){
+  orgDraggedMember = { nodeId, idx };
+  e.dataTransfer.effectAllowed = 'move';
+  e.stopPropagation();
+  const trash = document.getElementById('orgTrashZone');
+  if (trash) trash.classList.add('show');
+}
+window.onOrgMemberDragStart = onOrgMemberDragStart;
+
+function onOrgMemberDragEnd(){
+  orgDraggedMember = null;
+  const trash = document.getElementById('orgTrashZone');
+  if (trash) trash.classList.remove('show');
+  document.querySelectorAll('.org-box.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+window.onOrgMemberDragEnd = onOrgMemberDragEnd;
+
+function onOrgBoxDragOver(e){
+  if (!orgDraggedMember) return;
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+window.onOrgBoxDragOver = onOrgBoxDragOver;
+
+function onOrgBoxDragLeave(e){
+  e.currentTarget.classList.remove('drag-over');
+}
+window.onOrgBoxDragLeave = onOrgBoxDragLeave;
+
+function onOrgMemberDrop(e, targetNodeId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!orgDraggedMember) return;
+  const { nodeId: fromId, idx } = orgDraggedMember;
+  orgDraggedMember = null;
+  if (fromId === targetNodeId) return;
+  const fromFound = findOrgNode(fromId);
+  const toFound = findOrgNode(targetNodeId);
+  if (!fromFound || !toFound) return;
+  const [moved] = fromFound.node.members.splice(idx, 1);
+  if (!moved) return;
+  moved.deptMove = true;
+  moved.newHire = false;
+  toFound.node.members.push(moved);
+  persist();
+  render();
+}
+window.onOrgMemberDrop = onOrgMemberDrop;
+
+function onOrgTrashDragOver(e){
+  if (!orgDraggedMember) return;
+  e.preventDefault();
+  e.currentTarget.classList.add('drag-over');
+}
+window.onOrgTrashDragOver = onOrgTrashDragOver;
+
+function onOrgTrashDrop(e){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  if (!orgDraggedMember) return;
+  const { nodeId, idx } = orgDraggedMember;
+  orgDraggedMember = null;
+  const found = findOrgNode(nodeId);
+  if (!found) return;
+  const person = found.node.members[idx];
+  if (!person) return;
+  if (!confirm(`"${person.name}"님을 퇴사 처리(삭제)할까요?`)) { render(); return; }
+  found.node.members.splice(idx, 1);
+  persist();
+  render();
+}
+window.onOrgTrashDrop = onOrgTrashDrop;
 
 function toggleOrgEdit(id){
   orgEditingNodeId = (orgEditingNodeId === id) ? null : id;
@@ -7834,28 +7991,76 @@ function toggleOrgMemberTag(nodeId, idx, field){
 }
 window.toggleOrgMemberTag = toggleOrgMemberTag;
 
-function orgMemberChip(m){
+function orgMemberChip(node, m, idx){
   const tags = [];
   if (m.intern) tags.push('인');
   if (m.concurrent) tags.push('겸');
   const cls = ['org-member-chip'];
   if (m.newHire) cls.push('new-hire');
   if (m.deptMove) cls.push('dept-move');
-  return `<div class="${cls.join(' ')}">${esc(m.name)}${tags.length ? `<span class="tag"> (${tags.join(',')})</span>` : ''}</div>`;
+  return `<div class="${cls.join(' ')}" draggable="true"
+      ondragstart="onOrgMemberDragStart(event,'${node.id}',${idx})"
+      ondragend="onOrgMemberDragEnd()"
+      onclick="openOrgProfile('${node.id}',${idx})"
+      title="클릭하면 프로필, 드래그하면 다른 조직으로 이동">${esc(m.name)}${tags.length ? `<span class="tag"> (${tags.join(',')})</span>` : ''}</div>`;
 }
 
 function renderOrgBox(node){
-  const leaders = node.members.filter(m => m.title);
-  const staff = node.members.filter(m => !m.title);
-  const leaderLine = leaders.map(l => `${esc(l.name)}${l.concurrent ? '(겸)' : ''}`).join(', ');
+  initOrgCollapse();
+  const indexed = node.members.map((m, i) => ({ m, i }));
+  const leaders = indexed.filter(x => x.m.title);
+  const staff = indexed.filter(x => !x.m.title);
+  const leaderLine = leaders.map(x => `<span class="org-leader-name" draggable="true"
+      ondragstart="onOrgMemberDragStart(event,'${node.id}',${x.i})"
+      ondragend="onOrgMemberDragEnd()"
+      onclick="event.stopPropagation(); openOrgProfile('${node.id}',${x.i})">${esc(x.m.name)}${x.m.concurrent ? '(겸)' : ''}</span>`).join(', ');
   const levelClass = node.level === 'Part' ? 'Part' : node.level;
+  const hasChildren = node.children.length > 0;
+  const isCollapsed = hasChildren && orgCollapsedNodes.has(node.id);
+  const toggle = hasChildren ? `<span class="org-toggle">${isCollapsed ? '▸' : '▾'}</span>` : '';
+  const hiddenCount = isCollapsed ? countOrgSubtree(node) - node.members.length : 0;
   return `
-    <div class="org-box lvl-${levelClass}">
+    <div class="org-box lvl-${levelClass}"
+        ondragover="onOrgBoxDragOver(event)" ondragleave="onOrgBoxDragLeave(event)" ondrop="onOrgMemberDrop(event,'${node.id}')">
       <button class="org-edit-btn" onclick="toggleOrgEdit('${node.id}')" title="편집">✎</button>
-      <div class="org-box-name">${esc(node.name)}</div>
+      <div class="org-box-name" style="${hasChildren ? 'cursor:pointer;' : ''}" ${hasChildren ? `onclick="toggleOrgCollapse('${node.id}')"` : ''} title="${hasChildren ? (isCollapsed ? '펼치기' : '접기') : ''}">${toggle}${esc(node.name)}</div>
       ${leaderLine ? `<div class="org-box-leader">${leaderLine}</div>` : ''}
       <div class="org-box-count">${countOrgSubtree(node)}명</div>
-      ${staff.length ? `<div class="org-member-grid">${staff.map(m => orgMemberChip(m)).join('')}</div>` : ''}
+      ${staff.length ? `<div class="org-member-grid">${staff.map(x => orgMemberChip(node, x.m, x.i)).join('')}</div>` : ''}
+      ${hiddenCount > 0 ? `<div class="org-collapsed-note" onclick="toggleOrgCollapse('${node.id}')">＋${hiddenCount}명 더 있음 (펼쳐보기)</div>` : ''}
+    </div>
+  `;
+}
+
+function renderOrgProfileCard(){
+  if (!orgProfileMember) return '';
+  const found = findOrgNode(orgProfileMember.nodeId);
+  const m = found ? found.node.members[orgProfileMember.idx] : null;
+  if (!found || !m) return '';
+  const path = orgNodePath(orgProfileMember.nodeId) || '';
+  const tags = [];
+  if (m.intern) tags.push('인턴');
+  if (m.concurrent) tags.push('겸직');
+  if (m.newHire) tags.push('신규입사');
+  if (m.deptMove) tags.push('부서이동');
+  const row = (label, value) => value ? `<li><span class="step-n" style="width:auto;height:auto;border-radius:6px;padding:.15em .6em;background:var(--accent-tint);color:var(--accent-strong);font-size:.72rem;">${esc(label)}</span> ${esc(value)}</li>` : '';
+  return `
+    <div class="modal-overlay open" onclick="if(event.target===this) closeOrgProfile()">
+      <div class="modal">
+        <h2>${esc(m.name)} <button class="close-x" onclick="closeOrgProfile()">&times;</button></h2>
+        <ul style="list-style:none;padding:0;">
+          ${row('소속', path)}
+          ${row('직책', m.title)}
+          ${row('성별', m.gender)}
+          ${m.age != null ? row('나이', '만 ' + m.age + '세') : ''}
+          ${row('고용형태', m.type)}
+          ${row('표시', tags.join(', ') || '없음')}
+        </ul>
+        <div class="row-actions" style="margin-top:1rem;">
+          <button class="btn primary" onclick="closeOrgProfile(); toggleOrgEdit('${found.node.id}');">이 조직 편집으로 이동</button>
+          <button class="btn" style="color:var(--seal);" onclick="deleteOrgMemberFromProfile()">삭제(퇴사 처리)</button>
+        </div>
+      </div>
     </div>
   `;
 }
@@ -7894,8 +8099,10 @@ function renderOrgEditPanel(node){
 }
 
 function renderOrgNodeColumn(node){
+  initOrgCollapse();
   const isEditing = orgEditingNodeId === node.id;
-  const childrenHtml = node.children.length ? `
+  const isCollapsed = node.children.length > 0 && orgCollapsedNodes.has(node.id);
+  const childrenHtml = (node.children.length && !isCollapsed) ? `
     <div class="org-children">
       ${node.children.map(c => `<div class="org-col">${renderOrgNodeColumn(c)}</div>`).join('')}
     </div>
@@ -7908,20 +8115,33 @@ function renderOrgNodeColumn(node){
 }
 
 function renderOrgChart(){
+  initOrgCollapse();
   const total = DATA.orgChart.nodes.reduce((n, node) => n + countOrgSubtree(node), 0);
   return `
     <p class="doc-eyebrow">07 · 인원 현황 관리</p>
     <h2>🗂️ 조직도</h2>
-    <p class="lede">${esc(DATA.headcount.asOf)} 기준 인원 데이터를 바탕으로 자동 생성되었습니다. 박스에 마우스를 올리면 나오는 ✎ 버튼으로 이름 변경, 하위 조직·구성원 추가/삭제, 신규입사·부서이동·인턴·겸직 표시를 바로 편집할 수 있습니다.</p>
+    <p class="lede">${esc(DATA.headcount.asOf)} 기준 인원 데이터를 바탕으로 자동 생성되었습니다. 아래 요약 카드로 본부별 인원을 한눈에 보고, 그 아래 트리에서는 <b>이름을 클릭하면 프로필</b>이 보이고 <b>이름을 드래그해서 다른 조직 박스에 놓으면 부서 이동</b> 처리됩니다. 팀/Part 단계는 기본적으로 접혀 있어 한눈에 보기 편하며, 박스 이름을 누르면 펼치고 접을 수 있습니다. 박스에 마우스를 올리면 나오는 ✎ 버튼으로 이름 변경·조직/구성원 추가·삭제를 할 수 있습니다.</p>
+    <div class="stat-row">
+      ${DATA.orgChart.nodes.map(n => `
+        <div class="stat-tile">
+          <div class="stat-label">${esc(n.name)}</div>
+          <div class="stat-value" style="font-size:1.25rem;">${countOrgSubtree(n)}명</div>
+        </div>
+      `).join('')}
+    </div>
     <div class="orgchart-toolbar">
       <button class="btn primary" onclick="addOrgNode(null)">+ 최상위 조직 추가</button>
+      <button class="btn" onclick="expandAllOrg()">모두 펼치기</button>
+      <button class="btn" onclick="collapseAllOrg()">모두 접기</button>
       <span style="font-size:.82rem;color:var(--ink-soft);">전체 ${total}명</span>
+      <div class="org-trash-zone" id="orgTrashZone" ondragover="onOrgTrashDragOver(event)" ondragleave="onOrgBoxDragLeave(event)" ondrop="onOrgTrashDrop(event)">🗑 여기로 드래그하면 퇴사 처리</div>
     </div>
     <div class="orgchart-wrap">
       <div class="org-tree">
         ${DATA.orgChart.nodes.map(n => `<div class="org-col">${renderOrgNodeColumn(n)}</div>`).join('')}
       </div>
     </div>
+    ${renderOrgProfileCard()}
     <div class="org-legend">
       <span><span class="sw" style="background:var(--org-div-bg);"></span>본부</span>
       <span><span class="sw" style="background:var(--org-group-bg);"></span>그룹</span>
