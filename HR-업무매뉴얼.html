@@ -301,6 +301,15 @@
   .ed-text:hover{ background:var(--accent); color:#fff; }
   .ed-text:focus{ outline:2px solid var(--accent); background:var(--paper-raised); color:var(--ink); }
   .hc-live{ color:var(--ink-soft); }
+  .doc-edit-list{ display:flex; flex-direction:column; gap:.5rem; margin-top:.6rem; }
+  .doc-edit-row{ display:flex; align-items:center; gap:.7rem; padding:.6rem .8rem; border:1px solid var(--line); border-radius:10px; background:var(--paper-raised); }
+  .doc-edit-row.drag-over{ border-color:var(--accent); background:var(--accent-tint); }
+  .doc-edit-row .drag-handle{ cursor:grab; color:var(--ink-faint); font-size:1.1rem; flex-shrink:0; }
+  .doc-edit-main{ flex:1; min-width:0; }
+  .doc-edit-titlerow{ display:flex; align-items:center; gap:.5rem; margin-bottom:.2rem; }
+  .doc-body-edit-note{ margin:0 0 .8rem; padding:.6rem .9rem; background:var(--accent-tint); border:1px solid var(--accent); border-radius:8px; font-size:.82rem; color:var(--ink); }
+  .doc-body-edit{ outline:2px dashed var(--accent); outline-offset:6px; border-radius:6px; padding:.2rem; }
+  .doc-body-edit:focus{ outline:2px solid var(--accent); }
 </style>
 </head>
 <body>
@@ -4726,8 +4735,63 @@ function edText(key, def, opts){
 function saveEdText(key, el, isHtml){
   DATA.texts = DATA.texts || {};
   DATA.texts[key] = isHtml ? el.innerHTML : el.innerText;
-  persist('문구 저장됨 · ' + new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }));
+  persist('문구 저장됨 · ' + nowHm());
 }
+function nowHm(){ return new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }); }
+
+/* DATA에 저장된 값(문서 제목·소개글·본문 등)을 편집 모드에서 바로 고치게 하는 도우미.
+   displayHtml : 지금 보여줄 내용(esc 처리된 텍스트 또는 HTML)
+   onblurJs    : 편집을 끝냈을 때(다른 곳 클릭) 실행할 저장 코드 문자열 */
+function edInline(displayHtml, onblurJs, opts){
+  opts = opts || {};
+  if (!editMode) return displayHtml;
+  const tag = opts.block ? 'div' : 'span';
+  return `<${tag} class="ed-text${opts.cls ? ' ' + opts.cls : ''}" contenteditable="true" spellcheck="false"
+     onblur="${onblurJs}" title="여기를 눌러 수정">${displayHtml}</${tag}>`;
+}
+function saveDomainField(domainId, field, el){
+  const d = DATA.domains[domainId]; if (!d) return;
+  d[field] = el.innerText;
+  persist('저장됨 · ' + nowHm());
+}
+function saveDocField(domainId, docId, field, el){
+  const doc = findDoc(domainId, docId); if (!doc) return;
+  doc[field] = el.innerText;
+  persist('저장됨 · ' + nowHm());
+}
+function saveDocBody(domainId, docId, el){
+  const doc = findDoc(domainId, docId); if (!doc) return;
+  doc.body = el.innerHTML;
+  persist('문서 저장됨 · ' + nowHm());
+}
+window.saveDomainField = saveDomainField;
+window.saveDocField = saveDocField;
+window.saveDocBody = saveDocBody;
+
+/* 문서 카드 순서 바꾸기 (편집 모드에서 드래그) */
+let draggedDocId = null;
+function onDocDragStart(e, docId){ draggedDocId = docId; e.dataTransfer.effectAllowed = 'move'; }
+function onDocDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over'); }
+function onDocDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function onDocDrop(e, domainId, targetDocId){
+  e.preventDefault();
+  e.currentTarget.classList.remove('drag-over');
+  const fromId = draggedDocId; draggedDocId = null;
+  if (!fromId || fromId === targetDocId) return;
+  const docs = DATA.domains[domainId].docs;
+  const fromIdx = docs.findIndex(x => x.id === fromId);
+  if (fromIdx === -1) return;
+  const moved = docs.splice(fromIdx, 1)[0];
+  const toIdx = docs.findIndex(x => x.id === targetDocId);
+  docs.splice(toIdx === -1 ? docs.length : toIdx, 0, moved);
+  persist(); render();
+}
+function onDocDragEnd(){ draggedDocId = null; document.querySelectorAll('.doc-edit-row.drag-over').forEach(el => el.classList.remove('drag-over')); }
+window.onDocDragStart = onDocDragStart;
+window.onDocDragOver = onDocDragOver;
+window.onDocDragLeave = onDocDragLeave;
+window.onDocDrop = onDocDrop;
+window.onDocDragEnd = onDocDragEnd;
 function resetAllTexts(){
   if (!confirm('직접 고친 설명 문구를 모두 원래 기본값으로 되돌릴까요? (인원·조직 데이터는 그대로 유지됩니다)')) return;
   DATA.texts = {};
@@ -5004,7 +5068,7 @@ function renderRecruit(){
   return `
     <button class="back-link" onclick="go('domain','d09')">← 채용 현황 관리 목록으로</button>
     <p class="doc-eyebrow">09 · 채용 현황 관리 · 실시간 갱신</p>
-    <h2>채용 현황 대시보드</h2>
+    <h2>${edText('page.recruit.title', '채용 현황 대시보드')}</h2>
     <p class="lede">현재 열려 있는 채용 공고 ${allPos.length}건을 그룹별로 관리합니다. 상태·담당자·마감일을 바꾸면 바로 저장되고, 직무명을 누르면 메모를 남길 수 있습니다.</p>
     <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(96px,1fr)); gap:.6rem; margin:1.2rem 0 1.8rem;">${statCards}</div>
     ${groupsHtml}
@@ -5075,7 +5139,7 @@ function renderJdManage(){
 
   return `
     <p class="doc-eyebrow">09 · 채용 현황 관리 · JD 관리</p>
-    <h2>JD 관리</h2>
+    <h2>${edText('page.jdmanage.title', 'JD 관리')}</h2>
     <p class="lede">공통 항목은 한 번만 관리하고, 포지션별 항목만 따로 관리합니다. 카드를 드래그하면 순서를 바꾸거나 다른 포지션 위에 놓아서 같은 그룹으로 묶을 수 있습니다.</p>
 
     <h3>공통 항목 (모든 포지션 동일)</h3>
@@ -5733,7 +5797,7 @@ function renderJdImport(){
 
   return `
     <p class="doc-eyebrow">09 · 채용 현황 관리 · JD 관리</p>
-    <h2>📎 JD 파일로 새 포지션 만들기</h2>
+    <h2>${edText('page.jdimport.title', '📎 JD 파일로 새 포지션 만들기')}</h2>
     <p class="lede">Word(.docx) 또는 PDF로 된 JD 파일을 올리면 "직무소개·담당업무·자격요건·우대사항" 네 항목을 자동으로 나눠 채워드립니다. 회사소개·복리후생·채용절차 같은 공통 항목은 건드리지 않습니다.</p>
     <div class="callout"><b>💡 참고</b> — 진짜로 문서를 이해하는 AI가 아니라, "직무소개", "담당업무" 같은 흔한 소제목을 찾아서 그 아래 내용을 해당 항목에 넣는 방식입니다. 소제목이 다른 표현이거나 아예 없는 문서는 잘 안 나뉠 수 있습니다.</div>
     <div class="candidate-box">
@@ -5971,7 +6035,7 @@ function renderCandidateMatch(){
 
   return `
     <p class="doc-eyebrow">09 · 채용 현황 관리</p>
-    <h2>🎯 후보자 적합도 분석 <span class="badge" data-status="초안">베타</span></h2>
+    <h2>${edText('page.candidate.title', '🎯 후보자 적합도 분석')} <span class="badge" data-status="초안">베타</span></h2>
     <p class="lede">이력서·포트폴리오 PDF를 첨부하면, 등록된 ${DATA.jd.positions.length}개 포지션 중 자격요건이 겹치는 포지션을 찾아드립니다.</p>
     <div class="callout"><b>⚠ 꼭 읽어주세요</b> — 이 기능은 사람처럼 내용을 이해하는 AI가 아니라, 이력서 문구와 JD 문구 사이의 <b>단어 일치 정도</b>를 계산하는 방식입니다. 표현이 달라서 실제로는 맞는 경험을 놓칠 수도 있고, 반대로 단어만 우연히 겹쳐서 점수가 높게 나올 수도 있습니다. <b>참고 자료로만 활용</b>하고, 최종 판단은 반드시 채용 담당자가 이력서를 직접 검토해서 내려주세요.</div>
     <div class="candidate-box">
@@ -6116,7 +6180,7 @@ function renderHeadcountDashboard(){
   const upcoming = flattenOrgPeople().filter(p => p.hireDate && p.hireDate > todayStr());
   const upcomingHtml = upcoming.length ? `
     <div class="chart-card">
-      <h3>📅 입사예정 (${upcoming.length}명)</h3>
+      <h3>${edText('hc.sec.upcoming', '📅 입사예정')} (${upcoming.length}명)</h3>
       <div class="upcoming-list">${upcoming.map(p => `<span class="up-chip">${esc(p.name)} · ${esc((p.org||[]).join(' > '))} · ${esc(p.type||'')} · ${esc(p.hireDate)}</span>`).join('')}</div>
       <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">${edText('hc.upcoming.note', '※ 위 인원은 입사일이 아직 지나지 않아 아래 통계에는 포함되지 않았습니다. 조직도에서 입사일을 수정하면 자동으로 반영됩니다.')}</p>
     </div>
@@ -6124,7 +6188,7 @@ function renderHeadcountDashboard(){
 
   return `
     <p class="doc-eyebrow">07 · 인원 현황 관리</p>
-    <h2>📊 인원 현황 대시보드</h2>
+    <h2>${edText('page.hcdash.title', '📊 인원 현황 대시보드')}</h2>
     <p class="lede">오늘(${esc(todayStr())}) 기준 재직 인원 ${total}명의 현황입니다. ${edText('hc.dash.lede', '조직도 화면에서 인원을 추가·수정·이동하면 이 대시보드에 실시간으로 반영됩니다.')}</p>
 
     <div class="stat-row">
@@ -6135,14 +6199,14 @@ function renderHeadcountDashboard(){
     </div>
 
     <div class="chart-card">
-      <h3>🏢 조직별 인원 · 구성</h3>
+      <h3>${edText('hc.sec.org', '🏢 조직별 인원 · 구성')}</h3>
       <div class="breadcrumb-mini">${breadcrumb}</div>
       ${barChartHtml(dashboardDrillPath.length ? drillEntries : orgEntries, { clickable: canDrillDeeper, total: dashboardDrillPath.length ? drillTotal : total })}
       ${!canDrillDeeper ? '<p style="font-size:.78rem;color:var(--ink-faint);">더 이상 하위 조직이 없거나, Part 단계까지 펼쳤습니다.</p>' : ''}
     </div>
 
     <div class="chart-card">
-      <h3>⚖️ 남녀 비율</h3>
+      <h3>${edText('hc.sec.gender', '⚖️ 남녀 비율')}</h3>
       <div class="stack-bar">
         <div style="width:${total?(male/total*100):0}%; background:var(--series-1);">${male > 0 ? `남 ${male}명 (${Math.round(male/total*100)}%)` : ''}</div>
         <div style="width:${total?(female/total*100):0}%; background:var(--series-3);">${female > 0 ? `여 ${female}명 (${Math.round(female/total*100)}%)` : ''}</div>
@@ -6156,17 +6220,17 @@ function renderHeadcountDashboard(){
     </div>
 
     <div class="chart-card">
-      <h3>🎂 연령 분포 (만 나이 기준)</h3>
+      <h3>${edText('hc.sec.age', '🎂 연령 분포 (만 나이 기준)')}</h3>
       ${barChartHtml(ageEntries, { colors: ageEntries.map(([k]) => ageColorMap[k] || 'var(--ink-faint)'), total })}
     </div>
 
     <div class="chart-card">
-      <h3>💼 고용형태 분포</h3>
+      <h3>${edText('hc.sec.type', '💼 고용형태 분포')}</h3>
       ${barChartHtml(typeEntries, { total })}
     </div>
 
     <div class="chart-card">
-      <h3>🔬 연구원 현황 (케이스별)</h3>
+      <h3>${edText('hc.sec.rnd', '🔬 연구원 현황 (케이스별)')}</h3>
       <p style="font-size:.83rem;color:var(--ink-soft);margin-top:0;">${edText('hc.rnd.desc', '<b>기업부설연구소 정식 연구원</b>은 산기협에 등록된 사람만을 뜻합니다. <b>실질 R&D 인력</b>은 실제로 연구개발 업무를 수행하는지 여부로, 주로 투자사에 R&D 인력 규모를 어필할 때 쓰는 자료입니다. 두 기준이 항상 일치하지는 않아 4가지 경우로 나눠 보여드립니다.', {html:true})} <span class="hc-live">(현재 정식 연구원 = ${rr+nr}명)</span></p>
       <div class="table-wrap"><table class="rnd-cross">
         <thead><tr><th></th><th>산기협 등록 O (정식 연구원)</th><th>산기협 등록 X</th></tr></thead>
@@ -6607,7 +6671,7 @@ function renderOrgChart(){
   const total = DATA.orgChart.nodes.reduce((n, node) => n + countOrgSubtree(node), 0);
   return `
     <p class="doc-eyebrow">07 · 인원 현황 관리</p>
-    <h2>🗂️ 조직도</h2>
+    <h2>${edText('page.orgchart.title', '🗂️ 조직도')}</h2>
     <p class="lede">${edText('org.lede', '이 화면이 인원 데이터의 원본입니다 — 여기서 수정한 내용이 인원 현황 대시보드·조회 화면에 바로 반영됩니다. 아래 요약 카드로 본부별 인원을 한눈에 보고, 그 아래 트리에서는 <b>이름을 클릭하면 프로필</b>이 보이고 <b>이름을 드래그해서 다른 조직 박스에 놓으면 부서 이동</b> 처리됩니다. 팀/Part 단계는 기본적으로 접혀 있어 한눈에 보기 편하며, 박스 이름을 누르면 펼치고 접을 수 있습니다. 박스에 마우스를 올리면 나오는 ✎ 버튼으로 이름 변경·조직/구성원 추가·삭제를 할 수 있습니다.', {html:true})}</p>
     <div class="stat-row">
       ${DATA.orgChart.nodes.map(n => `
@@ -6751,7 +6815,7 @@ function renderHeadcountQuery(){
 
   return `
     <p class="doc-eyebrow">07 · 인원 현황 관리</p>
-    <h2>🔍 인원 현황 조회</h2>
+    <h2>${edText('page.hcquery.title', '🔍 인원 현황 조회')}</h2>
     <p class="lede">${edText('hc.query.lede', '부서에서 "지금 연구원 몇 명이야?", "청년 인원 몇 명이야?" 같은 질문이 왔을 때, 조건을 골라 바로 인원수와 명단을 확인하는 화면입니다.')}</p>
     <div class="callout">${edText('hc.query.callout', '<b>⚠ 시점 조회 관련 안내</b> — 기준일을 오늘이 아닌 날짜로 바꾸면, <b>현재 재직 중인 인원 중 그 날짜 이전에 입사한 사람</b>만 계산합니다. 그 사이에 퇴사한 인원의 기록은 이 표에 없어서 <b>과거 시점은 실제보다 적게 집계될 수 있습니다.</b> 부서·직책·고용형태는 모두 현재 기준 값이며(나이만 기준일 기준으로 다시 계산), 과거에는 다른 부서/고용형태였을 수 있습니다. 미래 날짜는 "입사예정" 명단의 입사일까지 반영됩니다.', {html:true})}</div>
 
@@ -6836,6 +6900,16 @@ function renderHeadcountQuery(){
 function renderBuiltin(key){
   const b = DATA.builtins[key];
   const note = DATA.notes[key] || '';
+  if (editMode) {
+    return `
+      <p class="doc-eyebrow">${esc(b.eyebrow)}</p>
+      <h2>${edInline(esc(b.title), `saveBuiltinField('${key}','title',this)`)}</h2>
+      <div class="doc-body-edit-note">✏️ 아래 내용을 직접 눌러 고칠 수 있습니다. 글자를 바꾸고 다른 곳을 클릭하면 저장됩니다.</div>
+      <div class="doc-body-edit" contenteditable="true" spellcheck="false"
+        onblur="saveBuiltinBody('${key}',this)">${b.body}</div>
+      ${renderNotes(key, note)}
+    `;
+  }
   return `
     <p class="doc-eyebrow">${esc(b.eyebrow)}</p>
     <h2>${esc(b.title)}</h2>
@@ -6843,6 +6917,18 @@ function renderBuiltin(key){
     ${renderNotes(key, note)}
   `;
 }
+function saveBuiltinField(key, field, el){
+  if (!DATA.builtins[key]) return;
+  DATA.builtins[key][field] = el.innerText;
+  persist('저장됨 · ' + nowHm());
+}
+function saveBuiltinBody(key, el){
+  if (!DATA.builtins[key]) return;
+  DATA.builtins[key].body = el.innerHTML;
+  persist('문서 저장됨 · ' + nowHm());
+}
+window.saveBuiltinField = saveBuiltinField;
+window.saveBuiltinBody = saveBuiltinBody;
 
 function renderNotes(key, note){
   return `
@@ -6865,16 +6951,35 @@ window.saveNotes = saveNotes;
 function renderDomain(domainId){
   const d = DATA.domains[domainId];
   const tag = d.tag ? `<span class="seal-chip">법</span>` : '';
-  const related = d.related ? `<p style="font-size:.85rem;color:var(--ink-soft);">연관 업무: ${esc(d.related)}</p>` : '';
-  const cards = d.docs.map(doc => `
-    <button class="doc-card" onclick="go('doc','${domainId}','${doc.id}')">
-      <div class="card-top">
-        <span class="card-title">${esc(doc.title)}</span>
-        <span class="badge" data-status="${doc.status}">${doc.status}</span>
+  const related = (d.related || editMode) ? `<p style="font-size:.85rem;color:var(--ink-soft);">연관 업무: ${edInline(esc(d.related || ''), `saveDomainField('${domainId}','related',this)`)}</p>` : '';
+  const cards = editMode
+    ? d.docs.map(doc => `
+      <div class="doc-edit-row" draggable="true"
+          ondragstart="onDocDragStart(event,'${doc.id}')"
+          ondragover="onDocDragOver(event)"
+          ondragleave="onDocDragLeave(event)"
+          ondrop="onDocDrop(event,'${domainId}','${doc.id}')"
+          ondragend="onDocDragEnd()">
+        <span class="drag-handle" title="드래그해서 순서 변경">⠿</span>
+        <div class="doc-edit-main">
+          <div class="doc-edit-titlerow">
+            <span class="card-title">${edInline(esc(doc.title), `saveDocField('${domainId}','${doc.id}','title',this)`)}</span>
+            <span class="badge" data-status="${doc.status}">${doc.status}</span>
+          </div>
+          <div class="card-desc">${edInline(esc(doc.desc), `saveDocField('${domainId}','${doc.id}','desc',this)`)}</div>
+        </div>
+        <button class="btn ghost" onclick="go('doc','${domainId}','${doc.id}')" title="문서 열기">열기 →</button>
       </div>
-      <div class="card-desc">${esc(doc.desc)}</div>
-    </button>
-  `).join('');
+    `).join('')
+    : d.docs.map(doc => `
+      <button class="doc-card" onclick="go('doc','${domainId}','${doc.id}')">
+        <div class="card-top">
+          <span class="card-title">${esc(doc.title)}</span>
+          <span class="badge" data-status="${doc.status}">${doc.status}</span>
+        </div>
+        <div class="card-desc">${esc(doc.desc)}</div>
+      </button>
+    `).join('');
   let dashboardCard = '';
   if (domainId === 'd04') {
     dashboardCard = `
@@ -6944,13 +7049,13 @@ function renderDomain(domainId){
   }
   return `
     <p class="doc-eyebrow">${esc(d.code)} · 업무 영역</p>
-    <h2>${esc(d.name)} ${tag}</h2>
-    <p class="lede">${esc(d.intro)}</p>
+    <h2>${edInline(esc(d.name), `saveDomainField('${domainId}','name',this)`)} ${tag}</h2>
+    <p class="lede">${edInline(esc(d.intro), `saveDomainField('${domainId}','intro',this)`)}</p>
     ${related}
     ${dashboardCard}
     <h3>이 업무의 문서 목록</h3>
-    <p style="font-size:.85rem;color:var(--ink-soft);">카드를 누르면 내용을 보거나 바로 쓸 수 있습니다.</p>
-    <div class="doc-grid">${cards}</div>
+    <p style="font-size:.85rem;color:var(--ink-soft);">${editMode ? '제목·설명을 눌러 고치고, ⠿를 드래그해 순서를 바꿀 수 있습니다. "열기 →"로 문서 내용을 편집하세요.' : '카드를 누르면 내용을 보거나 바로 쓸 수 있습니다.'}</p>
+    <div class="${editMode ? 'doc-edit-list' : 'doc-grid'}">${cards}</div>
   `;
 }
 
@@ -6966,8 +7071,8 @@ function renderDoc(domainId, docId){
   const header = `
     <button class="back-link" onclick="go('domain','${domainId}')">← ${esc(d.name)} 목록으로</button>
     <p class="doc-eyebrow">${esc(d.code)}-${esc(docId.split('-')[1])} · ${esc(d.name)}</p>
-    <h2>${esc(doc.title)}</h2>
-    <p class="lede">${esc(doc.desc)}</p>
+    <h2>${edInline(esc(doc.title), `saveDocField('${domainId}','${docId}','title',this)`)}</h2>
+    <p class="lede">${edInline(esc(doc.desc), `saveDocField('${domainId}','${docId}','desc',this)`)}</p>
     <div class="editor-meta">
       <label style="font-size:.83rem;color:var(--ink-soft);">진행 상태</label>
       <select id="statusSelect" onchange="updateStatus('${domainId}','${docId}',this.value)">${options}</select>
@@ -6977,6 +7082,13 @@ function renderDoc(domainId, docId){
   if (doc.richHtml) {
     // 미리 정리된 형식의 문서 — 보기 전용으로 보여주고, 덧붙일 내용은 메모로 받습니다.
     const note = DATA.notes[docId] || '';
+    if (editMode) {
+      return header + `
+        <div class="doc-body-edit-note">✏️ 아래 문서 내용을 직접 눌러 고칠 수 있습니다. 글자·표 안의 내용을 바꾸고 다른 곳을 클릭하면 저장됩니다. <b>표나 제목 구조는 그대로 두고 글자만 고치는 것을 권장</b>합니다.</div>
+        <div class="doc-body-edit" contenteditable="true" spellcheck="false"
+          onblur="saveDocBody('${domainId}','${docId}',this)">${doc.body}</div>
+      ` + renderNotes(docId, note);
+    }
     return header + doc.body + renderNotes(docId, note);
   }
 
