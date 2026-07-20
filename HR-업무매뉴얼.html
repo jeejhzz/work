@@ -295,6 +295,12 @@
   .org-member-row-detail{ display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.35rem; padding-left:.1rem; }
   .org-member-row-detail label{ display:flex; flex-direction:column; gap:.15rem; font-size:.68rem; color:var(--ink-faint); }
   .org-member-row-detail select, .org-member-row-detail input[type=date]{ font-size:.78rem; padding:.25rem .4rem; border:1px solid var(--line); border-radius:5px; background:var(--paper-raised); color:var(--ink); font-family:var(--sans); width:auto; }
+  .edit-banner{ position:sticky; top:0; z-index:30; display:flex; gap:1rem; align-items:center; justify-content:space-between; flex-wrap:wrap; margin:0 0 1rem; padding:.7rem 1rem; background:var(--accent-tint); border:1px solid var(--accent); border-radius:10px; font-size:.85rem; color:var(--ink); }
+  .edit-banner-actions{ display:flex; gap:.5rem; flex-shrink:0; }
+  .ed-text{ outline:1px dashed var(--accent); outline-offset:2px; border-radius:3px; background:var(--accent-tint); cursor:text; padding:0 .15em; transition:background .1s; }
+  .ed-text:hover{ background:var(--accent); color:#fff; }
+  .ed-text:focus{ outline:2px solid var(--accent); background:var(--paper-raised); color:var(--ink); }
+  .hc-live{ color:var(--ink-soft); }
 </style>
 </head>
 <body>
@@ -4459,12 +4465,65 @@ const RECRUIT_STATUS_COLOR = { '모집중':'초안', '서류전형':'검토중',
 ========================================================= */
 const ORIGINAL_HTML = document.documentElement.outerHTML;
 const STORAGE_KEY = 'hr-manual-data-v1';
+const DATA_VERSION = 2; // 파일의 데이터 구조 버전. 데이터 구조가 바뀌면 이 숫자를 올립니다.
+
+/* 예전에 이 브라우저에 저장해 둔 데이터(localStorage)를 새 구조로 맞춰줍니다.
+   v1 → v2: 인원 데이터를 "조직도" 한 곳으로 합치는 변경.
+   조직도 구성원에 생년월일·입사일·R&D 관련 정보가 없으면, 예전 인원 명단에서 찾아 채우고,
+   입사예정 인원을 조직도 구성원으로 옮긴 뒤, 예전 인원 명단은 정리합니다.
+   이렇게 해야 사용자가 예전에 직접 수정한 내용을 잃지 않으면서도 최신 구조로 넘어옵니다. */
+function migrateDataToV2(d){
+  if (!d || !d.headcount || !Array.isArray(d.headcount.people)) return d;
+  const byKey = {};
+  d.headcount.people.forEach(p => { byKey[p.name + '|' + (p.org || []).join('>')] = p; });
+  (function walk(nodes, path){
+    (nodes || []).forEach(n => {
+      const np = [...path, n.name];
+      (n.members || []).forEach(m => {
+        if (m.rndActual === undefined || m.rndRegistered === undefined ||
+            m.birthDate === undefined || m.hireDate === undefined) {
+          const src = byKey[m.name + '|' + np.join('>')];
+          if (src) {
+            m.birthDate = src.birthDate; m.hireDate = src.hireDate;
+            m.rndActual = src.rndActual; m.rndRegistered = src.rndRegistered;
+          }
+        }
+      });
+      walk(n.children, np);
+    });
+  })(d.orgChart ? d.orgChart.nodes : [], []);
+  function findByPath(nodes, pth){
+    let cur = nodes, node = null;
+    for (const s of pth) { node = (cur || []).find(x => x.name === s); if (!node) return null; cur = node.children; }
+    return node;
+  }
+  (d.headcount.upcoming || []).forEach(p => {
+    const t = d.orgChart ? findByPath(d.orgChart.nodes, p.org || []) : null;
+    if (t) t.members.push({
+      name: p.name, title: p.title || null, gender: p.gender || null, type: p.type || null,
+      age: p.age != null ? p.age : null, newHire: false, deptMove: false,
+      intern: p.type === '인턴', concurrent: false,
+      birthDate: p.birthDate || null, hireDate: p.hireDate || null,
+      rndActual: p.rndActual || null, rndRegistered: p.rndRegistered || null,
+    });
+  });
+  d.headcount = { asOf: d.headcount.asOf };
+  return d;
+}
 
 (function loadFromStorage(){
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) DATA = JSON.parse(raw);
+    if (raw) {
+      let parsed = JSON.parse(raw);
+      if (!parsed._v || parsed._v < DATA_VERSION) {
+        parsed = migrateDataToV2(parsed);
+      }
+      DATA = parsed;
+    }
   } catch(e) {}
+  DATA._v = DATA_VERSION;
+  DATA.texts = DATA.texts || {};
 })();
 
 let view = { type:'overview', domain:null, doc:null };
@@ -4643,8 +4702,44 @@ document.addEventListener('click', function(e){
 });
 window.go = go;
 
+/* ============ 편집 모드: 화면의 설명 문구를 직접 고칠 수 있게 합니다 ============ */
+let editMode = false;
+function toggleEditMode(){ editMode = !editMode; render(); window.scrollTo(0, 0); }
+window.toggleEditMode = toggleEditMode;
+
+/* 화면의 설명 문구를 "편집 모드"에서 직접 고칠 수 있게 감싸주는 도우미.
+   key : 문구를 구분하는 고유 이름 (이 값으로 저장됩니다 — 바꾸지 마세요)
+   def : 기본 문구 (사용자가 고치지 않았을 때 보여줄 원래 내용)
+   opts.html : true면 굵은 글씨 등 서식을 그대로 두고 편집 */
+function edText(key, def, opts){
+  opts = opts || {};
+  DATA.texts = DATA.texts || {};
+  const has = Object.prototype.hasOwnProperty.call(DATA.texts, key);
+  const val = has ? DATA.texts[key] : def;
+  if (!editMode) return opts.html ? val : esc(val);
+  const shown = opts.html ? val : esc(val);
+  return `<span class="ed-text" contenteditable="true" spellcheck="false"
+     data-ed-key="${esc(key)}"
+     onblur="saveEdText('${esc(key)}', this, ${opts.html ? 1 : 0})"
+     title="여기를 눌러 문구를 고칠 수 있어요">${shown}</span>`;
+}
+function saveEdText(key, el, isHtml){
+  DATA.texts = DATA.texts || {};
+  DATA.texts[key] = isHtml ? el.innerHTML : el.innerText;
+  persist('문구 저장됨 · ' + new Date().toLocaleTimeString('ko-KR', { hour:'2-digit', minute:'2-digit' }));
+}
+function resetAllTexts(){
+  if (!confirm('직접 고친 설명 문구를 모두 원래 기본값으로 되돌릴까요? (인원·조직 데이터는 그대로 유지됩니다)')) return;
+  DATA.texts = {};
+  persist('설명 문구를 모두 기본값으로 되돌렸습니다');
+  render();
+}
+window.saveEdText = saveEdText;
+window.resetAllTexts = resetAllTexts;
+
 function render(){
   const app = document.getElementById('app');
+  const editedCount = DATA.texts ? Object.keys(DATA.texts).length : 0;
   app.innerHTML = `
     <header class="topbar">
       <div>
@@ -4653,10 +4748,18 @@ function render(){
       </div>
       <div class="actions">
         <span class="save-flag" id="saveFlag"></span>
+        <button class="btn ${editMode ? 'primary' : 'ghost'}" onclick="toggleEditMode()">${editMode ? '✅ 편집 끝내기' : '✏️ 문구 편집'}</button>
         <button class="btn ghost" onclick="openGuide()">📖 사용법</button>
         <button class="btn primary" onclick="exportHtml()">⬇ 파일로 저장</button>
       </div>
     </header>
+    ${editMode ? `<div class="edit-banner">
+      <span>✏️ <b>편집 모드</b> — 점선으로 표시된 설명 문구를 눌러 직접 고칠 수 있어요. 다른 곳을 클릭하면 자동으로 저장됩니다. (인원·조직 정보는 "조직도" 화면에서 수정하세요.)</span>
+      <span class="edit-banner-actions">
+        ${editedCount ? `<button class="btn ghost" onclick="resetAllTexts()">↺ 문구 기본값으로 되돌리기</button>` : ''}
+        <button class="btn primary" onclick="toggleEditMode()">편집 끝내기</button>
+      </span>
+    </div>` : ''}
     <div class="searchbar-row">
       <span class="search-icon">🔍</span>
       <input type="text" id="searchInput" placeholder="문장으로 검색해보세요 (예: 급여 입금 시간, 스톡옵션, 병가 제도...)"
@@ -6015,14 +6118,14 @@ function renderHeadcountDashboard(){
     <div class="chart-card">
       <h3>📅 입사예정 (${upcoming.length}명)</h3>
       <div class="upcoming-list">${upcoming.map(p => `<span class="up-chip">${esc(p.name)} · ${esc((p.org||[]).join(' > '))} · ${esc(p.type||'')} · ${esc(p.hireDate)}</span>`).join('')}</div>
-      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">※ 위 인원은 입사일이 아직 지나지 않아 아래 통계에는 포함되지 않았습니다. 조직도에서 입사일을 수정하면 자동으로 반영됩니다.</p>
+      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">${edText('hc.upcoming.note', '※ 위 인원은 입사일이 아직 지나지 않아 아래 통계에는 포함되지 않았습니다. 조직도에서 입사일을 수정하면 자동으로 반영됩니다.')}</p>
     </div>
   ` : '';
 
   return `
     <p class="doc-eyebrow">07 · 인원 현황 관리</p>
     <h2>📊 인원 현황 대시보드</h2>
-    <p class="lede">오늘(${esc(todayStr())}) 기준 재직 인원 ${total}명의 현황입니다. 조직도 화면에서 인원을 추가·수정·이동하면 이 대시보드에 실시간으로 반영됩니다.</p>
+    <p class="lede">오늘(${esc(todayStr())}) 기준 재직 인원 ${total}명의 현황입니다. ${edText('hc.dash.lede', '조직도 화면에서 인원을 추가·수정·이동하면 이 대시보드에 실시간으로 반영됩니다.')}</p>
 
     <div class="stat-row">
       <div class="stat-tile"><div class="stat-label">전체 재직 인원</div><div class="stat-value">${total}명</div></div>
@@ -6064,7 +6167,7 @@ function renderHeadcountDashboard(){
 
     <div class="chart-card">
       <h3>🔬 연구원 현황 (케이스별)</h3>
-      <p style="font-size:.83rem;color:var(--ink-soft);margin-top:0;"><b>기업부설연구소 정식 연구원</b>은 산기협에 등록된 사람만을 뜻합니다(아래 표의 "산기협 등록 O" 두 칸 = ${rr+nr}명이 정식 연구원 수). <b>실질 R&D 인력</b>은 실제로 연구개발 업무를 수행하는지 여부로, 주로 투자사에 R&D 인력 규모를 어필할 때 쓰는 자료입니다. 두 기준이 항상 일치하지는 않아 4가지 경우로 나눠 보여드립니다.</p>
+      <p style="font-size:.83rem;color:var(--ink-soft);margin-top:0;">${edText('hc.rnd.desc', '<b>기업부설연구소 정식 연구원</b>은 산기협에 등록된 사람만을 뜻합니다. <b>실질 R&D 인력</b>은 실제로 연구개발 업무를 수행하는지 여부로, 주로 투자사에 R&D 인력 규모를 어필할 때 쓰는 자료입니다. 두 기준이 항상 일치하지는 않아 4가지 경우로 나눠 보여드립니다.', {html:true})} <span class="hc-live">(현재 정식 연구원 = ${rr+nr}명)</span></p>
       <div class="table-wrap"><table class="rnd-cross">
         <thead><tr><th></th><th>산기협 등록 O (정식 연구원)</th><th>산기협 등록 X</th></tr></thead>
         <tbody>
@@ -6072,12 +6175,12 @@ function renderHeadcountDashboard(){
           <tr><th>실질 R&D 아님</th><td class="hi">${nr}명</td><td class="lo">${nx}명</td></tr>
         </tbody>
       </table></div>
-      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">기업부설연구소 정식 연구원 수(산기협 등록 기준) = ${rr+nr}명 · 실질 R&D 인력 수(투자사 어필용) = ${rr+rx}명</p>
+      <p style="font-size:.78rem;color:var(--ink-faint);margin-top:.6rem;">${edText('hc.rnd.foot', '기업부설연구소 정식 연구원 수(산기협 등록 기준)')} = ${rr+nr}명 · ${edText('hc.rnd.foot2', '실질 R&D 인력 수(투자사 어필용)')} = ${rr+rx}명</p>
     </div>
 
     ${upcomingHtml}
 
-    <p style="font-size:.78rem;color:var(--ink-faint);">※ 이 통계는 "조직도" 화면의 최신 데이터를 그대로 계산한 것입니다. 인원 변동이 있으면 조직도에서 바로 수정해주세요.</p>
+    <p style="font-size:.78rem;color:var(--ink-faint);">${edText('hc.dash.foot', '※ 이 통계는 "조직도" 화면의 최신 데이터를 그대로 계산한 것입니다. 인원 변동이 있으면 조직도에서 바로 수정해주세요.')}</p>
   `;
 }
 
@@ -6505,7 +6608,7 @@ function renderOrgChart(){
   return `
     <p class="doc-eyebrow">07 · 인원 현황 관리</p>
     <h2>🗂️ 조직도</h2>
-    <p class="lede">이 화면이 인원 데이터의 원본입니다 — 여기서 수정한 내용이 인원 현황 대시보드·조회 화면에 바로 반영됩니다. 아래 요약 카드로 본부별 인원을 한눈에 보고, 그 아래 트리에서는 <b>이름을 클릭하면 프로필</b>이 보이고 <b>이름을 드래그해서 다른 조직 박스에 놓으면 부서 이동</b> 처리됩니다. 팀/Part 단계는 기본적으로 접혀 있어 한눈에 보기 편하며, 박스 이름을 누르면 펼치고 접을 수 있습니다. 박스에 마우스를 올리면 나오는 ✎ 버튼으로 이름 변경·조직/구성원 추가·삭제를 할 수 있습니다.</p>
+    <p class="lede">${edText('org.lede', '이 화면이 인원 데이터의 원본입니다 — 여기서 수정한 내용이 인원 현황 대시보드·조회 화면에 바로 반영됩니다. 아래 요약 카드로 본부별 인원을 한눈에 보고, 그 아래 트리에서는 <b>이름을 클릭하면 프로필</b>이 보이고 <b>이름을 드래그해서 다른 조직 박스에 놓으면 부서 이동</b> 처리됩니다. 팀/Part 단계는 기본적으로 접혀 있어 한눈에 보기 편하며, 박스 이름을 누르면 펼치고 접을 수 있습니다. 박스에 마우스를 올리면 나오는 ✎ 버튼으로 이름 변경·조직/구성원 추가·삭제를 할 수 있습니다.', {html:true})}</p>
     <div class="stat-row">
       ${DATA.orgChart.nodes.map(n => `
         <div class="stat-tile">
@@ -6649,8 +6752,8 @@ function renderHeadcountQuery(){
   return `
     <p class="doc-eyebrow">07 · 인원 현황 관리</p>
     <h2>🔍 인원 현황 조회</h2>
-    <p class="lede">부서에서 "지금 연구원 몇 명이야?", "청년 인원 몇 명이야?" 같은 질문이 왔을 때, 조건을 골라 바로 인원수와 명단을 확인하는 화면입니다.</p>
-    <div class="callout"><b>⚠ 시점 조회 관련 안내</b> — 기준일을 오늘(${esc(todayStr())})이 아닌 날짜로 바꾸면, <b>현재 재직 중인 인원 중 그 날짜 이전에 입사한 사람</b>만 계산합니다. 그 사이에 퇴사한 인원의 기록은 이 표에 없어서 <b>과거 시점은 실제보다 적게 집계될 수 있습니다.</b> 부서·직책·고용형태는 모두 현재 기준 값이며(나이만 기준일 기준으로 다시 계산), 과거에는 다른 부서/고용형태였을 수 있습니다. 미래 날짜는 "입사예정" 명단의 입사일까지 반영됩니다.</div>
+    <p class="lede">${edText('hc.query.lede', '부서에서 "지금 연구원 몇 명이야?", "청년 인원 몇 명이야?" 같은 질문이 왔을 때, 조건을 골라 바로 인원수와 명단을 확인하는 화면입니다.')}</p>
+    <div class="callout">${edText('hc.query.callout', '<b>⚠ 시점 조회 관련 안내</b> — 기준일을 오늘이 아닌 날짜로 바꾸면, <b>현재 재직 중인 인원 중 그 날짜 이전에 입사한 사람</b>만 계산합니다. 그 사이에 퇴사한 인원의 기록은 이 표에 없어서 <b>과거 시점은 실제보다 적게 집계될 수 있습니다.</b> 부서·직책·고용형태는 모두 현재 기준 값이며(나이만 기준일 기준으로 다시 계산), 과거에는 다른 부서/고용형태였을 수 있습니다. 미래 날짜는 "입사예정" 명단의 입사일까지 반영됩니다.', {html:true})}</div>
 
     <div class="candidate-box">
       <div class="org-edit-panel" style="border-color:var(--line);background:var(--paper);">
