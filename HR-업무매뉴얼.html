@@ -2000,7 +2000,7 @@ let DATA = {
                 "concurrent": false,
                 "birthDate": "1995-02-26",
                 "hireDate": "2026-01-05",
-                "rndActual": null,
+                "rndActual": "N-R&D",
                 "rndRegistered": "X"
               },
               {
@@ -2015,7 +2015,7 @@ let DATA = {
                 "concurrent": false,
                 "birthDate": "1997-10-17",
                 "hireDate": "2026-02-02",
-                "rndActual": null,
+                "rndActual": "N-R&D",
                 "rndRegistered": "X"
               },
               {
@@ -2115,14 +2115,14 @@ let DATA = {
                 "gender": "여",
                 "type": "정규직",
                 "age": 36,
-                "newHire": false,
-                "deptMove": false,
+                "newHire": true,
+                "deptMove": true,
                 "intern": false,
                 "concurrent": false,
                 "birthDate": "1990-04-01",
                 "hireDate": "2026-07-20",
                 "rndActual": "N-R&D",
-                "rndRegistered": "Staff"
+                "rndRegistered": "X"
               }
             ],
             "children": []
@@ -2235,6 +2235,21 @@ let DATA = {
                 "concurrent": false,
                 "birthDate": "1992-01-07",
                 "hireDate": "2026-04-01",
+                "rndActual": "N-R&D",
+                "rndRegistered": "X"
+              },
+              {
+                "name": "이다영",
+                "title": null,
+                "gender": "여",
+                "type": "인턴",
+                "age": 31,
+                "newHire": true,
+                "deptMove": true,
+                "intern": true,
+                "concurrent": false,
+                "birthDate": "1995-05-12",
+                "hireDate": "2026-07-20",
                 "rndActual": "N-R&D",
                 "rndRegistered": "X"
               }
@@ -2638,8 +2653,8 @@ let DATA = {
                     "gender": "여",
                     "type": "정규직",
                     "age": 44,
-                    "newHire": false,
-                    "deptMove": false,
+                    "newHire": true,
+                    "deptMove": true,
                     "intern": false,
                     "concurrent": false,
                     "birthDate": "1982-09-05",
@@ -2767,8 +2782,8 @@ let DATA = {
                         "gender": "남",
                         "type": "전문연구요원",
                         "age": 55,
-                        "newHire": false,
-                        "deptMove": false,
+                        "newHire": true,
+                        "deptMove": true,
                         "intern": false,
                         "concurrent": false,
                         "birthDate": "1971-04-21",
@@ -4028,8 +4043,8 @@ let DATA = {
                     "gender": "남",
                     "type": "정규직",
                     "age": 28,
-                    "newHire": false,
-                    "deptMove": false,
+                    "newHire": true,
+                    "deptMove": true,
                     "intern": false,
                     "concurrent": false,
                     "birthDate": "1998-05-07",
@@ -4461,7 +4476,8 @@ let DATA = {
         ]
       }
     ]
-  }
+  },
+  "orgDataVersion": 2
 };
 /*DATA-END*/
 
@@ -4475,6 +4491,10 @@ const RECRUIT_STATUS_COLOR = { '모집중':'초안', '서류전형':'검토중',
 const ORIGINAL_HTML = document.documentElement.outerHTML;
 const STORAGE_KEY = 'hr-manual-data-v1';
 const DATA_VERSION = 2; // 파일의 데이터 구조 버전. 데이터 구조가 바뀌면 이 숫자를 올립니다.
+// 인사 원본 데이터(조직도·인원) 버전. 엑셀을 새로 반영할 때마다 이 숫자를 올리면,
+// 예전에 브라우저에 저장돼 있던 인원 데이터를 새 엑셀 데이터로 교체합니다.
+// (직접 수정한 설명 문구·문서 내용 등은 그대로 유지됩니다.)
+const ORG_DATA_VERSION = 2;
 
 /* 예전에 이 브라우저에 저장해 둔 데이터(localStorage)를 새 구조로 맞춰줍니다.
    v1 → v2: 인원 데이터를 "조직도" 한 곳으로 합치는 변경.
@@ -4521,6 +4541,8 @@ function migrateDataToV2(d){
 }
 
 (function loadFromStorage(){
+  const bakedOrgChart = DATA.orgChart;     // 이 파일에 담긴 최신 조직도(엑셀 반영본)
+  const bakedHeadcount = DATA.headcount;    // 이 파일에 담긴 최신 인원 기준일 정보
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -4528,10 +4550,18 @@ function migrateDataToV2(d){
       if (!parsed._v || parsed._v < DATA_VERSION) {
         parsed = migrateDataToV2(parsed);
       }
+      // 이 파일이 더 새로운 인원 데이터를 담고 있으면, 조직도·인원만 최신본으로 교체합니다.
+      // (설명 문구·문서 편집 등 나머지 사용자 편집 내용은 parsed 쪽을 그대로 유지)
+      if (!parsed.orgDataVersion || parsed.orgDataVersion < ORG_DATA_VERSION) {
+        parsed.orgChart = bakedOrgChart;
+        parsed.headcount = bakedHeadcount;
+        parsed.orgDataVersion = ORG_DATA_VERSION;
+      }
       DATA = parsed;
     }
   } catch(e) {}
   DATA._v = DATA_VERSION;
+  DATA.orgDataVersion = ORG_DATA_VERSION;
   DATA.texts = DATA.texts || {};
 })();
 
