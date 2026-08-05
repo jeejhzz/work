@@ -5916,6 +5916,7 @@ const RESUME_SECTION_DEFS = [
   { key:'awards',         label:'수상',        re:/^(honors?\s*(&|and)?\s*awards?|awards?|수상(\s*경력)?)$/i },
   { key:'projects',       label:'프로젝트',     re:/^(projects?|프로젝트)$/i },
   { key:'publications',   label:'출판 · 논문',  re:/^(publications?|papers?|논문|출판)$/i },
+  { key:'patents',        label:'특허',        re:/^(patents?|특허)$/i },
   { key:'languages',      label:'언어',        re:/^(languages?|언어|사용\s*언어)$/i },
   { key:'volunteer',      label:'봉사활동',     re:/^(volunteer(ing)?(\s*experience)?|봉사(\s*활동)?)$/i },
 ];
@@ -5955,7 +5956,239 @@ function rzIsPeriod(l){
 function rzIsBullet(l){ return /^[-•*·▪◦‣]\s+/.test(l); }
 function rzStripBullet(l){ return l.replace(/^[-•*·▪◦‣]\s+/, ''); }
 
+/* ---- 한국어로 바꿀 수 있는 부분(날짜·기간·고용형태·학위·지역 등)을 번역합니다.
+   직무 설명 같은 자유 문장은 인터넷 연결 없이 번역할 수 없어 원문 그대로 두고,
+   화면에서 직접 고칠 수 있게 합니다. ---- */
+const RZ_MONTHS = { jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12 };
+function rzTrDate(s){
+  let t = String(s || '');
+  t = t.replace(/\b([A-Za-z]{3,9})\s+(\d{1,2}),\s*(\d{4})\b/g, (m, mon, d, y) => {
+    const n = RZ_MONTHS[mon.slice(0,3).toLowerCase()];
+    return n ? `${y}.${String(n).padStart(2,'0')}.${String(d).padStart(2,'0')}` : m;
+  });
+  t = t.replace(/\b([A-Za-z]{3,9})\s+(\d{4})\b/g, (m, mon, y) => {
+    const n = RZ_MONTHS[mon.slice(0,3).toLowerCase()];
+    return n ? `${y}.${String(n).padStart(2,'0')}` : m;
+  });
+  t = t.replace(/\bPresent\b/gi, '현재').replace(/\bCurrent\b/gi, '현재').replace(/\bIssued\b/gi, '등록');
+  return t.replace(/\s*[–—]\s*/g, ' – ').trim();
+}
+function rzTrDuration(s){
+  return String(s || '')
+    .replace(/(\d+)\s*yrs?\b/gi, '$1년').replace(/(\d+)\s*years?\b/gi, '$1년')
+    .replace(/(\d+)\s*mos?\b/gi, '$1개월').replace(/(\d+)\s*months?\b/gi, '$1개월');
+}
+const RZ_TERMS = {
+  'full-time':'정규직','fulltime':'정규직','part-time':'시간제','parttime':'시간제',
+  'contract':'계약직','internship':'인턴','intern':'인턴','freelance':'프리랜서',
+  'self-employed':'자영업','temporary':'임시직','apprenticeship':'수습','seasonal':'단기',
+  'phd':'박사','ph.d.':'박사','doctor of philosophy':'박사','doctorate':'박사',
+  'ms':'석사','m.s.':'석사','msc':'석사','master':'석사',"master's degree":'석사','master of science':'석사',
+  'bs':'학사','b.s.':'학사','bsc':'학사','bachelor':'학사',"bachelor's degree":'학사','bachelor of science':'학사',
+  'mba':'MBA','associate degree':'전문학사',
+  'native or bilingual proficiency':'원어민 수준','full professional proficiency':'비즈니스 능통',
+  'professional working proficiency':'비즈니스 회화 가능','limited working proficiency':'제한적 업무 가능',
+  'elementary proficiency':'초급',
+  'english':'영어','korean':'한국어','japanese':'일본어','chinese':'중국어',
+  'german':'독일어','french':'프랑스어','spanish':'스페인어',
+};
+const RZ_PLACES = [
+  ['south korea','대한민국'],['republic of korea','대한민국'],['korea','대한민국'],
+  ['seoul','서울'],['seocho-gu','서초구'],['gangnam-gu','강남구'],['jung district','중구'],
+  ['gyeonggi','경기'],['giheung','기흥'],['hwaseong','화성'],['goyang','고양'],
+  ['daejeon','대전'],['busan','부산'],['incheon','인천'],['pangyo','판교'],
+  ['united states','미국'],['usa','미국'],['texas','텍사스'],['california','캘리포니아'],
+  ['new york','뉴욕'],['japan','일본'],['china','중국'],['germany','독일'],
+  ['france','프랑스'],['india','인도'],['singapore','싱가포르'],['united kingdom','영국'],
+];
+function rzTrTerm(s){
+  const t = String(s || '').trim();
+  if (!t) return '';
+  const hit = RZ_TERMS[t.toLowerCase()];
+  if (hit) return hit;
+  return t;
+}
+function rzTrPlace(s){
+  let t = String(s || '').trim();
+  if (!t) return '';
+  RZ_PLACES.forEach(([en, ko]) => {
+    t = t.replace(new RegExp('\\b' + en.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi'), ko);
+  });
+  // "서울, 서울, 대한민국" 처럼 같은 지명이 반복되면 하나로 줄입니다.
+  const parts = t.split(/\s*,\s*/).filter(Boolean);
+  const seen = [];
+  parts.forEach(p => { if (!seen.includes(p)) seen.push(p); });
+  return seen.join(', ');
+}
+
+/* ---- 링크드인 리크루터(Recruiter) 화면 붙여넣기 전용 파서 ----
+   리크루터 화면은 "Position title", "Company name" 같은 항목 이름이 함께 복사되고,
+   버튼·링크 등 화면 요소도 잔뜩 섞여 들어옵니다. 그 부분을 걷어내고 항목별로 정리합니다. */
+const RZ_NOISE = [
+  /^sourced$/i, /^add (email|phone number)$/i, /^public profile$/i, /^change stage/i,
+  /^archive\b/i, /^message\b/i, /^share\b.*\bfor review$/i, /^more actions for/i,
+  /^in \d+ projects?$/i, /uncontacted current project/i, /^profile$/i,
+  /^(projects?|messages|feedback|attachments)\s*\(\d+\)$/i, /^recruiting activity$/i,
+  /^most recent activity$/i, /^hide details$/i, /^hiring assistant\b/i,
+  /^\d{1,2}\/\d{1,2}\/\d{4}\s*·/, /^enhanced by resume/i, /^highlight information from resume/i,
+  /^show (more|all)\b/i, /^see (publication|patent)s?$/i, /^(authors|inventors)$/i,
+  /^\d+\s+endorsements?$/i, /^\d+\s+\d+\s+connections?$/i, /^\d+\s*connections?$/i,
+  /^https?:\/\//i, /^[*•·\-–—]+$/, /^\d+$/, /^degree details$/i, /^\d+\.\s*$/,
+];
+const RZ_FIELD_LABELS = {
+  'position title':'title', 'company name':'company', 'dates employed and duration':'dates',
+  'position location':'location', 'position summary':'summary',
+  'school name':'title', 'degree name':'degree', 'field of study':'field',
+  'dates attended or expected graduation':'dates', 'degree summary':'summary',
+};
+function rzIsRecruiterFormat(raw){
+  return /(^|\n)\s*[*•]?\s*(position title|company name|dates employed and duration|school name)\s*(\n|$)/i.test(String(raw||''));
+}
+/* 마크다운 링크 [글자](주소) 는 글자만 남깁니다. */
+function rzStripLinks(s){ return String(s||'').replace(/\[([^\]]*)\]\((?:[^()]|\([^()]*\))*\)/g, '$1'); }
+
+function rzRecruiterLines(raw){
+  const out = [];
+  String(raw || '').replace(/\r/g,'').split('\n').forEach(orig => {
+    let l = rzStripLinks(orig).replace(/ /g,' ').trim();
+    if (!l) { out.push({ t:'', item:false }); return; }
+    const item = /^[*]\s+/.test(l) || /^\d+\.\s+/.test(l);
+    l = l.replace(/^[*•·]\s*/, '').replace(/^\d+\.\s+/, '').trim();
+    if (!l) return;
+    if (RZ_NOISE.some(re => re.test(l))) return;
+    out.push({ t:l, item });
+  });
+  return out;
+}
+
+function rzSectionOf(line){
+  const t = String(line||'').replace(/\s*\(\d+\)\s*$/, '').replace(/[:：]\s*$/, '').trim();
+  if (!t || t.length > 40) return null;
+  for (const def of RESUME_SECTION_DEFS) if (def.re.test(t)) return def;
+  return null;
+}
+
+/* 항목 이름이 붙은 경력·학력 블록을 읽어 한 건씩 나눕니다. */
+function rzParseLabeledEntries(lines){
+  const entries = [];
+  let cur = null, field = null;
+  const push = () => { if (cur) entries.push(cur); };
+  lines.forEach(({ t }) => {
+    const key = RZ_FIELD_LABELS[t.toLowerCase()];
+    if (key) {
+      if (key === 'title') { push(); cur = { title:[], company:[], dates:[], location:[], degree:[], field:[], summary:[] }; }
+      field = key;
+      return;
+    }
+    if (!cur || !field) return;
+    cur[field].push(t);
+  });
+  push();
+  return entries.filter(e => e.title.length);
+}
+
+function rzLabeledEntryText(e){
+  const out = [e.title.join(' ')];
+  const subs = [];
+  e.degree.forEach(d => subs.push(rzTrTerm(d)));
+  e.field.forEach(f => subs.push(f));
+  e.company.forEach(c => subs.push(rzTrTerm(c)));
+  if (e.location.length) subs.push(rzTrPlace(e.location.join(', ')));
+  if (subs.length) out.push(subs.filter(Boolean).join(' · '));
+  if (e.dates.length) out.push(e.dates.map(d => rzTrDuration(rzTrDate(d))).join(' · '));
+  e.summary.forEach(s => out.push('- ' + s));
+  return out.join('\n');
+}
+
+/* 항목 이름이 없는 블록(수상·논문·특허·자격·언어)은 * 로 시작하는 줄을 한 건의 시작으로 봅니다. */
+function rzParseItemEntries(lines){
+  const entries = [];
+  let cur = null;
+  lines.forEach(({ t, item }) => {
+    if (item || !cur) { if (cur) entries.push(cur); cur = { title: t, rest: [] }; return; }
+    cur.rest.push(t);
+  });
+  if (cur) entries.push(cur);
+  return entries;
+}
+function rzItemEntryText(e){
+  const out = [e.title];
+  const dates = [], subs = [], paras = [];
+  e.rest.forEach(l => {
+    const looksDate = /\b(19|20)\d{2}\b/.test(l) && l.length <= 45;
+    if (looksDate) dates.push(rzTrDuration(rzTrDate(l)));
+    else if (l.length > 80) paras.push(l);
+    else subs.push(rzTrTerm(l));
+  });
+  if (subs.length) out.push(subs.filter(Boolean).join(' · '));
+  if (dates.length) out.push(dates.join(' · ')); // 기간은 따로 한 줄로 (오른쪽에 표시됩니다)
+  paras.forEach(p => out.push('- ' + p));
+  return out.join('\n');
+}
+
+function parseLinkedInRecruiter(raw){
+  const lines = rzRecruiterLines(raw);
+  const compact = lines.filter(x => x.t);
+
+  // 첫 소제목 전까지가 머리말(이름·직함·지역)
+  let firstIdx = compact.findIndex(x => rzSectionOf(x.t));
+  if (firstIdx === -1) firstIdx = compact.length;
+  const head = compact.slice(0, firstIdx).map(x => x.t);
+  const joined = compact.map(x => x.t).join('\n');
+  const email = (joined.match(/[\w.+-]+@[\w-]+\.[\w.]+/) || [])[0] || '';
+  const phone = (joined.match(/(?:\+?\d{1,3}[\s-])?01[016789][\s-]?\d{3,4}[\s-]?\d{4}/) || [])[0] || '';
+
+  const name = head[0] || '';
+  // 지역 줄은 "도시, 지역, 국가" 형태(마지막 조각이 알려진 지명)이거나 지명 그 자체여야 합니다.
+  // 이렇게 해야 "Senior Developer at SAP Labs Korea" 같은 직함 줄을 지역으로 착각하지 않습니다.
+  const isKnownPlace = str => RZ_PLACES.some(([en]) => en.toLowerCase() === String(str||'').trim().toLowerCase());
+  const looksLikeLocation = s => {
+    const c = String(s||'').replace(/^·\s*/, '').replace(/\s*·\s*$/, '').trim();
+    if (!c || c.length > 50) return false;
+    if (isKnownPlace(c)) return true;
+    const parts = c.split(',').map(x => x.trim()).filter(Boolean);
+    return parts.length >= 2 && isKnownPlace(parts[parts.length - 1]);
+  };
+  const headline = (head[1] && !looksLikeLocation(head[1])) ? head[1] : '';
+  let location = '';
+  head.slice(1).forEach(h => {
+    if (!location && looksLikeLocation(h)) location = rzTrPlace(h.replace(/^·\s*/, '').replace(/\s*·\s*$/, '').trim());
+  });
+  const contact = [email, phone, location].filter(Boolean).join(' · ');
+
+  // 소제목 기준으로 구간 나누기
+  const buckets = [];
+  let cur = null;
+  compact.slice(firstIdx).forEach(x => {
+    const def = rzSectionOf(x.t);
+    if (def) {
+      cur = buckets.find(b => b.key === def.key);
+      if (!cur) { cur = { key: def.key, label: def.label, lines: [] }; buckets.push(cur); }
+      return;
+    }
+    if (cur) cur.lines.push(x);
+  });
+
+  const sections = buckets.map(b => {
+    let text = '';
+    if (b.key === 'skills') {
+      text = b.lines.filter(x => x.item || b.lines.every(y => !y.item)).map(x => x.t).join(', ');
+    } else if (b.key === 'summary') {
+      text = b.lines.map(x => x.t).join('\n');
+    } else {
+      const labeled = rzParseLabeledEntries(b.lines);
+      if (labeled.length) text = labeled.map(rzLabeledEntryText).join('\n\n');
+      else text = rzParseItemEntries(b.lines).map(rzItemEntryText).join('\n\n');
+    }
+    return { key: b.key, label: b.label, text: text.trim() };
+  }).filter(s => s.text);
+
+  return { name, headline, contact, sections };
+}
+
 function parseLinkedInProfile(raw){
+  // 리크루터 화면에서 복사한 형식이면 전용 파서로 처리합니다.
+  if (rzIsRecruiterFormat(raw)) return parseLinkedInRecruiter(raw);
   const lines = rzCleanLines(raw);
   const sections = [];
   let name = '', headline = '', contact = '';
@@ -6001,7 +6234,7 @@ function rzSectionHtml(key, text){
   const raw = String(text || '');
   if (!raw.trim()) return '';
 
-  if (key === 'skills' || key === 'languages') {
+  if (key === 'skills') {
     const items = raw.split(/[\n,·|]+/).map(s => s.trim()).filter(Boolean);
     if (items.length) return `<div class="rz-chips">${items.map(s => `<span class="rz-chip">${esc(s)}</span>`).join('')}</div>`;
   }
@@ -6245,7 +6478,8 @@ function renderResumeBuilder(){
     <p class="doc-eyebrow">09 · 채용 현황 관리</p>
     <h2>${edText('page.resume.title', '📄 이력서 PDF 만들기')}</h2>
     <p class="lede">${edText('page.resume.lede', '링크드인 프로필에서 복사한 내용을 그대로 붙여넣으면 Summary·Experience·Education·Skills·Accomplishments 같은 항목을 자동으로 나눠 이력서 서식으로 정리하고, PDF로 저장할 수 있게 해줍니다.')}</p>
-    <div class="callout"><b>💡 참고</b> — 링크드인 프로필 화면에서 내용을 드래그해 복사한 뒤 아래에 붙여넣으세요. 복사할 때 같은 줄이 두 번씩 들어가는 현상은 자동으로 정리합니다. 자동 분류가 완벽하지는 않으니 저장 전에 내용을 확인하고 고쳐주세요.</div>
+    <div class="callout"><b>💡 참고</b> — <b>링크드인 리크루터(Recruiter) 화면</b>과 <b>일반 프로필 화면</b> 둘 다 지원합니다. 화면 내용을 드래그해 복사한 뒤 그대로 붙여넣으세요. 버튼·링크·"Show more" 같은 화면 요소와, 같은 줄이 두 번씩 들어가는 현상은 자동으로 걷어냅니다.<br>
+    <b>한국어 변환</b> — 날짜(Jun 2017 → 2017.06), 기간(9 yrs 3 mos → 9년 3개월), 고용형태(Full-time → 정규직), 학위(PhD → 박사), 지역(Seoul, Korea → 서울, 대한민국), 어학 수준 등 <b>정해진 표현은 자동으로 한국어로 바꿉니다.</b> 다만 직무 설명·논문 초록 같은 <b>자유 문장은 인터넷 연결 없이 번역할 수 없어 원문 그대로 두었습니다</b> — 필요하면 아래 항목별 입력창에서 직접 고쳐주세요. 기술 용어(SoC, CXL 등)는 일부러 그대로 둡니다.</div>
     ${resumeError ? `<div class="anomaly-box"><h4>⚠ ${esc(resumeError)}</h4></div>` : ''}
     <div class="candidate-box">
       <textarea id="resumePasteArea" placeholder="링크드인 프로필 내용을 여기에 붙여넣기...
