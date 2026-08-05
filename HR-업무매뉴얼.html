@@ -310,6 +310,55 @@
   .doc-body-edit-note{ margin:0 0 .8rem; padding:.6rem .9rem; background:var(--accent-tint); border:1px solid var(--accent); border-radius:8px; font-size:.82rem; color:var(--ink); }
   .doc-body-edit{ outline:2px dashed var(--accent); outline-offset:6px; border-radius:6px; padding:.2rem; }
   .doc-body-edit:focus{ outline:2px solid var(--accent); }
+
+  /* ---- 이력서 만들기 ---- */
+  .rz-list{ display:flex; flex-direction:column; gap:.5rem; margin-top:.6rem; }
+  .rz-list-item{ display:flex; align-items:center; gap:.6rem; padding:.6rem .8rem; border:1px solid var(--line); border-radius:10px; background:var(--paper-raised); }
+  .rz-list-open{ flex:1; min-width:0; text-align:left; background:none; border:none; cursor:pointer; font-family:var(--sans); color:var(--ink); display:flex; flex-direction:column; gap:.15rem; }
+  .rz-list-open .card-desc{ font-size:.78rem; color:var(--ink-faint); }
+  .rz-edit-row{ border:1px solid var(--line); border-radius:10px; padding:.6rem .7rem; margin-bottom:.6rem; background:var(--paper-raised); }
+  .rz-edit-row.drag-over{ border-color:var(--accent); background:var(--accent-tint); }
+  .rz-edit-row-top{ display:flex; align-items:center; gap:.5rem; margin-bottom:.4rem; }
+  .rz-edit-row-top .drag-handle{ cursor:grab; color:var(--ink-faint); }
+  .rz-label-input{ flex:1; padding:.35rem .6rem; border:1px solid var(--line); border-radius:6px; font-family:var(--sans); font-weight:600; background:var(--paper); color:var(--ink); }
+  /* 이력서 미리보기는 "종이"처럼 항상 흰 배경·검은 글씨로 보여줍니다(인쇄 결과와 같게). */
+  .rz-paper{ background:#fff; color:#1a1a1a; border:1px solid var(--line); border-radius:6px; padding:2.4rem 2.6rem; margin-top:.8rem; box-shadow:var(--shadow); max-width:800px; font-family:var(--sans); line-height:1.5; }
+  .rz-head{ border-bottom:2px solid #1a1a1a; padding-bottom:.7rem; margin-bottom:1.2rem; }
+  /* .page h1/h2 전역 서식보다 우선하도록 .rz-paper 하위로 지정합니다. */
+  .rz-paper .rz-name{ font-family:var(--sans); font-size:1.6rem; font-weight:700; margin:0 0 .25rem; color:#1a1a1a; letter-spacing:-.01em; }
+  .rz-headline{ font-size:.95rem; margin:0 0 .2rem; color:#333; }
+  .rz-contact{ font-size:.82rem; margin:0; color:#555; font-family:var(--mono); }
+  .rz-section{ margin-bottom:1.25rem; }
+  .rz-paper .rz-section-title{ font-family:var(--sans); font-size:.8rem; font-weight:700; letter-spacing:.09em; color:#1a1a1a; border-bottom:1px solid #ccc; padding-bottom:.25rem; margin:0 0 .55rem; }
+  .rz-entry{ margin-bottom:.85rem; }
+  .rz-entry:last-child{ margin-bottom:0; }
+  .rz-entry-head{ display:flex; justify-content:space-between; align-items:baseline; gap:1rem; }
+  .rz-entry-title{ font-weight:700; font-size:.95rem; color:#1a1a1a; }
+  .rz-entry-period{ font-size:.78rem; color:#555; font-family:var(--mono); white-space:nowrap; flex-shrink:0; }
+  .rz-entry-sub{ font-size:.85rem; color:#444; margin-top:.1rem; }
+  .rz-para{ font-size:.87rem; color:#333; margin:.35rem 0 0; }
+  .rz-bullets{ margin:.35rem 0 0; padding-left:1.1rem; }
+  .rz-bullets li{ font-size:.87rem; color:#333; margin-bottom:.18rem; }
+  .rz-chips{ display:flex; flex-wrap:wrap; gap:.35rem; }
+  .rz-chip{ font-size:.8rem; padding:.16rem .55rem; border:1px solid #bbb; border-radius:999px; color:#333; background:#f7f7f7; }
+
+  /* ---- 인쇄(=PDF로 저장) 전용: 이력서 종이만 남기고 화면 요소는 숨깁니다 ---- */
+  @media print {
+    .topbar, .searchbar-row, .sidebar, .edit-banner, .no-print,
+    .candidate-box, .callout, .row-actions, .notes-box, .back-link{ display:none !important; }
+    body{ background:#fff !important; }
+    /* 화면용 높이 설정(100vh 등)이 남아 빈 페이지가 생기지 않도록 모두 풀어줍니다. */
+    html, body{ height:auto !important; min-height:0 !important; margin:0 !important; padding:0 !important; }
+    .app{ max-width:none !important; min-height:0 !important; height:auto !important; display:block !important; }
+    .body{ display:block !important; min-height:0 !important; height:auto !important; }
+    .content{ padding:0 !important; overflow:visible !important; min-height:0 !important; height:auto !important; }
+    .page{ max-width:none !important; min-height:0 !important; height:auto !important; animation:none !important; }
+    .rz-paper{ border:none !important; box-shadow:none !important; border-radius:0 !important;
+      margin:0 !important; padding:0 !important; max-width:none !important; background:#fff !important; }
+    .rz-section, .rz-entry{ break-inside:avoid; page-break-inside:avoid; }
+    .rz-section-title{ break-after:avoid; page-break-after:avoid; }
+    @page{ size:A4; margin:14mm 15mm; }
+  }
 </style>
 </head>
 <body>
@@ -4563,6 +4612,7 @@ function migrateDataToV2(d){
   DATA._v = DATA_VERSION;
   DATA.orgDataVersion = ORG_DATA_VERSION;
   DATA.texts = DATA.texts || {};
+  DATA.resumes = DATA.resumes || [];
 })();
 
 let view = { type:'overview', domain:null, doc:null };
@@ -4950,6 +5000,7 @@ function renderMain(){
   if (view.type === 'jdmanage') return renderJdManage();
   if (view.type === 'jddetail') return renderJdDetail(view.doc);
   if (view.type === 'jdimport') return renderJdImport();
+  if (view.type === 'resume') return renderResumeBuilder();
   if (view.type === 'candidate') return renderCandidateMatch();
   if (view.type === 'headcount') return renderHeadcountDashboard();
   if (view.type === 'orgchart') return renderOrgChart();
@@ -5847,6 +5898,378 @@ function renderJdImport(){
       </div>
     </div>
     ${bodyHtml}
+  `;
+}
+
+/* ============ 링크드인 붙여넣기 → 이력서 PDF 만들기 ============
+   링크드인 프로필에서 복사한 텍스트를 붙여넣으면 Summary/Experience/Education/
+   Skills/Accomplishments 같은 소제목을 찾아 항목별로 나눠 담고, 인쇄용 서식으로
+   정리해 PDF로 저장할 수 있게 합니다. (자동 분류 결과는 항상 직접 고칠 수 있습니다) */
+
+const RESUME_SECTION_DEFS = [
+  { key:'summary',        label:'요약',        re:/^(about|summary|profile|자기소개|소개|요약)$/i },
+  { key:'experience',     label:'경력',        re:/^(experience|work\s*experience|employment|경력|경력\s*사항|직무\s*경험)$/i },
+  { key:'education',      label:'학력',        re:/^(education|학력|학력\s*사항)$/i },
+  { key:'skills',         label:'보유 기술',    re:/^(skills?(\s*(&|and)\s*endorsements)?|기술|보유\s*기술|스킬|기술\s*스택)$/i },
+  { key:'accomplishments',label:'주요 성과',    re:/^(accomplishments?|achievements?|성과|주요\s*성과)$/i },
+  { key:'certifications', label:'자격 · 수료',  re:/^(licenses?\s*(&|and)?\s*certifications?|certifications?|자격증|자격|수료)$/i },
+  { key:'awards',         label:'수상',        re:/^(honors?\s*(&|and)?\s*awards?|awards?|수상(\s*경력)?)$/i },
+  { key:'projects',       label:'프로젝트',     re:/^(projects?|프로젝트)$/i },
+  { key:'publications',   label:'출판 · 논문',  re:/^(publications?|papers?|논문|출판)$/i },
+  { key:'languages',      label:'언어',        re:/^(languages?|언어|사용\s*언어)$/i },
+  { key:'volunteer',      label:'봉사활동',     re:/^(volunteer(ing)?(\s*experience)?|봉사(\s*활동)?)$/i },
+];
+
+/* 링크드인에서 복사하면 같은 줄이 두 번씩 들어오는 경우가 많아 연속 중복 줄을 없앱니다. */
+function rzCleanLines(raw){
+  const lines = String(raw || '').replace(/\r/g, '').split('\n')
+    .map(l => l.replace(/ /g, ' ').replace(/\s+$/,'').trim());
+  const out = [];
+  for (const l of lines) {
+    if (l && out.length && out[out.length - 1] === l) continue; // 연속 중복 제거
+    if (!l && out.length && !out[out.length - 1]) continue;     // 빈 줄 연속 축약
+    out.push(l);
+  }
+  while (out.length && !out[0]) out.shift();
+  while (out.length && !out[out.length - 1]) out.pop();
+  return out;
+}
+
+function rzMatchSection(line){
+  if (!line || line.length > 40) return null;
+  const t = line.replace(/[:：]\s*$/, '').trim();
+  for (const def of RESUME_SECTION_DEFS) {
+    if (def.re.test(t)) return def;
+  }
+  return null;
+}
+
+/* 기간처럼 보이는 줄인지 (예: 2020.03 - 현재, Jan 2020 - Present · 4 yrs) */
+function rzIsPeriod(l){
+  if (!l || l.length > 55) return false;
+  const hasYear = /\b(19|20)\d{2}\b/.test(l) || /\d{4}\s*년/.test(l);
+  const hasRange = /[-–—~]|present|현재|now|재직/i.test(l);
+  const hasDur = /\b\d+\s*(yrs?|years?|mos?|months?)\b|\d+\s*(년|개월)/i.test(l);
+  return (hasYear && (hasRange || hasDur)) || (hasDur && hasRange);
+}
+function rzIsBullet(l){ return /^[-•*·▪◦‣]\s+/.test(l); }
+function rzStripBullet(l){ return l.replace(/^[-•*·▪◦‣]\s+/, ''); }
+
+function parseLinkedInProfile(raw){
+  const lines = rzCleanLines(raw);
+  const sections = [];
+  let name = '', headline = '', contact = '';
+
+  // 이메일·전화번호는 어디에 있든 찾아서 연락처로 뽑아둡니다.
+  const joined = lines.join('\n');
+  const email = (joined.match(/[\w.+-]+@[\w-]+\.[\w.]+/) || [])[0] || '';
+  const phone = (joined.match(/(?:\+?\d{1,3}[\s-])?01[016789][\s-]?\d{3,4}[\s-]?\d{4}/) || [])[0] || '';
+  contact = [email, phone].filter(Boolean).join(' · ');
+
+  // 첫 소제목이 나오기 전까지를 머리말(이름·직함)로 봅니다.
+  let firstSectionIdx = lines.findIndex(l => rzMatchSection(l));
+  if (firstSectionIdx === -1) firstSectionIdx = 0;
+  const head = lines.slice(0, firstSectionIdx).filter(Boolean);
+  if (head.length) {
+    name = head[0];
+    const rest = head.slice(1).filter(l => l !== email && l !== phone);
+    if (rest.length) headline = rest[0];
+  }
+
+  // 소제목 기준으로 본문을 나눕니다.
+  let cur = null;
+  for (let i = firstSectionIdx; i < lines.length; i++) {
+    const def = rzMatchSection(lines[i]);
+    if (def) {
+      cur = sections.find(s => s.key === def.key);
+      if (!cur) { cur = { key: def.key, label: def.label, lines: [] }; sections.push(cur); }
+      continue;
+    }
+    if (cur) cur.lines.push(lines[i]);
+  }
+
+  return {
+    name, headline, contact,
+    sections: sections
+      .map(s => ({ key: s.key, label: s.label, text: s.lines.join('\n').trim() }))
+      .filter(s => s.text),
+  };
+}
+
+/* 한 섹션의 텍스트를 이력서 서식(HTML)으로 바꿉니다. */
+function rzSectionHtml(key, text){
+  const raw = String(text || '');
+  if (!raw.trim()) return '';
+
+  if (key === 'skills' || key === 'languages') {
+    const items = raw.split(/[\n,·|]+/).map(s => s.trim()).filter(Boolean);
+    if (items.length) return `<div class="rz-chips">${items.map(s => `<span class="rz-chip">${esc(s)}</span>`).join('')}</div>`;
+  }
+
+  const lines = raw.split('\n').map(l => l.trim());
+  const entries = [];
+  let cur = [];
+  lines.forEach(l => { if (!l) { if (cur.length) { entries.push(cur); cur = []; } } else cur.push(l); });
+  if (cur.length) entries.push(cur);
+  if (!entries.length) return '';
+
+  if (key === 'summary') {
+    return entries.map(e => `<p class="rz-para">${esc(e.join(' '))}</p>`).join('');
+  }
+
+  return entries.map(e => {
+    const title = e[0];
+    const rest = e.slice(1);
+    const bullets = rest.filter(rzIsBullet).map(rzStripBullet);
+    const plain = rest.filter(l => !rzIsBullet(l));
+    const period = plain.find(rzIsPeriod) || '';
+    const others = plain.filter(l => l !== period);
+    const subs = others.filter(l => l.length <= 60);
+    const paras = others.filter(l => l.length > 60);
+    return `
+      <div class="rz-entry">
+        <div class="rz-entry-head">
+          <span class="rz-entry-title">${esc(title)}</span>
+          ${period ? `<span class="rz-entry-period">${esc(period)}</span>` : ''}
+        </div>
+        ${subs.length ? `<div class="rz-entry-sub">${esc(subs.join(' · '))}</div>` : ''}
+        ${paras.map(p => `<p class="rz-para">${esc(p)}</p>`).join('')}
+        ${bullets.length ? `<ul class="rz-bullets">${bullets.map(b => `<li>${esc(b)}</li>`).join('')}</ul>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+let resumeCurrentId = null;
+let resumeError = '';
+
+function nextResumeId(){
+  let n = 1;
+  const used = new Set((DATA.resumes || []).map(r => r.id));
+  while (used.has('rz' + n)) n++;
+  return 'rz' + n;
+}
+
+function createResumeFromPaste(){
+  const el = document.getElementById('resumePasteArea');
+  const raw = el ? el.value : '';
+  if (!raw.trim()) { resumeError = '먼저 링크드인 프로필 내용을 붙여넣어 주세요.'; render(); return; }
+  const p = parseLinkedInProfile(raw);
+  if (!p.sections.length && !p.name) { resumeError = '내용을 알아보지 못했습니다. 링크드인 프로필 화면의 내용을 그대로 붙여넣었는지 확인해주세요.'; render(); return; }
+  resumeError = '';
+  DATA.resumes = DATA.resumes || [];
+  const r = {
+    id: nextResumeId(),
+    name: p.name || '이름 미상',
+    headline: p.headline || '',
+    contact: p.contact || '',
+    sections: p.sections.length ? p.sections : [{ key:'summary', label:'요약', text: rzCleanLines(raw).join('\n') }],
+    updatedAt: todayStr(),
+  };
+  DATA.resumes.unshift(r);
+  resumeCurrentId = r.id;
+  persist('이력서를 만들었습니다 · ' + nowHm());
+  render();
+}
+function findResume(id){ return (DATA.resumes || []).find(r => r.id === id); }
+function openResume(id){ resumeCurrentId = id; resumeError = ''; render(); window.scrollTo(0,0); }
+function closeResume(){ resumeCurrentId = null; render(); }
+function deleteResume(id){
+  if (!confirm('이 이력서를 삭제할까요?')) return;
+  DATA.resumes = (DATA.resumes || []).filter(r => r.id !== id);
+  if (resumeCurrentId === id) resumeCurrentId = null;
+  persist(); render();
+}
+function updateResumeField(id, field, value){
+  const r = findResume(id); if (!r) return;
+  r[field] = value; r.updatedAt = todayStr();
+  persist('저장됨 · ' + nowHm());
+  render(); // 미리보기에 바로 반영
+}
+function updateResumeSectionText(id, key, value){
+  const r = findResume(id); if (!r) return;
+  const s = r.sections.find(x => x.key === key); if (!s) return;
+  s.text = value; r.updatedAt = todayStr();
+  persist('저장됨 · ' + nowHm());
+  render();
+}
+function updateResumeSectionLabel(id, key, value){
+  const r = findResume(id); if (!r) return;
+  const s = r.sections.find(x => x.key === key); if (!s) return;
+  s.label = value; r.updatedAt = todayStr();
+  persist('저장됨 · ' + nowHm());
+  render(); // 미리보기에 바로 반영
+}
+function removeResumeSection(id, key){
+  const r = findResume(id); if (!r) return;
+  if (!confirm('이 항목을 이력서에서 뺄까요?')) return;
+  r.sections = r.sections.filter(s => s.key !== key);
+  persist(); render();
+}
+function addResumeSection(id){
+  const r = findResume(id); if (!r) return;
+  const label = (prompt('추가할 항목 이름 (예: 포트폴리오)') || '').trim();
+  if (!label) return;
+  r.sections.push({ key: 'custom' + Date.now(), label, text: '' });
+  persist(); render();
+}
+/* 항목 순서를 드래그로 바꿉니다. */
+let rzDraggedKey = null;
+function onRzDragStart(e, key){ rzDraggedKey = key; e.dataTransfer.effectAllowed = 'move'; }
+function onRzDragOver(e){ e.preventDefault(); e.dataTransfer.dropEffect = 'move'; e.currentTarget.classList.add('drag-over'); }
+function onRzDragLeave(e){ e.currentTarget.classList.remove('drag-over'); }
+function onRzDrop(e, id, targetKey){
+  e.preventDefault(); e.currentTarget.classList.remove('drag-over');
+  const from = rzDraggedKey; rzDraggedKey = null;
+  if (!from || from === targetKey) return;
+  const r = findResume(id); if (!r) return;
+  const fromIdx = r.sections.findIndex(s => s.key === from);
+  if (fromIdx === -1) return;
+  const moved = r.sections.splice(fromIdx, 1)[0];
+  const toIdx = r.sections.findIndex(s => s.key === targetKey);
+  r.sections.splice(toIdx === -1 ? r.sections.length : toIdx, 0, moved);
+  persist(); render();
+}
+function onRzDragEnd(){ rzDraggedKey = null; document.querySelectorAll('.rz-edit-row.drag-over').forEach(el => el.classList.remove('drag-over')); }
+
+/* 인쇄 대화상자를 띄웁니다. "대상"을 "PDF로 저장"으로 고르면 PDF 파일이 됩니다.
+   저장될 파일 이름이 사람 이름으로 나오도록 제목을 잠시 바꿨다가 되돌립니다. */
+function printResume(id){
+  const r = findResume(id);
+  const prev = document.title;
+  if (r && r.name) document.title = '이력서_' + r.name;
+  const restore = () => { document.title = prev; window.removeEventListener('afterprint', restore); };
+  window.addEventListener('afterprint', restore);
+  window.print();
+  setTimeout(restore, 2000);
+}
+window.createResumeFromPaste = createResumeFromPaste;
+window.openResume = openResume;
+window.closeResume = closeResume;
+window.deleteResume = deleteResume;
+window.updateResumeField = updateResumeField;
+window.updateResumeSectionText = updateResumeSectionText;
+window.updateResumeSectionLabel = updateResumeSectionLabel;
+window.removeResumeSection = removeResumeSection;
+window.addResumeSection = addResumeSection;
+window.printResume = printResume;
+window.onRzDragStart = onRzDragStart;
+window.onRzDragOver = onRzDragOver;
+window.onRzDragLeave = onRzDragLeave;
+window.onRzDrop = onRzDrop;
+window.onRzDragEnd = onRzDragEnd;
+
+function renderResumePaper(r){
+  return `
+    <div class="rz-paper" id="rzPaper">
+      <div class="rz-head">
+        <h1 class="rz-name">${esc(r.name)}</h1>
+        ${r.headline ? `<p class="rz-headline">${esc(r.headline)}</p>` : ''}
+        ${r.contact ? `<p class="rz-contact">${esc(r.contact)}</p>` : ''}
+      </div>
+      ${r.sections.map(s => {
+        const body = rzSectionHtml(s.key, s.text);
+        if (!body) return '';
+        return `<section class="rz-section"><h2 class="rz-section-title">${esc(s.label)}</h2>${body}</section>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderResumeBuilder(){
+  DATA.resumes = DATA.resumes || [];
+  const r = resumeCurrentId ? findResume(resumeCurrentId) : null;
+
+  if (r) {
+    const editRows = r.sections.map(s => `
+      <div class="rz-edit-row" draggable="true"
+          ondragstart="onRzDragStart(event,'${s.key}')"
+          ondragover="onRzDragOver(event)"
+          ondragleave="onRzDragLeave(event)"
+          ondrop="onRzDrop(event,'${r.id}','${s.key}')"
+          ondragend="onRzDragEnd()">
+        <div class="rz-edit-row-top">
+          <span class="drag-handle" title="드래그해서 순서 변경">⠿</span>
+          <input type="text" value="${esc(s.label)}" onchange="updateResumeSectionLabel('${r.id}','${s.key}',this.value)" class="rz-label-input">
+          <button class="jd-del" onclick="removeResumeSection('${r.id}','${s.key}')">항목 빼기</button>
+        </div>
+        <textarea onchange="updateResumeSectionText('${r.id}','${s.key}',this.value)" style="min-height:110px;">${esc(s.text)}</textarea>
+      </div>
+    `).join('');
+
+    return `
+      <p class="doc-eyebrow no-print">09 · 채용 현황 관리 · 이력서 만들기</p>
+      <button class="back-link no-print" onclick="closeResume()">← 이력서 목록으로</button>
+      <h2 class="no-print">📄 ${esc(r.name)} 이력서</h2>
+      <div class="callout no-print"><b>💡 PDF로 저장하는 방법</b> — 아래 <b>[PDF로 저장]</b> 버튼을 누르면 인쇄 창이 뜹니다. 거기서 <b>"대상(프린터)"을 "PDF로 저장"</b>으로 고르고 저장하면 이력서 PDF 파일이 만들어집니다. 화면의 메뉴·입력창은 인쇄에 나오지 않고 아래 이력서 부분만 나옵니다.</div>
+
+      <div class="row-actions no-print">
+        <button class="btn primary" onclick="printResume('${r.id}')">🖨 PDF로 저장</button>
+        <button class="btn" onclick="addResumeSection('${r.id}')">+ 항목 추가</button>
+        <button class="btn" style="color:var(--seal);" onclick="deleteResume('${r.id}')">이력서 삭제</button>
+        <span class="save-flag" id="saveFlag"></span>
+      </div>
+
+      <div class="candidate-box no-print">
+        <div class="jd-field"><label>이름</label>
+          <input type="text" value="${esc(r.name)}" onchange="updateResumeField('${r.id}','name',this.value)" style="width:100%;padding:.5rem .7rem;border:1px solid var(--line);border-radius:6px;font-family:var(--sans);background:var(--paper-raised);color:var(--ink);"></div>
+        <div class="jd-field"><label>직함 · 한 줄 소개</label>
+          <input type="text" value="${esc(r.headline)}" onchange="updateResumeField('${r.id}','headline',this.value)" style="width:100%;padding:.5rem .7rem;border:1px solid var(--line);border-radius:6px;font-family:var(--sans);background:var(--paper-raised);color:var(--ink);"></div>
+        <div class="jd-field"><label>연락처</label>
+          <input type="text" value="${esc(r.contact)}" onchange="updateResumeField('${r.id}','contact',this.value)" placeholder="이메일 · 전화번호" style="width:100%;padding:.5rem .7rem;border:1px solid var(--line);border-radius:6px;font-family:var(--sans);background:var(--paper-raised);color:var(--ink);"></div>
+        <p style="font-size:.8rem;color:var(--ink-faint);margin:.8rem 0 .3rem;">항목별 내용 — 고치면 아래 미리보기에 바로 반영됩니다. ⠿를 드래그하면 순서가 바뀝니다.</p>
+        ${editRows || '<p style="font-size:.85rem;color:var(--ink-faint);">항목이 없습니다. [+ 항목 추가]로 만들어보세요.</p>'}
+      </div>
+
+      <h3 class="no-print">미리보기 (이 부분이 PDF로 저장됩니다)</h3>
+      ${renderResumePaper(r)}
+    `;
+  }
+
+  const list = DATA.resumes.length ? `
+    <div class="rz-list">
+      ${DATA.resumes.map(x => `
+        <div class="rz-list-item">
+          <button class="rz-list-open" onclick="openResume('${x.id}')">
+            <span class="card-title">${esc(x.name)}</span>
+            <span class="card-desc">${esc(x.headline || '직함 없음')} · 항목 ${x.sections.length}개 · 수정 ${esc(x.updatedAt || '')}</span>
+          </button>
+          <button class="btn" onclick="printResume('${x.id}')">🖨 PDF</button>
+          <button class="jd-del" onclick="deleteResume('${x.id}')">삭제</button>
+        </div>
+      `).join('')}
+    </div>
+  ` : '';
+
+  return `
+    <p class="doc-eyebrow">09 · 채용 현황 관리</p>
+    <h2>${edText('page.resume.title', '📄 이력서 PDF 만들기')}</h2>
+    <p class="lede">${edText('page.resume.lede', '링크드인 프로필에서 복사한 내용을 그대로 붙여넣으면 Summary·Experience·Education·Skills·Accomplishments 같은 항목을 자동으로 나눠 이력서 서식으로 정리하고, PDF로 저장할 수 있게 해줍니다.')}</p>
+    <div class="callout"><b>💡 참고</b> — 링크드인 프로필 화면에서 내용을 드래그해 복사한 뒤 아래에 붙여넣으세요. 복사할 때 같은 줄이 두 번씩 들어가는 현상은 자동으로 정리합니다. 자동 분류가 완벽하지는 않으니 저장 전에 내용을 확인하고 고쳐주세요.</div>
+    ${resumeError ? `<div class="anomaly-box"><h4>⚠ ${esc(resumeError)}</h4></div>` : ''}
+    <div class="candidate-box">
+      <textarea id="resumePasteArea" placeholder="링크드인 프로필 내용을 여기에 붙여넣기...
+
+예)
+홍길동
+Backend Engineer at Dnotitia
+About
+백엔드 시스템을 설계하고 운영합니다.
+Experience
+Software Engineer
+Dnotitia · Full-time
+2023.07 - 현재
+- API 서버 개발
+Education
+서울대학교
+컴퓨터공학 학사
+Skills
+Python, Kubernetes, PostgreSQL" style="min-height:220px;"></textarea>
+      <div style="margin-top:1rem;">
+        <button class="btn primary" onclick="createResumeFromPaste()">이력서 만들기</button>
+      </div>
+    </div>
+    ${DATA.resumes.length ? `<h3>만들어둔 이력서 (${DATA.resumes.length}개)</h3>${list}` : ''}
   `;
 }
 
@@ -7047,6 +7470,13 @@ function renderDomain(domainId){
           <span class="dashboard-badge">베타</span>
         </div>
         <div class="card-desc">이력서·포트폴리오 PDF를 첨부하면 ${jdCount}개 포지션 중 자격요건이 겹치는 포지션과 근거를 찾아줍니다.</div>
+      </button>
+      <button class="dashboard-card" onclick="go('resume')">
+        <div class="card-top">
+          <span class="card-title">📄 이력서 PDF 만들기</span>
+          <span class="dashboard-badge">${(DATA.resumes||[]).length ? (DATA.resumes.length + '개 보관') : '링크드인 붙여넣기'}</span>
+        </div>
+        <div class="card-desc">링크드인 프로필 내용을 붙여넣으면 항목별로 정리된 이력서 서식으로 만들어 PDF로 저장합니다.</div>
       </button>
     `;
   }
