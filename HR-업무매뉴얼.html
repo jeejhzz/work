@@ -311,6 +311,11 @@
   .doc-body-edit{ outline:2px dashed var(--accent); outline-offset:6px; border-radius:6px; padding:.2rem; }
   .doc-body-edit:focus{ outline:2px solid var(--accent); }
 
+  .jd-indent-hint{ font-size:.82rem; color:var(--ink-soft); background:var(--accent-tint); border:1px solid var(--line);
+    border-radius:8px; padding:.55rem .8rem; margin:.2rem 0 .9rem; line-height:1.55; }
+  /* 들여쓰기가 눈에 보이도록 JD 항목 편집창은 고정폭 글꼴을 씁니다. */
+  #jdDuties, #jdQual, #jdPreferred{ font-family:var(--mono); font-size:.84rem; line-height:1.7; tab-size:2; }
+
   /* ---- 이력서 만들기 ---- */
   .rz-list{ display:flex; flex-direction:column; gap:.5rem; margin-top:.6rem; }
   .rz-list-item{ display:flex; align-items:center; gap:.6rem; padding:.6rem .8rem; border:1px solid var(--line); border-radius:10px; background:var(--paper-raised); }
@@ -1816,6 +1821,50 @@ let DATA = {
         ],
         "id": "jd28",
         "group": ""
+      },
+      {
+        "title": "[Architecture] SoC Architect",
+        "group": "Architecture",
+        "intro": "디노티시아 Architecture팀은 차세대 인공지능 솔루션의 핵심 연산을 가속하기 위한 하드웨어와 소프트웨어를 포함하는 전체 시스템의 청사진을 그립니다. Architecture팀은 워크로드에 대한 깊이 있는 분석과 선구적인 아이디어를 바탕으로 시스템의 근본적인 구조를 혁신합니다. Architecture팀의 목표는 알고리즘, 소프트웨어, 하드웨어를 아우르는 종합적인 아키텍처 설계를 통해 고객에게 압도적인 성능과 효율성을 제공하는 것입니다. Architecture팀에서는 하드웨어 시스템의 큰 그림을 그려 본 분은 물론, 하드웨어를 깊이 이해하는 시스템 소프트웨어 엔지니어의 지원도 환영합니다.",
+        "duties": [
+          "Architecture Specification & Ownership:",
+          "  담당 IP/서브시스템의 아키텍처 사양(외부 인터페이스, 기능 계약, programming model, 성능 요구)을 정의하고 문서로 소유합니다.",
+          "  RTL 설계·검증·소프트웨어 팀과 사양을 협의하고, 구현 과정에서 발생하는 변경 요청을 심의·중재합니다.",
+          "Workload-driven Architecture Exploration:",
+          "  Vector DB, RAG, Agentic AI 등 핵심 워크로드와 알고리즘을 심도 있게 분석하여 성능 병목을 식별하고, 이를 해결하기 위한 아키텍처 가설을 수립합니다.",
+          "  성능, 전력, 비용 등 다양한 제약 조건 하에서 최적의 아키텍처를 탐색하고, 정량적인 데이터에 기반하여 구조의 타당성을 검증하고 개선 방향을 제시합니다.",
+          "System Architecture Definition:",
+          "  분석 결과를 바탕으로, SoC의 구성요소와 소프트웨어 구성요소를 포함한 전체 시스템 아키텍처를 정의합니다.",
+          "  하드웨어와 소프트웨어의 상호작용을 고려하여 최적의 인터페이스를 설계하고, Runtime, OS, 가상화 환경에서의 동작을 포함한 전체 시스템 관점의 구조를 정의합니다.",
+          "  Security, Virtualization, Debug, RAS (Reliability, Availability, Serviceability) 등 시스템의 완성도를 높이기 위한 필수 아키텍처를 정의합니다.",
+          "Modeling, Simulation, and Analysis:",
+          "  C++/Python/SystemC 등을 이용하여 시스템 레벨의 성능 및 기능 모델(Performance/Functional Model)을 직접 개발하고, 시뮬레이션 환경을 구축합니다.",
+          "  개발된 모델을 기반으로 다양한 시나리오를 정의하고 시뮬레이션을 수행하여, 제안하는 아키텍처의 성능을 사전에 예측하고 잠재적 이슈를 분석합니다.",
+          "Continuous Research and Collaboration:",
+          "  컴퓨터 아키텍처, 프로세서, AI 가속기 관련 최신 기술 및 논문 동향을 지속적으로 학습하고 내재화하여 아키텍처에 반영합니다.",
+          "  사내 알고리즘, 소프트웨어, 하드웨어 설계 및 검증 전문가들과 긴밀하게 협업하며 아이디어를 구체화하고 제품 개발 전 과정에 기여합니다."
+        ],
+        "qualifications": [
+          "전기/전자/컴퓨터공학, 전산학 분야 석사학위 소지자 (석사학위 수여 이후 2년 이상 JD 관련 경력), 학사학위 소지자 (4년 이상 JD 관련 경력), 또는 박사학위 소지자",
+          "컴퓨터 아키텍처 분야에 대한 깊이 있는 이해",
+          "CPU, GPU 등 프로세서 구조, 메모리 시스템, 인터커넥트 등 컴퓨터 시스템 전반에 대한 이해",
+          "기술 사양을 문서로 명확하게 작성하고, 타 조직과 협의를 이끌어가는 커뮤니케이션 능력",
+          "다음 배경 중 하나 이상:",
+          "  (HW) 프로세서·가속기 또는 SoC의 아키텍처 정의, 마이크로아키텍처 설계 또는 검증 경험",
+          "  (SW) 디바이스 드라이버, runtime, 커널, 컴파일러 등 하드웨어에 가까운 시스템 소프트웨어 개발 경험",
+          "  (Perf) 시스템 성능 분석·프로파일링 또는 성능 모델/시뮬레이터 개발 경험"
+        ],
+        "preferred": [
+          "실제 칩/제품의 아키텍처 정의 또는 사양(spec) 작성 경험, tapeout 참여 경험",
+          "RAG, Vector DB 등 최신 AI 기술 및 워크로드에 대한 이해",
+          "아키텍처-알고리즘-컴파일러 Co-optimization 연구 또는 프로젝트 경험",
+          "System Software, OS, 가상화(Virtualization) 기술 및 하드웨어와의 연관성에 대한 이해",
+          "RTL 설계 및 ASIC 구현 프로세스에 대한 이해",
+          "C++/SystemC/Python 등을 이용한 시스템 레벨 모델링 및 시뮬레이터 개발 능력",
+          "성능 분석 툴(Performance Profiling Tool) 사용 및 분석 경험",
+          "Top-tier 학회/저널 주저자 논문 게재 실적 (예시: ISCA, MICRO, ASPLOS, HPCA 등)"
+        ],
+        "id": "jd29"
       }
     ]
   },
@@ -4580,7 +4629,7 @@ const DATA_VERSION = 2; // 파일의 데이터 구조 버전. 데이터 구조�
 const ORG_DATA_VERSION = 2;
 // JD 내용(회사소개·포지션 목록) 업데이트 회차. 회사소개를 고치거나 포지션을 새로 추가할 때
 // 이 숫자를 올리면, 예전에 저장된 데이터에도 그 변경이 반영됩니다.
-const JD_CONTENT_VERSION = 1;
+const JD_CONTENT_VERSION = 2;
 
 /* 예전에 이 브라우저에 저장해 둔 데이터(localStorage)를 새 구조로 맞춰줍니다.
    v1 → v2: 인원 데이터를 "조직도" 한 곳으로 합치는 변경.
@@ -5395,17 +5444,18 @@ function renderJdDetail(id){
       <label>직무소개</label>
       <textarea id="jdIntro" style="min-height:130px;">${esc(p.intro||'')}</textarea>
     </div>
+    <p class="jd-indent-hint">💡 <b>대제목 아래 소제목</b>을 넣으려면, 소제목 줄 <b>앞에 공백(스페이스)을 두 칸</b> 넣어주세요. 들여쓴 줄은 바로 윗 항목의 하위 항목으로 저장되고, 워드 파일과 복사한 JD에도 단계가 구분되어 나옵니다.</p>
     <div class="jd-field">
-      <label>담당업무 (한 줄에 하나씩)</label>
-      <textarea id="jdDuties" style="min-height:150px;">${esc((p.duties||[]).join('\n'))}</textarea>
+      <label>담당업무 (한 줄에 하나씩 · 들여쓰면 소제목)</label>
+      <textarea id="jdDuties" style="min-height:190px;">${esc(jdItemsToText(p.duties))}</textarea>
     </div>
     <div class="jd-field">
-      <label>자격요건 (한 줄에 하나씩)</label>
-      <textarea id="jdQual" style="min-height:130px;">${esc((p.qualifications||[]).join('\n'))}</textarea>
+      <label>자격요건 (한 줄에 하나씩 · 들여쓰면 소제목)</label>
+      <textarea id="jdQual" style="min-height:150px;">${esc(jdItemsToText(p.qualifications))}</textarea>
     </div>
     <div class="jd-field">
-      <label>우대사항 (한 줄에 하나씩)</label>
-      <textarea id="jdPreferred" style="min-height:130px;">${esc((p.preferred||[]).join('\n'))}</textarea>
+      <label>우대사항 (한 줄에 하나씩 · 들여쓰면 소제목)</label>
+      <textarea id="jdPreferred" style="min-height:130px;">${esc(jdItemsToText(p.preferred))}</textarea>
     </div>
     <div class="row-actions">
       <button class="btn primary" onclick="saveJdDetail('${id}')">저장</button>
@@ -5423,9 +5473,10 @@ function saveJdDetail(id){
   p.title = document.getElementById('jdTitle').value.trim() || p.title;
   p.group = document.getElementById('jdGroup').value.trim();
   p.intro = document.getElementById('jdIntro').value;
-  p.duties = document.getElementById('jdDuties').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  p.qualifications = document.getElementById('jdQual').value.split('\n').map(s=>s.trim()).filter(Boolean);
-  p.preferred = document.getElementById('jdPreferred').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  // 들여쓴 줄은 소제목으로 저장합니다 (jdNormalizeItems가 들여쓰기를 유지)
+  p.duties = jdNormalizeItems(document.getElementById('jdDuties').value);
+  p.qualifications = jdNormalizeItems(document.getElementById('jdQual').value);
+  p.preferred = jdNormalizeItems(document.getElementById('jdPreferred').value);
   persist();
   render();
   go('jddetail', null, id);
@@ -5434,10 +5485,38 @@ function saveJdDetail(id){
 }
 window.saveJdDetail = saveJdDetail;
 
+/* ---- JD 항목의 2단 구조(대제목 - 소제목) ----
+   소제목은 저장할 때 줄 앞에 공백 2칸을 붙여 표현합니다.
+   이렇게 하면 기존의 "한 줄에 하나씩" 편집 방식을 그대로 쓰면서도
+   현업에서 주는 대제목-소제목 구조를 그대로 담을 수 있습니다. */
+function jdIsSubItem(line){ return /^[ \t　]+\S/.test(String(line || '')); }
+function jdItemText(line){
+  return String(line || '').replace(/^[ \t　]+/, '').replace(/^[•○◦▪‣·*]\s*/, '').replace(/^-\s+/, '').trim();
+}
+/* 편집창 내용을 저장용 배열로 바꿉니다. (들여쓰기 = 소제목) */
+function jdNormalizeItems(text){
+  return String(text || '').split('\n')
+    .filter(l => l.trim())
+    .map(l => {
+      const sub = jdIsSubItem(l) || /^[○◦▪‣]\s*/.test(l.trim());
+      const t = jdItemText(l);
+      return t ? (sub ? '  ' + t : t) : '';
+    })
+    .filter(Boolean);
+}
+/* 저장된 배열을 편집창에 보여줄 문자열로 (들여쓰기 유지) */
+function jdItemsToText(arr){
+  return (arr || []).map(x => jdIsSubItem(x) ? '  ' + jdItemText(x) : jdItemText(x)).join('\n');
+}
+/* 대제목/소제목에 각각 다른 기호를 붙여 줄 목록으로 만듭니다. */
+function jdBulletLines(arr, parentMark, subMark){
+  return (arr || []).map(x => jdIsSubItem(x) ? subMark + jdItemText(x) : parentMark + jdItemText(x));
+}
+
 function assembleFullJd(id){
   const p = findJd(id);
   const c = DATA.jd.common;
-  const bullets = arr => (arr||[]).map(x => '· ' + x).join('\n');
+  const bullets = arr => jdBulletLines(arr, '· ', '   - ').join('\n');
   return [
     p.title,
     '',
@@ -5557,12 +5636,20 @@ function docxPara(text, opts){
   if (opts.bold) runProps.push('<w:b/>');
   if (opts.size) runProps.push(`<w:sz w:val="${opts.size}"/><w:szCs w:val="${opts.size}"/>`);
   const rPr = `<w:rPr>${runProps.join('')}</w:rPr>`;
-  const pPr = opts.spacingAfter !== undefined ? `<w:pPr><w:spacing w:after="${opts.spacingAfter}"/>${rPr}</w:pPr>` : '';
+  const spacing = opts.spacingAfter !== undefined ? `<w:spacing w:after="${opts.spacingAfter}"/>` : '';
+  const ind = opts.indentLeft ? `<w:ind w:left="${opts.indentLeft}"/>` : '';
+  const pPr = (spacing || ind) ? `<w:pPr>${spacing}${ind}${rPr}</w:pPr>` : '';
   return `<w:p>${pPr}<w:r>${rPr}<w:t xml:space="preserve">${escXml(text)}</w:t></w:r></w:p>`;
 }
 function docxTitle(text){ return docxPara(text, { bold:true, size:40, spacingAfter:200 }); }
 function docxHeading(text){ return docxPara(text, { bold:true, size:28, spacingAfter:120 }); }
-function docxBullets(arr){ return (arr || []).map(x => docxPara('•  ' + x, { spacingAfter:60 })).join(''); }
+/* 대제목은 • 기호로, 소제목은 한 단 들여쓴 – 기호로 내보냅니다. */
+function docxBullets(arr){
+  return (arr || []).map(x => {
+    const sub = jdIsSubItem(x);
+    return docxPara((sub ? '–  ' : '•  ') + jdItemText(x), { spacingAfter:60, indentLeft: sub ? 480 : 0 });
+  }).join('');
+}
 function docxMultiline(text){ return String(text || '').split('\n').filter(l => l.length).map(line => docxPara(line, { spacingAfter:80 })).join(''); }
 
 function buildJdDocumentXml(id){
@@ -5787,20 +5874,32 @@ function isJdStopHeader(line){
   return JD_STOP_PATTERNS.some(p => lower === p.toLowerCase() || lower.startsWith(p.toLowerCase()));
 }
 
+/* 문서에서 뽑은 줄들을 항목별로 나눕니다.
+   대제목-소제목 2단 구조는 두 가지 신호로 알아냅니다.
+     1) 하위 기호(○ ◦ ▪ ‣)를 쓴 줄
+     2) 윗 항목보다 들여쓰기가 된 줄
+   소제목으로 판단한 줄은 앞에 공백 2칸을 붙여 저장합니다. */
+const JD_SUB_MARK = /^[○◦▪‣]\s*/;
 function parseJdSections(lines){
   const result = { intro: '', duties: [], qualifications: [], preferred: [] };
   let current = null;
-  lines.map(l => String(l || '').trim()).filter(l => l.length > 0).forEach(line => {
-    const sec = matchJdSectionHeader(line);
+  (lines || []).forEach(raw => {
+    const line = String(raw || '').replace(/ /g, ' ');
+    const trimmed = line.trim();
+    if (!trimmed) return;
+    const sec = matchJdSectionHeader(trimmed);
     if (sec) { current = sec; return; }
-    if (isJdStopHeader(line)) { current = null; return; }
+    if (isJdStopHeader(trimmed)) { current = null; return; }
     if (!current) return;
     if (current === 'intro') {
-      result.intro += (result.intro ? ' ' : '') + line;
-    } else {
-      const cleaned = line.replace(/^[-•▪◦‣∙·*]\s*/, '').replace(/^\d+[\.\)]\s*/, '').trim();
-      if (cleaned) result[current].push(cleaned);
+      result.intro += (result.intro ? ' ' : '') + trimmed;
+      return;
     }
+    const indent = ((line.match(/^[ \t　]*/) || [''])[0]).replace(/\t/g, '  ').length;
+    // 하위 기호를 쓰거나 들여쓴 줄은 소제목으로 봅니다(단, 위에 대제목이 하나는 있어야 함).
+    const isSub = (JD_SUB_MARK.test(trimmed) || indent >= 2) && result[current].length > 0;
+    const cleaned = trimmed.replace(/^[-●•▪◦‣∙·*○]\s*/, '').replace(/^\d+[\.\)]\s*/, '').trim();
+    if (cleaned) result[current].push(isSub ? '  ' + cleaned : cleaned);
   });
   return result;
 }
@@ -5879,9 +5978,9 @@ function saveJdImportResult(){
   const newPos = {
     id, title, group: '',
     intro: document.getElementById('jdImportIntro').value.trim(),
-    duties: document.getElementById('jdImportDuties').value.split('\n').map(s=>s.trim()).filter(Boolean),
-    qualifications: document.getElementById('jdImportQual').value.split('\n').map(s=>s.trim()).filter(Boolean),
-    preferred: document.getElementById('jdImportPreferred').value.split('\n').map(s=>s.trim()).filter(Boolean),
+    duties: jdNormalizeItems(document.getElementById('jdImportDuties').value),
+    qualifications: jdNormalizeItems(document.getElementById('jdImportQual').value),
+    preferred: jdNormalizeItems(document.getElementById('jdImportPreferred').value),
   };
   DATA.jd.positions.push(newPos);
   jdImportFile = null; jdImportParsed = null; jdImportPastedText = ''; jdImportError = '';
@@ -6644,10 +6743,12 @@ function buildResumeKeywordSet(text){
 }
 
 function scoreCandidatePosition(pos, resumeKeywordSet){
+  // 소제목의 들여쓰기는 근거 문장에 그대로 보이지 않도록 걷어냅니다.
+  const flat = arr => (arr || []).map(jdItemText).filter(Boolean);
   const sections = [
-    { lines: pos.qualifications || [], weight: 3 },
-    { lines: pos.preferred || [], weight: 2 },
-    { lines: [...(pos.duties || []), pos.intro || ''], weight: 1 }
+    { lines: flat(pos.qualifications), weight: 3 },
+    { lines: flat(pos.preferred), weight: 2 },
+    { lines: [...flat(pos.duties), pos.intro || ''], weight: 1 }
   ];
   let weighted = 0, total = 0, qualHit = false;
   const evidence = [];
